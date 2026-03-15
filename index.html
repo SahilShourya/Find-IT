@@ -362,14 +362,15 @@
       </div>
       <div id="loginForm">
         <div class="form-group">
-          <label class="form-label">University Email</label>
-          <input class="form-input" type="email" id="loginEmail" placeholder="25bcs080@smvdu.ac.in">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="loginEmail" placeholder="yourname@gmail.com">
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
           <input class="form-input" type="password" id="loginPassword" placeholder="Enter password">
         </div>
         <button class="btn-submit" data-fn="handleLogin">Sign In</button>
+        <button class="btn-cancel" style="width:100%;margin-top:10px;" data-fn="handleForgotPassword">🔑 Forgot Password?</button>
       </div>
       <div id="signupForm" style="display:none;">
         <div class="form-row">
@@ -568,11 +569,43 @@
 </div>
 
 <script type="module">
+// ================================================================
+// SMVDU FindIt — Lost & Found Web App
+// Built with Firebase (Auth + Firestore) + Cloudinary (Images)
+// ================================================================
+
+// ── FIREBASE IMPORTS ──
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, doc, updateDoc, query, orderBy, onSnapshot, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword,   // Register new user
+  signInWithEmailAndPassword,        // Login existing user
+  onAuthStateChanged,                // Listen for login/logout changes
+  signOut,                           // Logout user
+  updateProfile,                     // Update display name
+  sendEmailVerification,             // Send verification email
+  sendPasswordResetEmail             // Send password reset email
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import { 
+  getFirestore, 
+  collection,       // Reference to a collection
+  addDoc,           // Add new document
+  getDocs,          // Get all documents (one time)
+  doc,              // Reference to a specific document
+  updateDoc,        // Update existing document
+  query,            // Build a query
+  orderBy,          // Sort results
+  onSnapshot,       // Real-time listener
+  where,            // Filter condition
+  serverTimestamp   // Firebase server time
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
+// ── FIREBASE CONFIGURATION ──
+// These keys connect our app to Firebase project "Find IT"
+// Get these from: Firebase Console > Project Settings > Web App
 const firebaseConfig = {
   apiKey: "AIzaSyBrwqF0UimXJonkwp8uV71MaGI2IzoyQfM",
   authDomain: "find-it-b3fa2.firebaseapp.com",
@@ -583,38 +616,49 @@ const firebaseConfig = {
   measurementId: "G-44LQ104PV6"
 };
 
-let app, auth, db, storage;
-let currentUser = null;
-let allItems = [];
-let currentTab = 'all';
-let currentCategory = 'all';
-let activeChatId = null;
-let unsubscribeChat = null;
+// ── GLOBAL VARIABLES ──
+let app, auth, db, storage;        // Firebase services
+let currentUser = null;             // Currently logged in user (null if not logged in)
+let allItems = [];                  // All items loaded from Firebase
+let currentTab = 'all';            // Current tab: 'all', 'lost', or 'found'
+let currentCategory = 'all';       // Current category filter
+let activeChatId = null;           // Currently open chat conversation ID
+let unsubscribeChat = null;        // Function to stop listening to chat messages
 
+// Check if Firebase is properly configured (not placeholder values)
 const FIREBASE_CONFIGURED = firebaseConfig.apiKey !== "YOUR_API_KEY";
 
+// ── FIREBASE INITIALIZATION ──
 try {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-  document.getElementById('setupBanner').style.display = 'none';
+  app = initializeApp(firebaseConfig);   // Start Firebase app
+  auth = getAuth(app);                   // Get Authentication service
+  db = getFirestore(app);               // Get Firestore database
+  storage = getStorage(app);            // Get Storage service
+
+  document.getElementById('setupBanner').style.display = 'none'; // Hide setup banner
+
   if (FIREBASE_CONFIGURED) {
+    // Listen for login/logout changes in real-time
+    // This runs automatically whenever user logs in or out
     onAuthStateChanged(auth, user => {
       currentUser = user;
-      updateNavAuth(user);
-      loadItems();
-      if (user) loadMyItems();
+      updateNavAuth(user);   // Update navbar (show Sign In or Sign Out)
+      loadItems();           // Load all lost/found items
+      if (user) loadMyItems(); // Load user's own items if logged in
     });
   } else {
-    loadDemoItems();
+    loadDemoItems(); // Fallback if Firebase not configured
   }
 } catch(e) {
   console.warn("Firebase init failed");
   loadDemoItems();
 }
 
+// ── DEMO DATA ──
+// No demo items — app uses real Firebase data only
 const demoItems = [];
+
+// Called when Firebase is not configured — shows empty state
 function loadDemoItems() {
   allItems = [];
   renderItems('recentItems', []);
@@ -623,24 +667,35 @@ function loadDemoItems() {
   updateStats();
 }
 
+// ── LOAD ALL ITEMS FROM FIREBASE ──
+// Uses onSnapshot for real-time updates — page auto-refreshes when new items are added
 async function loadItems() {
   if(!FIREBASE_CONFIGURED) return loadDemoItems();
   try {
+    // Get all items sorted by newest first
     const q = query(collection(db,'items'), orderBy('createdAt','desc'));
+    
+    // onSnapshot = real-time listener, runs every time data changes
     onSnapshot(q, snap => {
       allItems = snap.docs.map(d => ({id:d.id,...d.data()}));
-      // Show only active items on screen, claimed items stay in Firebase
+      
+      // Only show ACTIVE items on screen
+      // Resolved/claimed items stay in Firebase but are hidden from view
       const activeItems = allItems.filter(i => i.status !== 'claimed');
-      renderItems('recentItems', activeItems.slice(0,6));
-      filterItems();
-      updateBadges();
-      updateStats();
+      renderItems('recentItems', activeItems.slice(0,6)); // Show latest 6 on home
+      filterItems();     // Apply current filters to items page
+      updateBadges();    // Update tab counts
+      updateStats();     // Update homepage stats
     });
   } catch(e){ loadDemoItems(); }
 }
 
+// ── LOAD CURRENT USER'S OWN ITEMS ──
+// Shows items reported by the logged-in user on their Profile page
 async function loadMyItems() {
   if(!currentUser||!FIREBASE_CONFIGURED) return;
+  
+  // Filter items where userId matches current user's UID
   const q = query(collection(db,'items'),where('userId','==',currentUser.uid));
   onSnapshot(q, snap => {
     const mine = snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -648,8 +703,13 @@ async function loadMyItems() {
   });
 }
 
+// ── RENDER ITEMS TO SCREEN ──
+// Takes an array of items and displays them as cards in the given container
+// containerId = HTML element ID where cards should appear
 function renderItems(containerId, items) {
   const el = document.getElementById(containerId);
+  
+  // Show empty state if no items
   if(!items||!items.length){
     el.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No items found</h3><p>Try a different filter or be the first to report!</p></div>`;
     return;
@@ -695,26 +755,39 @@ function updateStats(){
   document.getElementById('statResolved').textContent=allItems.filter(i=>i.status==='claimed').length;
 }
 
+// ── TAB FILTER (All / Lost / Found) ──
 window.setTab = function(tab) {
   currentTab=tab;
+  // Toggle active class on tab buttons
   ['all','lost','found'].forEach(t=>{ document.getElementById('tab-'+t).classList.toggle('active',t===tab); });
-  filterItems();
+  filterItems(); // Re-apply all filters
 }
 
+// ── CATEGORY FILTER ──
 window.setCategoryFilter = function(cat, btn) {
   currentCategory=cat;
+  // Remove active from all filter buttons, add to clicked one
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  filterItems();
+  filterItems(); // Re-apply all filters
 }
 
+// ── MAIN FILTER FUNCTION ──
+// Applies tab filter + category filter + search text together
 window.filterItems = function() {
-  // Only show active items, hide resolved ones from browse
+  // Start with only ACTIVE items (hide resolved ones)
   let items = allItems.filter(i => i.status !== 'claimed');
+  
+  // Apply tab filter (lost/found/all)
   if(currentTab!=='all') items=items.filter(i=>i.type===currentTab);
+  
+  // Apply category filter
   if(currentCategory!=='all') items=items.filter(i=>i.category===currentCategory);
+  
+  // Apply search text filter (searches name + description + location)
   const q=(document.getElementById('searchInput').value||'').toLowerCase();
   if(q) items=items.filter(i=>(i.name+i.description+i.location).toLowerCase().includes(q));
+  
   renderItems('itemsGrid', items);
 }
 
@@ -772,9 +845,13 @@ window.submitClaim = async function() {
   } else { showToast('Incorrect answer. Please try again.','error'); }
 }
 
+// ── MARK ITEM AS RESOLVED ──
+// Called by item owner when their item has been found/returned
+// Item disappears from browse but data stays in Firebase
 window.markResolved = async function(id) {
   if(!currentUser){ showToast('Please sign in first','error'); return; }
   try {
+    // Update status to 'claimed' in Firestore
     await updateDoc(doc(db,'items',id),{status:'claimed'});
     showToast('Marked as resolved! Great job helping a fellow student 🎉','success');
     closeModal('detailModal');
@@ -805,6 +882,23 @@ window.handleLogin = async function() {
     showToast('Welcome back! 👋','success');
     closeModal('authModal');
   } catch(e){ showToast(e.message,'error'); }
+}
+
+// ── FORGOT PASSWORD ──
+// Firebase sends a real password reset email to the user
+// User clicks link in email → sets new password
+window.handleForgotPassword = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if(!email){
+    showToast('Please enter your email address first','error');
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email); // Firebase sends reset email
+    showToast('✅ Password reset email sent! Check your inbox.','success');
+  } catch(e){
+    showToast('❌ ' + e.message,'error');
+  }
 }
 
 window.handleSignup = async function() {
@@ -909,34 +1003,64 @@ window.previewPhoto = function(input) {
   }
 }
 
+// ── SUBMIT LOST/FOUND REPORT ──
+// Called when user clicks "Submit Report" button
 window.submitReport = async function() {
-  const type=document.getElementById('reportType').value;
+  // Get all form values
+  const type=document.getElementById('reportType').value;       // 'lost' or 'found'
   const name=document.getElementById('itemName').value.trim();
   const category=document.getElementById('itemCategory').value;
   const desc=document.getElementById('itemDesc').value.trim();
   const location=document.getElementById('itemLocation').value;
   const date=document.getElementById('itemDate').value;
+  
+  // Validate required fields
   if(!name||!category||!desc||!location||!date){ showToast('Please fill all required fields','error'); return; }
   if(!currentUser){ showToast('Please sign in first','error'); return; }
+  
   try {
-    let imageUrl='';
+    let imageUrl=''; // Will store Cloudinary image URL if photo uploaded
+    
     const photoFile=document.getElementById('itemPhoto').files[0];
     if(photoFile){
       try {
+        // Upload photo to Cloudinary (free image hosting)
+        // Cloud name: duxehxynt, Preset: smvdu-findit (unsigned)
         const formData = new FormData();
         formData.append('file', photoFile);
         formData.append('upload_preset', 'smvdu-findit');
         formData.append('cloud_name', 'duxehxynt');
         const cloudRes = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload', {method:'POST',body:formData});
         const cloudData = await cloudRes.json();
-        imageUrl = cloudData.secure_url || '';
-      } catch(uploadErr){ console.warn('Photo upload skipped:', uploadErr.message); }
+        imageUrl = cloudData.secure_url || ''; // Get the uploaded image URL
+      } catch(uploadErr){ 
+        console.warn('Photo upload skipped:', uploadErr.message); 
+        // Continue without image if upload fails
+      }
     }
-    const data={type,name,category,description:desc,location,date,userId:currentUser.uid,userName:currentUser.displayName||currentUser.email,status:'active',imageUrl,createdAt:serverTimestamp()};
+    
+    // Build the item data object to save in Firestore
+    const data={
+      type,                    // 'lost' or 'found'
+      name,                    // Item name
+      category,                // Item category
+      description: desc,       // Item description
+      location,                // Where it was lost/found
+      date,                    // Date of loss/finding
+      userId: currentUser.uid, // Who reported it
+      userName: currentUser.displayName||currentUser.email, // Reporter name
+      status: 'active',        // 'active' or 'claimed'
+      imageUrl,                // Cloudinary image URL (empty if no photo)
+      createdAt: serverTimestamp() // Firebase server timestamp
+    };
+    
+    // For lost items — save verification question/answer for claim verification
     if(type==='lost'){
       data.verifyQuestion=document.getElementById('verifyQuestion').value;
       data.verifyAnswer=document.getElementById('verifyAnswer').value;
     }
+    
+    // Save to Firestore database
     await addDoc(collection(db,'items'),data);
     showToast(`${type==='lost'?'Lost':'Found'} item reported! We hope it gets reunited soon 🤞`,'success');
     closeModal('reportModal');
@@ -1002,14 +1126,24 @@ window.openChat = async function(chatId, otherName, otherUserId) {
   });
 }
 
+// ── SEND CHAT MESSAGE ──
+// Saves message to Firestore under chats/{chatId}/messages
+// Both users see it instantly via onSnapshot real-time listener
 window.sendMessage = async function() {
   if(!currentUser||!activeChatId) return;
   const input=document.getElementById('chatInput');
   const text=input.value.trim();
   if(!text) return;
-  input.value='';
+  input.value=''; // Clear input field
   try {
-    await addDoc(collection(db,'chats',activeChatId,'messages'),{text,senderId:currentUser.uid,senderName:currentUser.displayName,time:serverTimestamp()});
+    // Add message to messages subcollection
+    await addDoc(collection(db,'chats',activeChatId,'messages'),{
+      text,
+      senderId: currentUser.uid,
+      senderName: currentUser.displayName,
+      time: serverTimestamp()
+    });
+    // Update last message preview in chat list
     await updateDoc(doc(db,'chats',activeChatId),{lastMessage:text,lastUpdated:serverTimestamp()});
   } catch(e){ console.error(e); }
 }
