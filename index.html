@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SMVDU Lost & Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
     --saffron: #C9A84C;
@@ -757,7 +758,7 @@
 <!-- NAV -->
 <nav>
   <div class="nav-logo">
-    <img class="smvdu-logo" src="https://tse1.mm.bing.net/th/id/OIP.UUW_4ACmAB3-VVu-fVDKDQHaCD?pid=Api&P=0&h=180" alt="SMVDU Logo">
+    <img class="smvdu-logo" src="https://in.images.search.yahoo.com/images/view;_ylt=Awrx.TvGrbZp0xU9C169HAx.;_ylu=c2VjA3NyBHNsawNpbWcEb2lkAzgzYzQyOWI0OTJhMWVmMWE0OGU3ZDNiYmM0MTM0ZGZjBGdwb3MDMwRpdANiaW5n?back=https%3A%2F%2Fin.images.search.yahoo.com%2Fsearch%2Fimages%3Fp%3Dfind%2Bit%2BLOGO%26type%3DE210IN1589G0%26fr%3Dmcafee%26fr2%3Dpiv-web%26tab%3Dorganic%26ri%3D3&w=834&h=231&imgurl=claremont-courier.com%2Fwp-content%2Fuploads%2F2022%2F05%2FFind-IT-Logo.png&rurl=https%3A%2F%2Fclaremont-courier.com%2Fbusinesses%2F&size=8KB&p=find+it+LOGO&oid=83c429b492a1ef1a48e7d3bbc4134dfc&fr2=piv-web&fr=mcafee&tt=Business+Directory+%7C+Claremont+COURIER&b=0&ni=21&no=3&ts=&tab=organic&sigr=GGG6l_NGNZNB&sigb=vyyhJQESOL3Q&sigi=bwiTV6YQcWxl&sigt=FGJ1BNyFI.0Y&.crumb=9k.iJ.4EaH.&fr=mcafee&fr2=piv-web&type=E210IN1589G0" alt="SMVDU Logo">
     <div class="logo-text">
       <span class="top">SMVDU</span>
       <span class="bottom">Find<span>It</span></span>
@@ -780,7 +781,7 @@
   <div class="hero">
     <div class="hero-badge">🎓 Shri Mata Vaishno Devi University, Katra</div>
     <h1>Lost something on<br>campus? <span class="accent">We'll find it.</span></h1>
-    <p>SMVDU's dedicated lost & found platform —Whole Campus covered. Report lost items, upload found ones, and connect with fellow students instantly.</p>
+    <p>SMVDU's dedicated lost & found platform — Whole Campus covered. Report lost items, upload found ones, and connect with fellow students instantly.</p>
     <div class="hero-actions">
       <button class="btn-primary" data-fn="openReportModal" data-arg1="lost">📢 Report Lost Item</button>
       <button class="btn-secondary" data-fn="openReportModal" data-arg1="found">🔍 I Found Something</button>
@@ -801,8 +802,8 @@
       <div class="lbl">Successfully Reunited</div>
     </div>
     <div class="stat-item">
-      <div class="num">450</div>
-      <div class="lbl">Acres Campus</div>
+      <div class="num">Whole</div>
+      <div class="lbl">Campus</div>
     </div>
   </div>
 
@@ -963,8 +964,8 @@
             <option value="">Select Department</option>
             <option>Computer Science & Engineering</option>
             <option>Electronics & Communication</option>
-            <option>Mechanical Engineering</option>
-            <option>Civil Or Majdur Engineering</option>
+            <option>Mechanical/Mechanic Engineering</option>
+            <option>Civil / Majdur Engineering</option>
             <option>Biotechnology</option>
             <option>Physics</option>
             <option>Chemistry</option>
@@ -1044,8 +1045,8 @@
           <select class="form-select" id="itemLocation">
             <option value="">Select Location</option>
             <option>Main Academic Block</option>
-            <option>Library</option>
-            <option>Canteen </option>
+            <option>Central Library</option>
+            <option>Canteen</option>
             <option>Nilgiri Hostel</option>
             <option>Vindhyanchal Hostel</option>
             <option>Trikuta Hostel</option>
@@ -1054,20 +1055,31 @@
             <option>Vaishnavi Hostel</option>
             <option>Basohli Hostel</option>
             <option>Old Basohli Hostel</option>
+            <option>Nilgiri Mess</option>
+            <option>Vindhyanchal Mess</option>
+            <option>Central Mess</option>
+            <option>Shivalik Mess</option>
+            <option>Vaishnavi Mess</option>
+            <option>Basohli Mess</option>
             <option>Sports Complex</option>
             <option>Matrika Auditorium</option>
-            <option>Administrative Block</option>
-            <option>Parking Area Near Physics Department</option>
-            <option>Parking Area Near Shivalik Hostel</option>
-            <option>Lawn Tennis Court</option>
+            <option>Admin Block</option>
+            <option>Parking Area</option>
             <option>Bus Stand</option>
-            <option>Back To The Trikuta Ground</option>
             <option>Labs Block</option>
+            <option>Ground Of Campus</option>
+            <option>BC Junction</option>
             <option>LT 1</option>
             <option>LT 2</option>
             <option>LT 3</option>
             <option>LT 4</option>
-            <option>RED ROCKS</option>
+            <option>Red Rocks</option>
+            <option>Trikuta Ground</option>
+            <option>Gym</option>
+            <option>Grocery</option>
+            <option>Medical Aid Center</option>
+            <option>Near Medicle Buildng</option>
+            <option>Near Workshop</option>
             <option>Other</option>
           </select>
         </div>
@@ -1077,9 +1089,9 @@
         </div>
       </div>
       <div class="form-group" id="verifyQuestionGroup" style="display:none;">
-        <label class="form-label">🔐 Verification Question(Only you would know this)</label>
-        <input class="form-input" type="text" id="verifyQuestion" placeholder="e.g. Tell Me The Uniqueness Of Your Stuff,Which Only You Know?">
-        <input class="form-input" type="text" id="verifyAnswer" placeholder="Answer(kept private)" style="margin-top:8px;">
+        <label class="form-label">🔐 Verification Question (This Is For Your stuff Matching and Only You Would Know This.)</label>
+        <input class="form-input" type="text" id="verifyQuestion" placeholder="e.g. What Was The Uniqueness Of Your Stuff?">
+        <input class="form-input" type="text" id="verifyAnswer" placeholder="Answer (kept private)" style="margin-top:8px;">
       </div>
       <div class="form-group">
         <label class="form-label">Upload Photo</label>
@@ -1466,9 +1478,20 @@ window.submitReport = async function() {
     let imageUrl='';
     const photoFile=document.getElementById('itemPhoto').files[0];
     if(photoFile){
-      const storageRef=ref(storage,`items/${Date.now()}_${photoFile.name}`);
-      await uploadBytes(storageRef,photoFile);
-      imageUrl=await getDownloadURL(storageRef);
+      try {
+        const formData = new FormData();
+        formData.append('file', photoFile);
+        formData.append('upload_preset', 'smvdu-findit');
+        formData.append('cloud_name', 'duxehxynt');
+        const cloudRes = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const cloudData = await cloudRes.json();
+        imageUrl = cloudData.secure_url || '';
+      } catch(uploadErr){
+        console.warn('Photo upload skipped:', uploadErr.message);
+      }
     }
     const data={type,name,category,description:desc,location,date,userId:currentUser.uid,userName:currentUser.displayName||currentUser.email,status:'active',imageUrl,createdAt:serverTimestamp()};
     if(type==='lost'){
