@@ -383,8 +383,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" type="email" id="signupEmail" placeholder="25bcs080@smvdu.ac.in">
+          <label class="form-label">Personal Email (Gmail/any)</label>
+          <input class="form-input" type="email" id="signupEmail" placeholder="yourname@gmail.com">
         </div>
         <div class="form-group">
           <label class="form-label">Department</label>
@@ -812,33 +812,39 @@ window.handleSignup = async function() {
   const name=document.getElementById('signupName').value;
   const email=document.getElementById('signupEmail').value;
   const pass=document.getElementById('signupPassword').value;
-  const roll=document.getElementById('signupRoll').value;
+  const roll=document.getElementById('signupRoll').value.trim().toUpperCase();
   const dept=document.getElementById('signupDept').value;
   const hostel=document.getElementById('signupHostel').value;
-  if(!name||!email||!pass||!roll){ showToast('Please fill required fields','error'); return; }
+  if(!name||!email||!pass||!roll||!dept){ showToast('Please fill all required fields','error'); return; }
 
-  // Only allow SMVDU email domains
-  const allowedDomains = ['smvdu.ac.in', 'students.smvdu.ac.in'];
-  const emailDomain = email.split('@')[1]?.toLowerCase();
-  if(!allowedDomains.includes(emailDomain)){
-    showToast('❌ Only SMVDU university emails allowed! (@smvdu.ac.in)','error');
+  // Validate roll number format — must be like 25BCS080, 24ECE012 etc
+  const rollPattern = /^\d{2}[A-Z]{2,4}\d{3,4}$/;
+  if(!rollPattern.test(roll)){
+    showToast('❌ Invalid roll number! Format: 25BCS080','error');
     return;
   }
+
+  // Check if roll number already registered
+  try {
+    const rollCheck = await getDocs(query(collection(db,'users'), where('roll','==',roll)));
+    if(!rollCheck.empty){
+      showToast('❌ This roll number is already registered!','error');
+      return;
+    }
+  } catch(e){}
 
   try {
     const cred=await createUserWithEmailAndPassword(auth,email,pass);
     await updateProfile(cred.user,{displayName:name});
-    // Send email verification
     await sendEmailVerification(cred.user);
-    await addDoc(collection(db,'users'),{uid:cred.user.uid,name,email,roll,dept,hostel,emailVerified:false,createdAt:serverTimestamp()});
-    showToast('✅ Account created! Check your SMVDU email for verification link!','success');
-    // Show verification notice
+    await addDoc(collection(db,'users'),{uid:cred.user.uid,name,email,roll,dept,hostel,createdAt:serverTimestamp()});
+    showToast('✅ Account created! Verify your email to continue.','success');
     document.getElementById('signupForm').innerHTML = `
       <div style="text-align:center;padding:20px;">
         <div style="font-size:3rem;margin-bottom:16px;">📧</div>
         <h3 style="font-family:'Syne',sans-serif;margin-bottom:12px;color:var(--saffron)">Verify Your Email</h3>
         <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:20px;">
-          We've sent a verification link to <strong style="color:var(--text)">${email}</strong><br>
+          We've sent a verification link to<br><strong style="color:var(--text)">${email}</strong><br><br>
           Please check your inbox and click the link to activate your account.
         </p>
         <button class="btn-submit" onclick="checkVerification()">✅ I've Verified — Continue</button>
