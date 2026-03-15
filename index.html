@@ -218,7 +218,15 @@
 
 <nav>
   <div class="nav-logo">
-    <img class="smvdu-logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b3/Shri_Mata_Vaishno_Devi_University_logo.png/220px-Shri_Mata_Vaishno_Devi_University_logo.png" alt="SMVDU Logo">
+    <svg class="smvdu-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:44px;height:44px;flex-shrink:0;">
+      <circle cx="22" cy="22" r="22" fill="#0A1F42"/>
+      <circle cx="22" cy="22" r="20" fill="#0F2850" stroke="#C9A84C" stroke-width="1.5"/>
+      <text x="22" y="17" text-anchor="middle" font-family="serif" font-size="7" font-weight="bold" fill="#C9A84C">SMVDU</text>
+      <text x="22" y="27" text-anchor="middle" font-family="serif" font-size="9" font-weight="bold" fill="#F0EDE8">Find</text>
+      <text x="32" y="27" text-anchor="middle" font-family="serif" font-size="9" font-weight="bold" fill="#C9A84C">It</text>
+      <line x1="8" y1="30" x2="36" y2="30" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="22" cy="35" r="1.5" fill="#C9A84C"/>
+    </svg>
     <div class="logo-text">
       <span class="top">SMVDU</span>
       <span class="bottom">Find<span>It</span></span>
@@ -561,7 +569,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, doc, updateDoc, query, orderBy, onSnapshot, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
@@ -621,7 +629,9 @@ async function loadItems() {
     const q = query(collection(db,'items'), orderBy('createdAt','desc'));
     onSnapshot(q, snap => {
       allItems = snap.docs.map(d => ({id:d.id,...d.data()}));
-      renderItems('recentItems', allItems.slice(0,6));
+      // Show only active items on screen, claimed items stay in Firebase
+      const activeItems = allItems.filter(i => i.status !== 'claimed');
+      renderItems('recentItems', activeItems.slice(0,6));
       filterItems();
       updateBadges();
       updateStats();
@@ -699,7 +709,8 @@ window.setCategoryFilter = function(cat, btn) {
 }
 
 window.filterItems = function() {
-  let items = [...allItems];
+  // Only show active items, hide resolved ones from browse
+  let items = allItems.filter(i => i.status !== 'claimed');
   if(currentTab!=='all') items=items.filter(i=>i.type===currentTab);
   if(currentCategory!=='all') items=items.filter(i=>i.category===currentCategory);
   const q=(document.getElementById('searchInput').value||'').toLowerCase();
@@ -785,7 +796,12 @@ window.handleLogin = async function() {
   const pass=document.getElementById('loginPassword').value;
   if(!email||!pass){ showToast('Please fill all fields','error'); return; }
   try {
-    await signInWithEmailAndPassword(auth,email,pass);
+    const cred=await signInWithEmailAndPassword(auth,email,pass);
+    if(!cred.user.emailVerified){
+      await signOut(auth);
+      showToast('❌ Please verify your email first! Check your inbox.','error');
+      return;
+    }
     showToast('Welcome back! 👋','success');
     closeModal('authModal');
   } catch(e){ showToast(e.message,'error'); }
@@ -800,12 +816,54 @@ window.handleSignup = async function() {
   const dept=document.getElementById('signupDept').value;
   const hostel=document.getElementById('signupHostel').value;
   if(!name||!email||!pass||!roll){ showToast('Please fill required fields','error'); return; }
+
+  // Only allow SMVDU email domains
+  const allowedDomains = ['smvdu.ac.in', 'students.smvdu.ac.in'];
+  const emailDomain = email.split('@')[1]?.toLowerCase();
+  if(!allowedDomains.includes(emailDomain)){
+    showToast('❌ Only SMVDU university emails allowed! (@smvdu.ac.in)','error');
+    return;
+  }
+
   try {
     const cred=await createUserWithEmailAndPassword(auth,email,pass);
     await updateProfile(cred.user,{displayName:name});
-    await addDoc(collection(db,'users'),{uid:cred.user.uid,name,email,roll,dept,hostel,createdAt:serverTimestamp()});
-    showToast('Account created! Welcome to SMVDU FindIt 🎉','success');
+    // Send email verification
+    await sendEmailVerification(cred.user);
+    await addDoc(collection(db,'users'),{uid:cred.user.uid,name,email,roll,dept,hostel,emailVerified:false,createdAt:serverTimestamp()});
+    showToast('✅ Account created! Check your SMVDU email for verification link!','success');
+    // Show verification notice
+    document.getElementById('signupForm').innerHTML = `
+      <div style="text-align:center;padding:20px;">
+        <div style="font-size:3rem;margin-bottom:16px;">📧</div>
+        <h3 style="font-family:'Syne',sans-serif;margin-bottom:12px;color:var(--saffron)">Verify Your Email</h3>
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:20px;">
+          We've sent a verification link to <strong style="color:var(--text)">${email}</strong><br>
+          Please check your inbox and click the link to activate your account.
+        </p>
+        <button class="btn-submit" onclick="checkVerification()">✅ I've Verified — Continue</button>
+        <button class="btn-cancel" style="width:100%;margin-top:10px;" onclick="resendVerification()">📨 Resend Email</button>
+      </div>
+    `;
+  } catch(e){ showToast(e.message,'error'); }
+}
+
+window.checkVerification = async function() {
+  if(!auth.currentUser){ showToast('Please sign in first','error'); return; }
+  await auth.currentUser.reload();
+  if(auth.currentUser.emailVerified){
+    showToast('✅ Email verified! Welcome to SMVDU FindIt 🎉','success');
     closeModal('authModal');
+  } else {
+    showToast('❌ Email not verified yet. Please check your inbox.','error');
+  }
+}
+
+window.resendVerification = async function() {
+  if(!auth.currentUser){ showToast('Please sign in first','error'); return; }
+  try {
+    await sendEmailVerification(auth.currentUser);
+    showToast('📨 Verification email sent again!','success');
   } catch(e){ showToast(e.message,'error'); }
 }
 
