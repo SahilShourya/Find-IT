@@ -1043,7 +1043,7 @@
             <option value="">Select Location</option>
             <option>Main Academic Block</option>
             <option>Library</option>
-            <option>Canteen / Food Court</option>
+            <option>Canteen </option>
             <option>Nilgiri Hostel</option>
             <option>Vindhyanchal Hostel</option>
             <option>Trikuta Hostel</option>
@@ -1053,12 +1053,19 @@
             <option>Basohli Hostel</option>
             <option>Old Basohli Hostel</option>
             <option>Sports Complex</option>
-            <option>Auditorium</option>
-            <option>Admin Block</option>
-            <option>Parking Area</option>
-            <option>Bus Stand / Gate</option>
+            <option>Matrika Auditorium</option>
+            <option>Administrative Block</option>
+            <option>Parking Area Near Physics Department</option>
+            <option>Parking Area Near Shivalik Hostel</option>
+            <option>Lawn Tennis Court</option>
+            <option>Bus Stand</option>
+            <option>Back To The Trikuta Ground</option>
             <option>Labs Block</option>
-            <option>Open Ground / Garden</option>
+            <option>LT 1</option>
+            <option>LT 2</option>
+            <option>LT 3</option>
+            <option>LT 4</option>
+            <option>RED ROCKS</option>
             <option>Other</option>
           </select>
         </div>
@@ -1162,8 +1169,9 @@ try {
   db = getFirestore(app);
   storage = getStorage(app);
 
+  // Always hide setup banner - Firebase is configured
+  document.getElementById('setupBanner').style.display = 'none';
   if (FIREBASE_CONFIGURED) {
-    document.getElementById('setupBanner').style.display = 'none';
     onAuthStateChanged(auth, user => {
       currentUser = user;
       updateNavAuth(user);
@@ -1178,20 +1186,13 @@ try {
   loadDemoItems();
 }
 
-// ── DEMO DATA ──
-const demoItems = [
-  {id:'d1',type:'lost',name:'Black OnePlus Charger',category:'Electronics',description:'65W warp charger, black cable, might have my name written on the adapter',location:'Library',date:'2024-01-15',userId:'demo1',userName:'Rahul Sharma',status:'active',emoji:'🔌'},
-  {id:'d2',type:'found',name:'Student ID Card',category:'ID/Documents',description:'Found an ID card near the canteen. Name visible on card.',location:'Canteen / Food Court',date:'2024-01-16',userId:'demo2',userName:'Priya Gupta',status:'active',emoji:'🪪'},
-  {id:'d3',type:'lost',name:'Blue Titan Watch',category:'Other',description:'Blue dial, silver chain, lost somewhere between hostel and main block',location:'Main Academic Block',date:'2024-01-14',userId:'demo3',userName:'Arjun Singh',status:'active',emoji:'⌚'},
-  {id:'d4',type:'found',name:'Set of 3 Keys',category:'Keys',description:'3 keys on a ring with a small Om pendant keychain',location:'Boys Hostel (BH-2)',date:'2024-01-17',userId:'demo4',userName:'Anjali Raina',status:'active',emoji:'🔑'},
-  {id:'d5',type:'lost',name:'Calculus Textbook',category:'Books/Notes',description:'Thomas Calculus 13th edition, has my name "Vikram" on first page',location:'Library',date:'2024-01-13',userId:'demo5',userName:'Vikram Thakur',status:'claimed',emoji:'📚'},
-  {id:'d6',type:'found',name:'Black Leather Wallet',category:'Wallet/Purse',description:'Black leather, has some cash and cards inside. Found near sports complex.',location:'Sports Complex',date:'2024-01-18',userId:'demo6',userName:'Sneha Dogra',status:'active',emoji:'👛'},
-];
+// ── NO DEMO DATA - Real Firebase data only ──
+const demoItems = [];
 
 function loadDemoItems() {
-  allItems = demoItems;
-  renderItems('recentItems', demoItems.slice(0,4));
-  renderItems('itemsGrid', demoItems);
+  allItems = [];
+  renderItems('recentItems', []);
+  renderItems('itemsGrid', []);
   updateBadges();
   updateStats();
 }
