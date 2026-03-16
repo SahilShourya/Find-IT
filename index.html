@@ -889,7 +889,7 @@ async function loadMyItems() {
 
 // ── SMART MATCHING SYSTEM ──
 // Compares lost item details with found items to find potential matches
-async function checkSmartMatches(lostItem) {
+window.checkSmartMatches = async function(lostItem) {
   if(!FIREBASE_CONFIGURED) return;
   try {
     // Get all active found items
@@ -1114,6 +1114,64 @@ window.markResolved = async function(id) {
     showToast('Marked as resolved! Great job helping a fellow student 🎉','success');
     closeModal('detailModal');
   } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+// ── GOOGLE LOGIN ──
+window.handleGoogleLogin = async function() {
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // Check if new user or existing
+    const userQuery = query(collection(db,'users'), where('uid','==',user.uid));
+    const userSnap = await getDocs(userQuery);
+
+    if(userSnap.empty){
+      // New user — show profile completion
+      document.getElementById('googleSignInStep').style.display = 'none';
+      document.getElementById('completeProfileStep').style.display = 'block';
+      document.querySelector('#authModal .modal-title').innerHTML = 'Complete Your <span style="color:var(--orange)">Profile</span>';
+    } else {
+      // Existing user — login directly
+      showToast('Welcome back, ' + user.displayName + '! 👋','success');
+      closeModal('authModal');
+      updateNavAuth(user);
+    }
+  } catch(e){
+    if(e.code !== 'auth/popup-closed-by-user'){
+      showToast('Login failed: ' + e.message,'error');
+    }
+  }
+}
+
+// ── SAVE PROFILE AFTER GOOGLE LOGIN ──
+window.saveUserProfile = async function() {
+  const roll = document.getElementById('profileRoll').value.trim().toUpperCase();
+  const dept = document.getElementById('profileDept').value;
+  if(!roll || !dept){ showToast('Please fill Roll Number and Department','error'); return; }
+
+  const rollPattern = /^[0-9]{2}[A-Z]{2,4}[0-9]{3,4}$/;
+  if(!rollPattern.test(roll)){ showToast('Invalid roll number! Format: 25BCS080','error'); return; }
+
+  try {
+    const rollCheck = await getDocs(query(collection(db,'users'), where('roll','==',roll)));
+    if(!rollCheck.empty){ showToast('This roll number is already registered!','error'); return; }
+  } catch(e){}
+
+  const user = auth.currentUser;
+  const hostel = document.getElementById('profileHostel').value;
+  try {
+    await addDoc(collection(db,'users'),{
+      uid: user.uid, name: user.displayName,
+      email: user.email, photoURL: user.photoURL,
+      roll, dept, hostel, createdAt: serverTimestamp()
+    });
+    showToast('Welcome to SMVDU FindIt, ' + user.displayName + '! 🎉','success');
+    closeModal('authModal');
+    updateNavAuth(user);
+  } catch(e){ showToast('Error: ' + e.message,'error'); }
 }
 
 window.openAuthModal = function(){ 
