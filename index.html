@@ -418,15 +418,7 @@
 
 <nav>
   <div class="nav-logo">
-    <svg class="smvdu-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:44px;height:44px;flex-shrink:0;">
-      <circle cx="22" cy="22" r="22" fill="#0A1F42"/>
-      <circle cx="22" cy="22" r="20" fill="#0F2850" stroke="#C9A84C" stroke-width="1.5"/>
-      <text x="22" y="17" text-anchor="middle" font-family="serif" font-size="7" font-weight="bold" fill="#C9A84C">SMVDU</text>
-      <text x="22" y="27" text-anchor="middle" font-family="serif" font-size="9" font-weight="bold" fill="#F0EDE8">Find</text>
-      <text x="32" y="27" text-anchor="middle" font-family="serif" font-size="9" font-weight="bold" fill="#C9A84C">It</text>
-      <line x1="8" y1="30" x2="36" y2="30" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
-      <circle cx="22" cy="35" r="1.5" fill="#C9A84C"/>
-    </svg>
+    <img class="smvdu-logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b3/Shri_Mata_Vaishno_Devi_University_logo.png/220px-Shri_Mata_Vaishno_Devi_University_logo.png" alt="SMVDU Logo">
     <div class="logo-text">
       <span class="top">SMVDU</span>
       <span class="bottom">Find<span>It</span></span>
@@ -441,38 +433,50 @@
   </div>
 </nav>
 
+<!-- ================================================================
+     TOAST NOTIFICATIONS CONTAINER
+================================================================ -->
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- ================================================================
+     HOME PAGE
+================================================================ -->
 <div class="page active" id="page-home">
   <div class="hero">
-    <div class="hero-badge">🎓 Shri Mata Vaishno Devi University, Katra</div>
+    <div class="hero-badge">🎓 SHRI MATA VAISHNO DEVI UNIVERSITY, KATRA</div>
     <h1>Lost something on<br>campus? <span class="accent">We'll find it.</span></h1>
-    <p>SMVDU's dedicated lost & found platform — Whole Campus covered. Report lost items, upload found ones, and connect with fellow students instantly.</p>
+    <p>SMVDU's dedicated lost & found platform — whole campus covered. Report lost items, upload found ones, and connect instantly.</p>
     <div class="hero-actions">
       <button class="btn-primary" data-fn="openReportModal" data-arg1="lost">📢 Report Lost Item</button>
       <button class="btn-secondary" data-fn="openReportModal" data-arg1="found">🔍 I Found Something</button>
     </div>
   </div>
+
+  <!-- Stats Bar -->
   <div class="stats-strip">
     <div class="stat-item"><div class="num" id="statLost">0</div><div class="lbl">Items Reported Lost</div></div>
     <div class="stat-item"><div class="num" id="statFound">0</div><div class="lbl">Items Found</div></div>
     <div class="stat-item"><div class="num" id="statResolved">0</div><div class="lbl">Successfully Reunited</div></div>
     <div class="stat-item"><div class="num">Whole</div><div class="lbl">Campus</div></div>
   </div>
+
   <div class="container">
+    <!-- Setup Banner (hidden when Firebase is configured) -->
     <div class="setup-banner" id="setupBanner">
       <h3>⚡ Firebase Setup Required</h3>
       <p>Connect your Firebase project to enable real-time features.</p>
     </div>
+
+    <!-- Quick Search -->
+    <div style="margin-bottom:20px;">
+      <input type="text" id="homeSearch" placeholder="🔍  Quick search — item name, location..."
+        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:0.9rem;color:var(--text);background:var(--white);"
+        oninput="if(this.value.length>2){showPage('items');document.getElementById('searchInput').value=this.value;if(window.filterItems)window.filterItems();}">
+    </div>
+
     <div class="section-header">
       <div class="section-title">Recent <span>Activity</span></div>
-      <button class="btn-secondary" style="padding:9px 18px;font-size:0.85rem;" data-fn="showPage" data-arg1="items">View All →</button>
-    </div>
-    <!-- Quick search on homepage -->
-    <div style="margin-bottom:20px;">
-      <input type="text" id="homeSearch" placeholder="🔍  Quick search — type item name, location..." 
-        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:0.9rem;color:var(--text);"
-        oninput="if(this.value.length>2){showPage('items');document.getElementById('searchInput').value=this.value;if(window.filterItems)window.filterItems();}">
+      <button class="btn-secondary" style="padding:8px 16px;font-size:0.82rem;color:var(--steel);border-color:var(--steel);" data-fn="showPage" data-arg1="items">View All →</button>
     </div>
     <div class="items-grid" id="recentItems">
       <div class="loading"><div class="spinner"></div><span>Loading items...</span></div>
@@ -480,27 +484,37 @@
   </div>
 </div>
 
+<!-- ================================================================
+     BROWSE PAGE
+================================================================ -->
 <div class="page" id="page-items">
   <div class="container">
     <div class="section-header">
       <div class="section-title">Browse <span>Items</span></div>
       <div style="display:flex;gap:8px;">
-        <button class="btn-primary" style="font-size:0.85rem;padding:9px 18px;" data-fn="openReportModal" data-arg1="lost">+ Report Lost</button>
-        <button class="btn-secondary" style="font-size:0.85rem;padding:9px 18px;" data-fn="openReportModal" data-arg1="found">+ Found Item</button>
+        <button class="btn-primary" style="padding:8px 16px;font-size:0.82rem;" data-fn="openReportModal" data-arg1="lost">+ Report Lost</button>
+        <button class="btn-primary" style="padding:8px 16px;font-size:0.82rem;background:var(--steel);" data-fn="openReportModal" data-arg1="found">+ Found Item</button>
       </div>
     </div>
+
+    <!-- Lost / Found / All Tabs -->
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-all" data-fn="setTab" data-arg1="all">All Items <span class="tab-badge" id="badge-all">0</span></button>
       <button class="tab-btn" id="tab-lost" data-fn="setTab" data-arg1="lost">🔴 Lost <span class="tab-badge" id="badge-lost">0</span></button>
       <button class="tab-btn" id="tab-found" data-fn="setTab" data-arg1="found">🟢 Found <span class="tab-badge" id="badge-found">0</span></button>
     </div>
+
+    <!-- Search Bar -->
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search by item name, description, location..." oninput="if(window.filterItems)window.filterItems()">
+      <input type="text" id="searchInput" placeholder="Search by item name, description, location..."
+        oninput="if(window.filterItems)window.filterItems()">
     </div>
+
+    <!-- Category Filters -->
     <div class="filters" id="categoryFilters">
-      <button class="filter-btn active" onclick="if(window.setCategoryFilter)window.setCategoryFilter('all',this)">All Categories</button>
+      <button class="filter-btn active" onclick="if(window.setCategoryFilter)window.setCategoryFilter('all',this)">All</button>
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Electronics',this)">📱 Electronics</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('ID/Documents',this)">🪪 ID/Documents</button>
+      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('ID/Documents',this)">🪪 ID/Docs</button>
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Keys',this)">🔑 Keys</button>
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Wallet/Purse',this)">👛 Wallet</button>
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Bag/Backpack',this)">🎒 Bag</button>
@@ -510,64 +524,75 @@
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Bottle',this)">🍶 Bottle</button>
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Other',this)">📦 Other</button>
     </div>
+
+    <!-- Items Grid -->
     <div class="items-grid" id="itemsGrid">
       <div class="loading"><div class="spinner"></div><span>Loading...</span></div>
     </div>
   </div>
 </div>
 
+<!-- ================================================================
+     MESSAGES / CHAT PAGE
+================================================================ -->
 <div class="page" id="page-chat">
   <div class="chat-layout">
     <div class="chat-sidebar">
       <div class="chat-sidebar-header">💬 Messages</div>
       <div id="chatList">
-        <div style="padding:20px;color:var(--muted);font-size:0.85rem;text-align:center;">Sign in to view your conversations</div>
+        <div style="padding:18px;color:var(--muted);font-size:0.84rem;text-align:center;">Sign in to view conversations</div>
       </div>
     </div>
     <div class="chat-main" id="chatMain">
       <div class="chat-empty">
         <div>
-          <div style="font-size:3rem;margin-bottom:12px;">💬</div>
-          <h3 style="font-family:'Syne',sans-serif;margin-bottom:8px;">Select a Conversation</h3>
-          <p style="color:var(--muted);font-size:0.88rem;">Click on an item to start chatting<br>with the person who found/lost it</p>
+          <div style="font-size:2.8rem;margin-bottom:12px;">💬</div>
+          <h3 style="font-size:1rem;margin-bottom:6px;color:var(--heading);">Select a Conversation</h3>
+          <p style="color:var(--muted);font-size:0.84rem;">Click an item card to chat<br>with the person who found/lost it</p>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ================================================================
+     PROFILE PAGE
+================================================================ -->
 <div class="page" id="page-profile">
   <div class="profile-header">
     <div class="profile-info">
       <!-- Avatar with edit button -->
       <div style="position:relative;flex-shrink:0;">
         <div class="profile-avatar" id="profileAvatar">👤</div>
-        <label for="profilePhotoInput" title="Change photo" style="position:absolute;bottom:0;right:0;background:var(--orange);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;border:2px solid var(--navy);">✏️</label>
+        <label for="profilePhotoInput" title="Change photo"
+          style="position:absolute;bottom:0;right:0;background:var(--orange);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.7rem;border:2px solid var(--navy);">✏️</label>
         <input type="file" id="profilePhotoInput" accept="image/*" style="display:none;" onchange="updateProfilePhoto(this)">
       </div>
       <div class="profile-details">
         <h2 id="profileName">Guest User</h2>
         <p id="profileEmail">Not signed in</p>
         <div class="profile-badge" id="profileDept">🎓 SMVDU Student</div>
-        <div style="margin-top:8px;">
-          <label for="profilePhotoInput" style="font-size:0.75rem;color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:underline;">📷 Change profile photo</label>
+        <div style="margin-top:6px;">
+          <label for="profilePhotoInput" style="font-size:0.73rem;color:rgba(255,255,255,0.45);cursor:pointer;text-decoration:underline;">📷 Change profile photo</label>
         </div>
       </div>
     </div>
   </div>
+
   <div class="container">
-    <!-- SMART MATCH INBOX -->
-    <div id="matchInboxSection" style="display:none;margin-bottom:32px;">
+    <!-- Smart Match Inbox -->
+    <div id="matchInboxSection" style="display:none;margin-bottom:28px;">
       <div class="section-header">
         <div class="section-title">🎯 Smart <span>Matches</span></div>
-        <span style="font-size:0.82rem;color:var(--muted);">Potential matches for your lost items</span>
+        <span style="font-size:0.8rem;color:var(--muted);">Potential matches for your lost items</span>
       </div>
       <div id="matchInbox"></div>
     </div>
 
+    <!-- My Reports -->
     <div class="section-header">
       <div class="section-title">My <span>Reports</span></div>
-      <span id="myReportsCount" style="font-size:0.82rem;color:var(--muted);background:var(--offwhite);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
+      <span id="myReportsCount" style="font-size:0.8rem;color:var(--muted);background:var(--offwhite);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
     </div>
     <div class="items-grid" id="myItems">
       <div class="empty-state"><div class="icon">📋</div><h3>No reports yet</h3><p>Sign in and report a lost or found item</p></div>
@@ -575,6 +600,9 @@
   </div>
 </div>
 
+<!-- ================================================================
+     AUTH MODAL — Google Sign In + Profile Setup
+================================================================ -->
 <div class="modal-overlay" id="authModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
@@ -626,11 +654,11 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Roll Number *</label>
-            <input class="form-input" type="text" id="profileRoll" placeholder="e.g. 25BCS080">
+            <input class="form-input" type="text" id="regRoll" placeholder="e.g. 25BCS080">
           </div>
           <div class="form-group">
             <label class="form-label">Department *</label>
-            <select class="form-select" id="profileDept">
+            <select class="form-select" id="regDept">
               <option value="">Select</option>
               <option>Computer Science & Engineering</option>
               <option>Electronics & Communication</option>
@@ -647,7 +675,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Hostel (optional)</label>
-          <select class="form-select" id="profileHostel">
+          <select class="form-select" id="regHostel">
             <option value="">Select Hostel</option>
             <option>Nilgiri Hostel</option>
             <option>Vindhyanchal Hostel</option>
@@ -659,9 +687,8 @@
             <option>Old Basohli Hostel</option>
           </select>
         </div>
-        <div style="display:flex;gap:8px;margin-top:14px;">
-          <button class="btn-submit" onclick="saveUserProfile()">Complete Registration →</button>
-          <button class="btn-cancel" onclick="skipProfile()" style="padding:10px 16px;">Skip for now</button>
+        <div style="margin-top:14px;">
+          <button class="btn-submit" style="width:100%;" onclick="saveUserProfile()">Complete Registration →</button>
         </div>
       </div>
       </div>
@@ -669,659 +696,9 @@
   </div>
 </div>
 
-<!-- REPORT ITEM MODALname="viewport" content="width=device-width, initial-scale=1.0">
-<title>SMVDU Lost & Found</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --navy:    #1C3557;
-    --blue:    #2C3E50;
-    --steel:   #5A7FA3;
-    --orange:  #F47C20;
-    --green:   #28A745;
-    --leaf:    #3FAE49;
-    --white:   #FFFFFF;
-    --offwhite:#F4F6F8;
-    --text:    #4A4A4A;
-    --heading: #1F3A5F;
-    --border:  #D9D9D9;
-    --muted:   #888;
-    --red:     #DC3545;
-  }
-
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--white);
-    color: var(--text);
-    font-size: 14.5px;
-    line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: var(--offwhite); }
-  ::-webkit-scrollbar-thumb { background: var(--steel); }
-
-  /* NAV */
-  nav {
-    position: fixed; top:0; left:0; right:0; z-index:1000;
-    background: var(--blue);
-    height: 58px;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 1.5rem;
-    border-bottom: 3px solid var(--orange);
-  }
-  .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-  .nav-logo img.smvdu-logo, .nav-logo svg.smvdu-logo {
-    height:36px; width:36px; border-radius:50%; background:#fff; padding:2px; flex-shrink:0;
-  }
-  .nav-logo .logo-text { display:flex; flex-direction:column; line-height:1.2; }
-  .nav-logo .logo-text .top { font-size:0.58rem; font-weight:700; color:var(--orange); letter-spacing:1.5px; text-transform:uppercase; }
-  .nav-logo .logo-text .bottom { font-size:0.92rem; font-weight:700; color:#fff; }
-  .nav-logo .logo-text .bottom span { color:var(--orange); }
-
-  .nav-links { display:flex; align-items:center; gap:3px; }
-  .nav-links button {
-    background:transparent; border:none; color:rgba(255,255,255,0.8);
-    padding:6px 13px; border-radius:3px; font-size:0.85rem; cursor:pointer; transition:all 0.15s;
-  }
-  .nav-links button:hover, .nav-links button.active { background:rgba(255,255,255,0.12); color:#fff; }
-  .nav-links .btn-auth {
-    background: var(--green); color:#fff; font-weight:600;
-    padding:6px 16px; border-radius:3px; border:none;
-  }
-  .nav-links .btn-auth:hover { background: var(--leaf); }
-
-  /* PAGES */
-  .page { display:none; min-height:100vh; padding-top:58px; }
-  .page.active { display:block; }
-
-  /* HERO */
-  .hero {
-    background: var(--navy);
-    color: #fff;
-    padding: 52px 1.5rem 40px;
-    text-align: center;
-  }
-  .hero-badge {
-    display: inline-block;
-    background: var(--orange);
-    border-radius: 2px;
-    padding: 3px 12px;
-    font-size: 0.76rem; color: #fff; font-weight:600;
-    margin-bottom: 16px; letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .hero h1 {
-    font-size: clamp(1.7rem,4vw,2.7rem); font-weight:700;
-    line-height:1.2; margin-bottom:12px; color:#fff;
-  }
-  .hero h1 .accent { color: var(--orange); }
-  .hero p { font-size:0.96rem; color:rgba(255,255,255,0.72); max-width:480px; margin:0 auto 26px; line-height:1.7; }
-  .hero-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-
-  /* BUTTONS */
-  .btn-primary {
-    background: var(--green); color:#fff; border:none;
-    padding:10px 22px; border-radius:3px; font-size:0.9rem; font-weight:600;
-    cursor:pointer; transition:background 0.15s;
-    display:inline-flex; align-items:center; gap:6px;
-  }
-  .btn-primary:hover { background:var(--leaf); }
-
-  .btn-secondary {
-    background:transparent; color:rgba(255,255,255,0.85);
-    border:1px solid rgba(255,255,255,0.4);
-    padding:10px 22px; border-radius:3px; font-size:0.9rem;
-    cursor:pointer; transition:all 0.15s;
-    display:inline-flex; align-items:center; gap:6px;
-  }
-  .btn-secondary:hover { border-color:#fff; color:#fff; }
-
-  /* STATS */
-  .stats-strip {
-    display:flex;
-    background: var(--blue);
-    border-top: 1px solid rgba(255,255,255,0.07);
-  }
-  .stat-item {
-    flex:1; padding:18px 12px; text-align:center;
-    border-right:1px solid rgba(255,255,255,0.07);
-  }
-  .stat-item:last-child { border-right:none; }
-  .stat-item .num { font-size:1.7rem; font-weight:700; color:var(--orange); }
-  .stat-item .lbl { font-size:0.72rem; color:rgba(255,255,255,0.55); margin-top:2px; }
-
-  /* CONTAINER */
-  .container { max-width:1100px; margin:0 auto; padding:28px 1.5rem; }
-
-  /* SECTION HEADER */
-  .section-header {
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:18px; padding-bottom:10px;
-    border-bottom:2px solid var(--border);
-  }
-  .section-title { font-size:1.15rem; font-weight:700; color:var(--heading); }
-  .section-title span { color:var(--orange); }
-
-  /* FILTERS */
-  .filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
-  .filter-btn {
-    background:var(--offwhite); border:1px solid var(--border);
-    color:var(--text); padding:5px 12px; border-radius:3px;
-    font-size:0.82rem; cursor:pointer; transition:all 0.15s;
-  }
-  .filter-btn:hover { background:var(--steel); border-color:var(--steel); color:#fff; }
-  .filter-btn.active { background:var(--navy); border-color:var(--navy); color:#fff; }
-
-  /* SEARCH */
-  .search-bar { display:flex; gap:8px; margin-bottom:16px; }
-  .search-bar input {
-    flex:1; background:var(--white); border:1px solid var(--border);
-    color:var(--text); padding:9px 12px; border-radius:3px; font-size:0.9rem;
-    transition:border-color 0.15s;
-  }
-  .search-bar input:focus { outline:none; border-color:var(--steel); }
-  .search-bar input::placeholder { color:#bbb; }
-
-  /* TABS */
-  .tab-bar { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; width:100%; }
-  .tab-btn {
-    background:transparent; border:none; border-bottom:2px solid transparent;
-    margin-bottom:-2px; color:var(--muted); padding:9px 18px;
-    font-size:0.88rem; cursor:pointer; transition:all 0.15s;
-    display:flex; align-items:center; gap:6px;
-  }
-  .tab-btn.active { color:var(--navy); border-bottom-color:var(--orange); font-weight:600; }
-  .tab-badge {
-    background:var(--offwhite); color:var(--muted);
-    padding:1px 6px; border-radius:10px; font-size:0.7rem;
-  }
-  .tab-btn.active .tab-badge { background:var(--orange); color:#fff; }
-
-  /* ITEM GRID */
-  .items-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:16px; }
-
-  /* ITEM CARD */
-  .item-card {
-    background:var(--white); border:1px solid var(--border);
-    border-radius:4px; overflow:hidden; cursor:pointer;
-    transition:all 0.15s; box-shadow:0 1px 3px rgba(0,0,0,0.06);
-  }
-  .item-card:hover { box-shadow:0 4px 14px rgba(28,53,87,0.14); border-color:var(--steel); transform:translateY(-2px); }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
-  .item-card { animation:fadeUp 0.3s ease forwards; }
-
-  .item-img {
-    width:100%; height:155px;
-    background:var(--offwhite);
-    display:flex; align-items:center; justify-content:center;
-    font-size:2.4rem; border-bottom:1px solid var(--border); overflow:hidden;
-  }
-  .item-img img { width:100%; height:100%; object-fit:cover; }
-
-  .item-body { padding:12px; }
-  .item-tags { display:flex; gap:4px; margin-bottom:7px; flex-wrap:wrap; }
-  .tag { font-size:0.69rem; padding:2px 7px; border-radius:2px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; }
-  .tag-lost    { background:#fde8e8; color:var(--red); }
-  .tag-found   { background:#e6f5ec; color:var(--green); }
-  .tag-category{ background:var(--offwhite); color:var(--muted); border:1px solid var(--border); }
-  .tag-claimed { background:#e8f3ff; color:var(--steel); }
-
-  .item-title { font-size:0.96rem; font-weight:700; margin-bottom:4px; color:var(--heading); }
-  .item-desc { font-size:0.81rem; color:var(--muted); line-height:1.5; margin-bottom:9px; }
-  .item-meta {
-    display:flex; justify-content:space-between; align-items:center;
-    font-size:0.77rem; color:var(--muted);
-    border-top:1px solid var(--border); padding-top:9px;
-  }
-  .item-action {
-    background:var(--navy); color:#fff; border:none;
-    padding:4px 11px; border-radius:2px; font-size:0.77rem;
-    cursor:pointer; transition:background 0.15s;
-  }
-  .item-action:hover { background:var(--steel); }
-
-  /* EMPTY STATE */
-  .empty-state { text-align:center; padding:52px 20px; color:var(--muted); }
-  .empty-state .icon { font-size:2.6rem; margin-bottom:11px; opacity:0.35; }
-  .empty-state h3 { font-size:1rem; margin-bottom:5px; color:var(--heading); }
-
-  /* MODAL */
-  .modal-overlay {
-    display:none; position:fixed; inset:0;
-    background:rgba(28,53,87,0.55); z-index:2000;
-    align-items:center; justify-content:center; padding:16px;
-  }
-  .modal-overlay.open { display:flex; }
-  .modal {
-    background:var(--white); border:1px solid var(--border);
-    border-top:3px solid var(--navy);
-    border-radius:4px; width:100%; max-width:500px;
-    max-height:90vh; overflow-y:auto;
-    box-shadow:0 8px 28px rgba(28,53,87,0.16);
-  }
-  .modal-header {
-    padding:15px 17px;
-    display:flex; align-items:center; justify-content:space-between;
-    border-bottom:1px solid var(--border); background:var(--offwhite);
-  }
-  .modal-title { font-size:1.08rem; font-weight:700; color:var(--heading); }
-  .modal-close {
-    background:transparent; border:1px solid var(--border); color:var(--muted);
-    width:27px; height:27px; border-radius:3px; cursor:pointer; font-size:0.88rem;
-    display:flex; align-items:center; justify-content:center; transition:all 0.15s;
-  }
-  .modal-close:hover { border-color:var(--red); color:var(--red); }
-  .modal-body { padding:17px; }
-
-  /* FORM */
-  .form-group { margin-bottom:12px; }
-  .form-label {
-    display:block; font-size:0.77rem; font-weight:600;
-    color:var(--heading); margin-bottom:4px;
-    text-transform:uppercase; letter-spacing:0.4px;
-  }
-  .form-input, .form-select, .form-textarea {
-    width:100%; background:var(--white); border:1px solid var(--border);
-    color:var(--text); padding:8px 11px; border-radius:3px; font-size:0.88rem;
-    transition:border-color 0.15s;
-  }
-  .form-input:focus, .form-select:focus, .form-textarea:focus {
-    outline:none; border-color:var(--steel);
-  }
-  .form-input::placeholder, .form-textarea::placeholder { color:#bbb; }
-  .form-textarea { resize:vertical; min-height:76px; }
-  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .upload-area {
-    border:2px dashed var(--border); border-radius:3px; padding:20px;
-    text-align:center; cursor:pointer; background:var(--offwhite); transition:all 0.15s;
-  }
-  .upload-area:hover { border-color:var(--steel); }
-  .upload-area input { display:none; }
-  .upload-area .icon { font-size:1.5rem; margin-bottom:5px; }
-  .upload-area p { font-size:0.79rem; color:var(--muted); }
-  .form-actions { display:flex; gap:8px; margin-top:14px; }
-  .btn-submit {
-    flex:1; background:var(--navy); color:#fff; border:none;
-    padding:10px; border-radius:3px; font-size:0.9rem; font-weight:600;
-    cursor:pointer; transition:background 0.15s;
-  }
-  .btn-submit:hover { background:var(--steel); }
-  .btn-cancel {
-    background:var(--offwhite); color:var(--muted); border:1px solid var(--border);
-    padding:10px 15px; border-radius:3px; cursor:pointer; font-size:0.87rem; transition:all 0.15s;
-  }
-  .btn-cancel:hover { border-color:var(--red); color:var(--red); }
-
-  /* AUTH TABS */
-  .auth-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:17px; }
-  .auth-tab {
-    flex:1; background:transparent; border:none;
-    border-bottom:2px solid transparent; margin-bottom:-2px;
-    color:var(--muted); padding:8px; font-size:0.88rem; cursor:pointer; transition:all 0.15s;
-  }
-  .auth-tab.active { color:var(--navy); border-bottom-color:var(--navy); font-weight:600; }
-
-  /* DETAIL */
-  .detail-img {
-    width:100%; height:185px; background:var(--offwhite);
-    display:flex; align-items:center; justify-content:center;
-    font-size:3.2rem; margin-bottom:13px; overflow:hidden;
-    border:1px solid var(--border); border-radius:3px;
-  }
-  .detail-img img { width:100%; height:100%; object-fit:cover; }
-  .detail-info { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:11px 0; }
-  .detail-field {
-    background:var(--offwhite); border-radius:3px;
-    padding:9px; border:1px solid var(--border);
-  }
-  .detail-field .key { font-size:0.69rem; color:var(--muted); margin-bottom:3px; text-transform:uppercase; letter-spacing:0.3px; font-weight:600; }
-  .detail-field .val { font-size:0.87rem; font-weight:600; color:var(--heading); }
-
-  /* CHAT */
-  .chat-layout { display:grid; grid-template-columns:252px 1fr; height:calc(100vh - 58px); overflow:hidden; }
-  .chat-sidebar { background:var(--white); border-right:1px solid var(--border); overflow-y:auto; }
-  .chat-sidebar-header {
-    padding:13px 15px; border-bottom:2px solid var(--orange);
-    font-weight:700; font-size:0.93rem; color:var(--heading); background:var(--offwhite);
-  }
-  .chat-list-item {
-    padding:11px 14px; border-bottom:1px solid var(--border);
-    cursor:pointer; transition:background 0.1s; display:flex; align-items:center; gap:9px;
-  }
-  .chat-list-item:hover, .chat-list-item.active { background:var(--offwhite); }
-  .chat-avatar {
-    width:34px; height:34px; border-radius:50%; background:var(--navy); color:#fff;
-    display:flex; align-items:center; justify-content:center; font-size:0.84rem; flex-shrink:0;
-  }
-  .chat-preview h4 { font-size:0.85rem; font-weight:600; margin-bottom:2px; color:var(--heading); }
-  .chat-preview p { font-size:0.74rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:143px; }
-  .chat-main { display:flex; flex-direction:column; background:var(--offwhite); }
-  .chat-topbar {
-    padding:10px 17px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; gap:10px; background:var(--white);
-    border-left:4px solid var(--orange);
-  }
-  .chat-messages { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:8px; }
-  .msg { max-width:64%; padding:9px 12px; border-radius:4px; font-size:0.86rem; line-height:1.5; }
-  .msg-in { background:var(--white); align-self:flex-start; border:1px solid var(--border); border-bottom-left-radius:1px; }
-  .msg-out { background:var(--navy); color:#fff; align-self:flex-end; border-bottom-right-radius:1px; }
-  .msg-time { font-size:0.67rem; opacity:0.5; margin-top:3px; }
-  .chat-input-bar { padding:10px 13px; border-top:1px solid var(--border); display:flex; gap:7px; background:var(--white); }
-  .chat-input-bar input {
-    flex:1; background:var(--offwhite); border:1px solid var(--border);
-    color:var(--text); padding:8px 11px; border-radius:3px; font-size:0.86rem;
-  }
-  .chat-input-bar input:focus { outline:none; border-color:var(--steel); }
-  .chat-send { background:var(--orange); border:none; color:#fff; width:36px; height:36px; border-radius:3px; cursor:pointer; font-size:0.92rem; transition:background 0.15s; }
-  .chat-send:hover { background:#d66910; }
-  .chat-empty { flex:1; display:flex; align-items:center; justify-content:center; color:var(--muted); text-align:center; }
-
-  /* PROFILE */
-  .profile-header { background:var(--navy); padding:26px 1.5rem; color:#fff; border-bottom:4px solid var(--orange); }
-  .profile-info { max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:17px; }
-  .profile-avatar {
-    width:62px; height:62px; border-radius:50%;
-    background:rgba(255,255,255,0.1); border:2px solid var(--orange);
-    display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; overflow:hidden;
-  }
-  .profile-avatar img { width:100%; height:100%; object-fit:cover; }
-  .profile-details h2 { font-size:1.15rem; font-weight:700; color:#fff; }
-  .profile-details p { color:rgba(255,255,255,0.6); font-size:0.82rem; margin-top:2px; }
-  .profile-badge { display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:5px; font-size:0.79rem; color:rgba(255,255,255,0.75); }
-
-  /* TOAST */
-  .toast-container { position:fixed; bottom:17px; right:17px; z-index:3000; display:flex; flex-direction:column; gap:5px; }
-  .toast {
-    background:var(--navy); color:#fff; border-left:3px solid var(--steel);
-    padding:10px 14px; border-radius:3px; font-size:0.83rem; max-width:270px;
-    box-shadow:0 4px 12px rgba(28,53,87,0.2); animation:toastIn 0.22s ease;
-  }
-  .toast.success { border-left-color:var(--green); }
-  .toast.error   { border-left-color:var(--red); }
-  @keyframes toastIn { from{opacity:0;transform:translateX(13px);} to{opacity:1;transform:translateX(0);} }
-
-  /* LOADING */
-  .loading { display:flex; align-items:center; justify-content:center; padding:46px; color:var(--muted); flex-direction:column; gap:9px; }
-  .spinner { width:25px; height:25px; border:2px solid var(--border); border-top-color:var(--navy); border-radius:50%; animation:spin 0.75s linear infinite; }
-  @keyframes spin { to{transform:rotate(360deg);} }
-
-  /* SETUP BANNER */
-  .setup-banner { background:#fff8e1; border:1px solid #ffe082; border-radius:3px; padding:13px; margin-bottom:16px; }
-  .setup-banner h3 { font-weight:700; color:#7a5c00; margin-bottom:4px; font-size:0.93rem; }
-  .setup-banner p { font-size:0.81rem; color:#5a4400; }
-  code { background:var(--offwhite); border:1px solid var(--border); padding:1px 5px; border-radius:2px; font-size:0.79rem; color:var(--steel); font-family:monospace; }
-
-  /* RESPONSIVE */
-  @media(max-width:768px){
-    .chat-layout{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 58px);}
-    .chat-sidebar{display:none;}
-    .chat-main{height:calc(100vh - 58px);}
-    .form-row{grid-template-columns:1fr;}
-    .detail-info{grid-template-columns:1fr;}
-    .stats-strip{flex-wrap:wrap;}
-    .stat-item{min-width:50%;}
-    .profile-info{flex-direction:column;text-align:center;}
-    .page{overflow-y:auto;-webkit-overflow-scrolling:touch;}
-    .container{padding:17px 1rem;}
-    .hero{padding:32px 1rem 24px;}
-    .hero h1{font-size:1.6rem;}
-    .nav-links button:not(.btn-auth){display:none;}
-    .items-grid{grid-template-columns:1fr;}
-    .modal{max-height:88vh;overflow-y:auto;}
-    .tab-bar{width:100%;}
-    .tab-btn{flex:1;padding:7px 4px;font-size:0.79rem;}
-  }
-</style>
-</head>
-<body>
-
-<nav>
-  <div class="nav-logo">
-    <svg class="smvdu-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:44px;height:44px;flex-shrink:0;">
-      <circle cx="22" cy="22" r="22" fill="#0A1F42"/>
-      <circle cx="22" cy="22" r="20" fill="#0F2850" stroke="#C9A84C" stroke-width="1.5"/>
-      <text x="22" y="17" text-anchor="middle" font-family="serif" font-size="7" font-weight="bold" fill="#C9A84C">SMVDU</text>
-      <text x="22" y="27" text-anchor="middle" font-family="serif" font-size="9" font-weight="bold" fill="#F0EDE8">Find</text>
-      <text x="32" y="27" text-anchor="middle" font-family="serif" font-size="9" font-weight="bold" fill="#C9A84C">It</text>
-      <line x1="8" y1="30" x2="36" y2="30" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
-      <circle cx="22" cy="35" r="1.5" fill="#C9A84C"/>
-    </svg>
-    <div class="logo-text">
-      <span class="top">SMVDU</span>
-      <span class="bottom">Find<span>It</span></span>
-    </div>
-  </div>
-  <div class="nav-links">
-    <button data-fn="showPage" data-arg1="home" id="nav-home" class="active">Home</button>
-    <button data-fn="showPage" data-arg1="items" id="nav-items">Browse</button>
-    <button data-fn="showPage" data-arg1="chat" id="nav-chat">Messages</button>
-    <button data-fn="showPage" data-arg1="profile" id="nav-profile">Profile</button>
-    <button class="btn-auth" data-fn="openAuthModal" id="authBtn">Sign In</button>
-  </div>
-</nav>
-
-<div class="toast-container" id="toastContainer"></div>
-
-<div class="page active" id="page-home">
-  <div class="hero">
-    <div class="hero-badge">🎓 Shri Mata Vaishno Devi University, Katra</div>
-    <h1>Lost something on<br>campus? <span class="accent">We'll find it.</span></h1>
-    <p>SMVDU's dedicated lost & found platform — Whole Campus covered. Report lost items, upload found ones, and connect with fellow students instantly.</p>
-    <div class="hero-actions">
-      <button class="btn-primary" data-fn="openReportModal" data-arg1="lost">📢 Report Lost Item</button>
-      <button class="btn-secondary" data-fn="openReportModal" data-arg1="found">🔍 I Found Something</button>
-    </div>
-  </div>
-  <div class="stats-strip">
-    <div class="stat-item"><div class="num" id="statLost">0</div><div class="lbl">Items Reported Lost</div></div>
-    <div class="stat-item"><div class="num" id="statFound">0</div><div class="lbl">Items Found</div></div>
-    <div class="stat-item"><div class="num" id="statResolved">0</div><div class="lbl">Successfully Reunited</div></div>
-    <div class="stat-item"><div class="num">Whole</div><div class="lbl">Campus</div></div>
-  </div>
-  <div class="container">
-    <div class="setup-banner" id="setupBanner">
-      <h3>⚡ Firebase Setup Required</h3>
-      <p>Connect your Firebase project to enable real-time features.</p>
-    </div>
-    <div class="section-header">
-      <div class="section-title">Recent <span>Activity</span></div>
-      <button class="btn-secondary" style="padding:9px 18px;font-size:0.85rem;" data-fn="showPage" data-arg1="items">View All →</button>
-    </div>
-    <!-- Quick search on homepage -->
-    <div style="margin-bottom:20px;">
-      <input type="text" id="homeSearch" placeholder="🔍  Quick search — type item name, location..." 
-        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:0.9rem;color:var(--text);"
-        oninput="if(this.value.length>2){showPage('items');document.getElementById('searchInput').value=this.value;if(window.filterItems)window.filterItems();}">
-    </div>
-    <div class="items-grid" id="recentItems">
-      <div class="loading"><div class="spinner"></div><span>Loading items...</span></div>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page-items">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-title">Browse <span>Items</span></div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-primary" style="font-size:0.85rem;padding:9px 18px;" data-fn="openReportModal" data-arg1="lost">+ Report Lost</button>
-        <button class="btn-secondary" style="font-size:0.85rem;padding:9px 18px;" data-fn="openReportModal" data-arg1="found">+ Found Item</button>
-      </div>
-    </div>
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tab-all" data-fn="setTab" data-arg1="all">All Items <span class="tab-badge" id="badge-all">0</span></button>
-      <button class="tab-btn" id="tab-lost" data-fn="setTab" data-arg1="lost">🔴 Lost <span class="tab-badge" id="badge-lost">0</span></button>
-      <button class="tab-btn" id="tab-found" data-fn="setTab" data-arg1="found">🟢 Found <span class="tab-badge" id="badge-found">0</span></button>
-    </div>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search by item name, description, location..." oninput="if(window.filterItems)window.filterItems()">
-    </div>
-    <div class="filters" id="categoryFilters">
-      <button class="filter-btn active" onclick="if(window.setCategoryFilter)window.setCategoryFilter('all',this)">All Categories</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Electronics',this)">📱 Electronics</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('ID/Documents',this)">🪪 ID/Documents</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Keys',this)">🔑 Keys</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Wallet/Purse',this)">👛 Wallet</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Bag/Backpack',this)">🎒 Bag</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Clothing',this)">👕 Clothing</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Books/Notes',this)">📚 Books</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Sports',this)">⚽ Sports</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Bottle',this)">🍶 Bottle</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Other',this)">📦 Other</button>
-    </div>
-    <div class="items-grid" id="itemsGrid">
-      <div class="loading"><div class="spinner"></div><span>Loading...</span></div>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page-chat">
-  <div class="chat-layout">
-    <div class="chat-sidebar">
-      <div class="chat-sidebar-header">💬 Messages</div>
-      <div id="chatList">
-        <div style="padding:20px;color:var(--muted);font-size:0.85rem;text-align:center;">Sign in to view your conversations</div>
-      </div>
-    </div>
-    <div class="chat-main" id="chatMain">
-      <div class="chat-empty">
-        <div>
-          <div style="font-size:3rem;margin-bottom:12px;">💬</div>
-          <h3 style="font-family:'Syne',sans-serif;margin-bottom:8px;">Select a Conversation</h3>
-          <p style="color:var(--muted);font-size:0.88rem;">Click on an item to start chatting<br>with the person who found/lost it</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page-profile">
-  <div class="profile-header">
-    <div class="profile-info">
-      <!-- Avatar with edit button -->
-      <div style="position:relative;flex-shrink:0;">
-        <div class="profile-avatar" id="profileAvatar">👤</div>
-        <label for="profilePhotoInput" title="Change photo" style="position:absolute;bottom:0;right:0;background:var(--orange);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;border:2px solid var(--navy);">✏️</label>
-        <input type="file" id="profilePhotoInput" accept="image/*" style="display:none;" onchange="updateProfilePhoto(this)">
-      </div>
-      <div class="profile-details">
-        <h2 id="profileName">Guest User</h2>
-        <p id="profileEmail">Not signed in</p>
-        <div class="profile-badge" id="profileDept">🎓 SMVDU Student</div>
-        <div style="margin-top:8px;">
-          <label for="profilePhotoInput" style="font-size:0.75rem;color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:underline;">📷 Change profile photo</label>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="container">
-    <!-- SMART MATCH INBOX -->
-    <div id="matchInboxSection" style="display:none;margin-bottom:32px;">
-      <div class="section-header">
-        <div class="section-title">🎯 Smart <span>Matches</span></div>
-        <span style="font-size:0.82rem;color:var(--muted);">Potential matches for your lost items</span>
-      </div>
-      <div id="matchInbox"></div>
-    </div>
-
-    <div class="section-header">
-      <div class="section-title">My <span>Reports</span></div>
-      <span id="myReportsCount" style="font-size:0.82rem;color:var(--muted);background:var(--offwhite);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
-    </div>
-    <div class="items-grid" id="myItems">
-      <div class="empty-state"><div class="icon">📋</div><h3>No reports yet</h3><p>Sign in and report a lost or found item</p></div>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="authModal">
-  <div class="modal" style="max-width:420px;">
-    <div class="modal-header">
-      <div class="modal-title">Welcome to <span style="color:var(--orange)">FindIt</span></div>
-      <button class="modal-close" data-fn="closeModal" data-arg1="authModal">✕</button>
-    </div>
-    <div class="modal-body" id="authModalBody">
-      <!-- Step 1: Google Sign In -->
-      <div id="googleSignInStep">
-        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;text-align:center;">Sign in with your Google account to continue</p>
-        <button onclick="handleGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;border:1px solid #ddd;border-radius:3px;background:#fff;cursor:pointer;font-family:Georgia,serif;font-size:0.95rem;font-weight:bold;color:#333;transition:all 0.15s;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='#fff'">
-          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-        <p style="font-size:0.78rem;color:#aaa;text-align:center;margin-top:14px;">Only verified Google accounts are allowed</p>
-      </div>
-      <!-- Step 2: Complete Profile (shown after Google login for new users) -->
-      <div id="completeProfileStep" style="display:none;">
-        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px;">Almost done! Fill in your SMVDU details:</p>
-        
-        <!-- Avatar Selection -->
-        <div class="form-group">
-          <label class="form-label">Choose Your Avatar</label>
-          <div id="avatarPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
-            <span class="avatar-opt" data-emoji="🧑‍💻" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--orange);border-radius:6px;background:#fff5ee;">🧑‍💻</span>
-            <span class="avatar-opt" data-emoji="👨‍🎓" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">👨‍🎓</span>
-            <span class="avatar-opt" data-emoji="👩‍🎓" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">👩‍🎓</span>
-            <span class="avatar-opt" data-emoji="🧑‍🔬" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🧑‍🔬</span>
-            <span class="avatar-opt" data-emoji="🧑‍🏫" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🧑‍🏫</span>
-            <span class="avatar-opt" data-emoji="🦁" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🦁</span>
-            <span class="avatar-opt" data-emoji="🐯" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🐯</span>
-            <span class="avatar-opt" data-emoji="🦅" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🦅</span>
-            <span class="avatar-opt" data-emoji="⚡" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">⚡</span>
-            <span class="avatar-opt" data-emoji="🏔️" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🏔️</span>
-          </div>
-          <input type="hidden" id="selectedAvatar" value="🧑‍💻">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Roll Number *</label>
-            <input class="form-input" type="text" id="profileRoll" placeholder="e.g. 25BCS080" oninput="this.value=this.value.toUpperCase()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Department *</label>
-            <select class="form-select" id="profileDept">
-              <option value="">Select</option>
-              <option>Computer Science & Engineering</option>
-              <option>Electronics & Communication</option>
-              <option>Mechanical Engineering</option>
-              <option>Civil Engineering</option>
-              <option>Biotechnology</option>
-              <option>Physics</option>
-              <option>Chemistry</option>
-              <option>Mathematics</option>
-              <option>Management</option>
-              <option>Other</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Hostel</label>
-          <select class="form-select" id="profileHostel">
-            <option value="">Select Hostel</option>
-            <option>Nilgiri Hostel</option>
-            <option>Vindhyanchal Hostel</option>
-            <option>Trikuta Hostel</option>
-            <option>Kailash Hostel</option>
-            <option>Shivalik Hostel</option>
-            <option>Vaishnavi Hostel</option>
-            <option>Basohli Hostel</option>
-            <option>Old Basohli Hostel</option>
-          </select>
-        </div>
-        <button class="btn-submit" onclick="saveUserProfile()">Complete Registration →</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+<!-- ================================================================
+     REPORT LOST/FOUND ITEM MODAL
+================================================================ -->
 <div class="modal-overlay" id="reportModal">
   <div class="modal">
     <div class="modal-header">
@@ -1330,6 +707,7 @@
     </div>
     <div class="modal-body">
       <input type="hidden" id="reportType" value="lost">
+
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Item Name *</label>
@@ -1352,52 +730,63 @@
           </select>
         </div>
       </div>
+
       <div class="form-group">
         <label class="form-label">Description *</label>
-        <textarea class="form-textarea" id="itemDesc" placeholder="Describe the item — color, brand, any identifying marks..."></textarea>
+        <textarea class="form-textarea" id="itemDesc" placeholder="Describe — color, brand, any unique marks..."></textarea>
       </div>
+
       <div class="form-row">
+        <!-- Location Dropdown — All SMVDU Campus Locations -->
         <div class="form-group">
           <label class="form-label">Location on Campus *</label>
           <select class="form-select" id="itemLocation">
             <option value="">Select Location</option>
-            <option>Main Academic Block</option>
-            <option>Central Library</option>
-            <option>Canteen</option>
-            <option>Nilgiri Hostel</option>
-            <option>Vindhyanchal Hostel</option>
-            <option>Trikuta Hostel</option>
-            <option>Kailash Hostel</option>
-            <option>Shivalik Hostel</option>
-            <option>Vaishnavi Hostel</option>
-            <option>Basohli Hostel</option>
-            <option>Old Basohli Hostel</option>
-            <option>Nilgiri Mess</option>
-            <option>Vindhyanchal Mess</option>
-            <option>Central Mess</option>
-            <option>Shivalik Mess</option>
-            <option>Vaishnavi Mess</option>
-            <option>Basohli Mess</option>
-            <option>Sports Complex</option>
-            <option>Matrika Auditorium</option>
-            <option>Admin Block</option>
-            <option>Parking Area</option>
-            <option>Bus Stand</option>
-            <option>Labs Block</option>
-            <option>Ground Of Campus</option>
-            <option>BC Junction</option>
-            <option>LT 1</option>
-            <option>LT 2</option>
-            <option>LT 3</option>
-            <option>LT 4</option>
-            <option>Red Rocks</option>
-            <option>Trikuta Ground</option>
-            <option>Gym</option>
-            <option>Grocery</option>
-            <option>Medical Aid Center</option>
-            <option>Near Medicle Buildng</option>
-            <option>Near Workshop</option>
-            <option>Near Guest House</option>
+            <optgroup label="Academic">
+              <option>Main Academic Block</option>
+              <option>Central Library</option>
+              <option>Labs Block</option>
+              <option>LT 1</option>
+              <option>LT 2</option>
+              <option>LT 3</option>
+              <option>LT 4</option>
+              <option>Admin Block</option>
+            </optgroup>
+            <optgroup label="Hostels">
+              <option>Nilgiri Hostel</option>
+              <option>Vindhyanchal Hostel</option>
+              <option>Trikuta Hostel</option>
+              <option>Kailash Hostel</option>
+              <option>Shivalik Hostel</option>
+              <option>Vaishnavi Hostel</option>
+              <option>Basohli Hostel</option>
+              <option>Old Basohli Hostel</option>
+            </optgroup>
+            <optgroup label="Mess / Canteen">
+              <option>Canteen</option>
+              <option>Nilgiri Mess</option>
+              <option>Vindhyanchal Mess</option>
+              <option>Central Mess</option>
+              <option>Shivalik Mess</option>
+              <option>Vaishnavi Mess</option>
+              <option>Basohli Mess</option>
+            </optgroup>
+            <optgroup label="Other Campus Areas">
+              <option>Sports Complex</option>
+              <option>Gym</option>
+              <option>Matrika Auditorium</option>
+              <option>Trikuta Ground</option>
+              <option>Ground Of Campus</option>
+              <option>Red Rocks</option>
+              <option>BC Junction</option>
+              <option>Parking Area</option>
+              <option>Bus Stand</option>
+              <option>Near Guest House</option>
+              <option>Near Medical Building</option>
+              <option>Near Workshop</option>
+              <option>Grocery</option>
+              <option>Medical Aid Center</option>
+            </optgroup>
             <option>Other</option>
           </select>
         </div>
@@ -1406,19 +795,24 @@
           <input class="form-input" type="date" id="itemDate">
         </div>
       </div>
+
+      <!-- Verification Question (only for Lost items) -->
       <div class="form-group" id="verifyQuestionGroup" style="display:none;">
-        <label class="form-label">🔐 Verification Question (This Is For Your stuff Matching and Only You Would Know This.)</label>
-        <input class="form-input" type="text" id="verifyQuestion" placeholder="e.g. What Was The Uniqueness Of Your Stuff?">
-        <input class="form-input" type="text" id="verifyAnswer" placeholder="Answer (kept private)" style="margin-top:8px;">
+        <label class="form-label">🔐 Verification Question <span style="font-weight:normal;text-transform:none;">(Only you would know this — helps verify the real owner)</span></label>
+        <input class="form-input" type="text" id="verifyQuestion" placeholder="e.g. What sticker is on your laptop?">
+        <input class="form-input" type="text" id="verifyAnswer" placeholder="Your answer (kept private)" style="margin-top:7px;">
       </div>
+
+      <!-- Photo Upload -->
       <div class="form-group">
-        <label class="form-label">Upload Photo</label>
+        <label class="form-label">Upload Photo (optional)</label>
         <div class="upload-area" onclick="document.getElementById('itemPhoto').click()">
           <input type="file" id="itemPhoto" accept="image/*" onchange="previewPhoto(this)">
           <div class="icon" id="uploadIcon">📸</div>
-          <p id="uploadText">Click to upload image of the item</p>
+          <p id="uploadText">Click to upload a photo of the item</p>
         </div>
       </div>
+
       <div class="form-actions">
         <button class="btn-cancel" data-fn="closeModal" data-arg1="reportModal">Cancel</button>
         <button class="btn-submit" data-fn="submitReport">Submit Report</button>
@@ -1427,6 +821,9 @@
   </div>
 </div>
 
+<!-- ================================================================
+     ITEM DETAIL MODAL — Shows full info + Chat + Claim buttons
+================================================================ -->
 <div class="modal-overlay" id="detailModal">
   <div class="modal" style="max-width:560px;">
     <div class="modal-header">
@@ -1437,14 +834,17 @@
   </div>
 </div>
 
+<!-- ================================================================
+     CLAIM ITEM MODAL — Owner answers verification question
+================================================================ -->
 <div class="modal-overlay" id="claimModal">
-  <div class="modal" style="max-width:440px;">
+  <div class="modal" style="max-width:420px;">
     <div class="modal-header">
       <div class="modal-title">🔐 Claim This Item</div>
       <button class="modal-close" data-fn="closeModal" data-arg1="claimModal">✕</button>
     </div>
     <div class="modal-body">
-      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;">Answer the verification question to prove this is yours:</p>
+      <p style="color:var(--muted);font-size:0.86rem;margin-bottom:16px;">Answer the secret question to prove ownership:</p>
       <div class="form-group">
         <label class="form-label" id="claimQuestion">Verification Question</label>
         <input class="form-input" type="text" id="claimAnswer" placeholder="Your answer">
@@ -1841,9 +1241,9 @@ window.handleGoogleLogin = async function() {
       document.querySelector('#authModal .modal-title').innerHTML = 'Complete Your <span style="color:var(--orange)">Profile</span>';
       // Reset form
       window._regPhotoFile = null;
-      const rollEl = document.getElementById('profileRoll');
-      const deptEl = document.getElementById('profileDept');
-      const hostelEl = document.getElementById('profileHostel');
+      const rollEl = document.getElementById('regRoll');
+      const deptEl = document.getElementById('regDept');
+      const hostelEl = document.getElementById('regHostel');
       if(rollEl) rollEl.value = '';
       if(deptEl) deptEl.value = '';
       if(hostelEl) hostelEl.value = '';
@@ -1891,9 +1291,9 @@ window.saveUserProfile = async function() {
   const user = auth.currentUser;
   if(!user){ showToast('Not signed in','error'); return; }
 
-  const rollEl   = document.getElementById('profileRoll');
-  const deptEl   = document.getElementById('profileDept');
-  const hostelEl = document.getElementById('profileHostel');
+  const rollEl   = document.getElementById('regRoll');
+  const deptEl   = document.getElementById('regDept');
+  const hostelEl = document.getElementById('regHostel');
   const avatarEl = document.getElementById('selectedAvatar');
 
   const roll   = rollEl   ? rollEl.value.trim().toUpperCase()   : '';
@@ -1902,7 +1302,7 @@ window.saveUserProfile = async function() {
   const avatar = avatarEl ? (avatarEl.value || '🧑‍💻')            : '🧑‍💻';
 
   if(!roll) { showToast('Please enter Roll Number','error'); return; }
-  if(!dept) { showToast('Please select Department','error'); return; }
+  // dept is optional — save whatever is selected
 
   // Upload photo if selected
   let customPhoto = '';
@@ -1936,24 +1336,6 @@ window.saveUserProfile = async function() {
   } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
-window.skipProfile = function() {
-  const user = auth.currentUser;
-  if(!user) return;
-  // Save minimal profile with just Google data
-  addDoc(collection(db,'users'),{
-    uid: user.uid,
-    name: user.displayName || '',
-    email: user.email || '',
-    avatar: '🧑‍💻',
-    customPhoto: '',
-    roll: '', dept: '', hostel: '',
-    createdAt: serverTimestamp()
-  }).catch(()=>{});
-  showToast('Welcome! You can update your details from Profile later.','success');
-  closeModal('authModal');
-  updateNavAuth(user);
-}
-
 
 window.openAuthModal = function(){ 
   // Reset modal to Google sign in step
@@ -1968,35 +1350,9 @@ window.openAuthModal = function(){
 
 // switchAuthTab removed — Google login only
 
-window.handleLogin = async function() {
-  if(!FIREBASE_CONFIGURED){ showToast('Connect Firebase to enable real login','error'); return; }
-  const email=document.getElementById('loginEmail').value;
-  const pass=document.getElementById('loginPassword').value;
-  if(!email||!pass){ showToast('Please fill all fields','error'); return; }
-  try {
-    // Simple login - no email verification check needed
-    await signInWithEmailAndPassword(auth,email,pass);
-    showToast('Welcome back! 👋','success');
-    closeModal('authModal');
-  } catch(e){ showToast(e.message,'error'); }
-}
+// Email/password login removed — Google only
 
-// ── FORGOT PASSWORD ──
-// Firebase sends a real password reset email to the user
-// User clicks link in email → sets new password
-window.handleForgotPassword = async function() {
-  const email = document.getElementById('loginEmail').value.trim();
-  if(!email){
-    showToast('Please enter your email address first','error');
-    return;
-  }
-  try {
-    await sendPasswordResetEmail(auth, email); // Firebase sends reset email
-    showToast('✅ Password reset email sent! Check your inbox.','success');
-  } catch(e){
-    showToast('❌ ' + e.message,'error');
-  }
-}
+// Forgot password removed — Google login handles this
 
 // Old email/password signup removed — Google login only
 
@@ -2009,7 +1365,7 @@ async function updateNavAuth(user){
       await signOut(auth);
       document.getElementById('profileName').textContent='Guest User';
       document.getElementById('profileEmail').textContent='Not signed in';
-      document.getElementById('profileDept').innerHTML='🎓 SMVDU Student';
+      document.getElementById('regDept').innerHTML='🎓 SMVDU Student';
       document.getElementById('profileAvatar').innerHTML='👤';
       showToast('Signed out','');
     };
@@ -2039,7 +1395,7 @@ async function updateNavAuth(user){
 
         // Show all details
         document.getElementById('profileName').textContent = u.name || user.displayName;
-        const deptEl = document.getElementById('profileDept');
+        const deptEl = document.getElementById('regDept');
         deptEl.innerHTML = [
           u.roll   ? `<span>🎓 ${u.roll}</span>` : '',
           u.dept   ? `<span style="margin-left:10px;">📚 ${u.dept}</span>` : '',
@@ -2359,7 +1715,10 @@ window.showToast = function(msg, type='') {
 </script>
 
 <script>
+// ── MAIN CLICK DELEGATION ──
 document.addEventListener('click', function(e) {
+
+  // 1. Handle data-fn buttons
   var btn = e.target.closest('[data-fn]');
   if (btn) {
     var fn = btn.getAttribute('data-fn');
@@ -2372,6 +1731,32 @@ document.addEventListener('click', function(e) {
       else window[fn]();
     }
   }
+
+  // 2. Handle avatar selection (data-av attribute)
+  var avOpt = e.target.closest('[data-av]');
+  if (avOpt) {
+    var emoji = avOpt.getAttribute('data-av');
+    // Reset all avatars in same picker
+    var picker = avOpt.closest('#avatarPicker');
+    if (picker) {
+      picker.querySelectorAll('[data-av]').forEach(function(a) {
+        a.style.borderColor = 'var(--border)';
+        a.style.background = '';
+      });
+    }
+    // Highlight selected
+    avOpt.style.borderColor = 'var(--orange)';
+    avOpt.style.background = '#fff5ee';
+    // Save value
+    var hiddenInput = document.getElementById('selectedAvatar');
+    if (hiddenInput) hiddenInput.value = emoji;
+    // Update photo preview
+    var preview = document.getElementById('photoPreview');
+    if (preview) preview.innerHTML = '<span style="font-size:2rem">'+emoji+'</span>';
+    // Clear uploaded photo file
+    window._regPhotoFile = null;
+  }
+
 });
 </script>
 </body>
