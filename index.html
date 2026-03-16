@@ -244,15 +244,168 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
 @keyframes sp{to{transform:rotate(360deg)}}
 
 /* DESKTOP */
-@media(min-width:600px){
-  #app{max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.15);}
-  .chat-window{max-width:480px;left:50%;transform:translateX(calc(-50% + 100vw));transition:transform .25s ease;}
-  .chat-window.open{transform:translateX(-50%);}
+/* ═══════════════════════════════════
+   DESKTOP LAYOUT (768px+)
+   Full sidebar navigation like a web app
+═══════════════════════════════════ */
+@media(min-width:768px){
+  html,body{overflow:auto;}
+
+  /* App becomes a full desktop layout */
+  #app{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    grid-template-rows:56px 1fr;
+    grid-template-areas:
+      "topbar topbar"
+      "sidebar main";
+    height:100vh;
+    max-width:1200px;
+    margin:0 auto;
+    box-shadow:0 0 60px rgba(0,0,0,.12);
+  }
+
+  /* Topbar spans full width */
+  .topbar{grid-area:topbar;}
+
+  /* Sidebar replaces bottom nav */
+  .bottom-nav{
+    grid-area:sidebar;
+    flex-direction:column;
+    align-items:stretch;
+    background:var(--blue);
+    border-top:none;
+    border-right:1px solid rgba(255,255,255,.1);
+    padding:12px 0;
+    padding-bottom:0;
+    width:240px;
+    height:100%;
+    overflow-y:auto;
+  }
+  .bn-item{
+    flex-direction:row;
+    justify-content:flex-start;
+    padding:12px 20px;
+    gap:12px;
+    font-size:.88rem;
+    color:rgba(255,255,255,.75);
+    border-radius:0;
+    width:100%;
+  }
+  .bn-item .ico{font-size:1.1rem;}
+  .bn-item:hover{background:rgba(255,255,255,.08);}
+  .bn-item.active{background:rgba(255,255,255,.12);color:#fff;}
+  .bn-item.active .ico{transform:none;}
+
+  /* FAB button for reporting */
+  .desktop-fab{
+    margin:16px;
+    background:var(--orange);
+    color:#fff;
+    border:none;
+    padding:12px 16px;
+    border-radius:8px;
+    font-size:.88rem;
+    font-weight:600;
+    cursor:pointer;
+    width:calc(100% - 32px);
+    text-align:left;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .desktop-fab:hover{background:#d66910;}
+
+  /* Main content area */
+  .pages{
+    grid-area:main;
+    overflow:hidden;
+    background:var(--off);
+  }
+  .page{
+    overflow-y:auto;
+    height:100%;
+  }
+
+  /* Chat window becomes a panel, not fullscreen */
+  .chat-window{
+    position:static;
+    transform:none!important;
+    display:none;
+    flex-direction:column;
+    height:100%;
+    border-left:1px solid var(--border);
+    background:var(--off);
+  }
+  .chat-window.open{display:flex;}
+  .cw-back{display:none;}
+
+  /* Chat page = sidebar + window side by side */
+  #page-chat{
+    display:none;
+    grid-template-columns:300px 1fr;
+    height:100%;
+  }
+  #page-chat.active{display:grid!important;}
+  .chat-list-page{border-right:1px solid var(--border);}
+
+  /* Chat window inside chat page on desktop */
+  #page-chat .chat-window-slot{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    background:#f0f2f5;
+  }
+
+  /* Modals centered, not bottom sheets */
   .overlay{align-items:center;}
-  .sheet{border-radius:16px;max-width:480px;margin-bottom:0;}
-  @keyframes slideUp{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-  .hero-btns{flex-direction:row;max-width:none;}
-  .cards-list{display:grid;grid-template-columns:1fr 1fr;}
+  .sheet{
+    border-radius:12px;
+    max-width:520px;
+    margin-bottom:0;
+    max-height:88vh;
+  }
+  @keyframes slideUp{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+
+  /* Hero adjustments */
+  .hero{padding:48px 32px;}
+  .hero h1{font-size:2.2rem;}
+  .hero-btns{flex-direction:row;max-width:none;justify-content:center;gap:14px;}
+  .btn-hero-p,.btn-hero-s{width:auto;padding:14px 28px;}
+
+  /* Stats row */
+  .stats-row{grid-template-columns:1fr 1fr 1fr 1fr;}
+
+  /* Cards grid */
+  .cards-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+  .browse-list{padding:16px;}
+  #itemsList{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+
+  /* Profile */
+  .prof-top{padding:32px;}
+
+  /* Home body */
+  .home-body{padding:20px 24px;}
+
+  /* Desktop chat slot */
+  .chat-window-slot{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    background:#f0f2f5;
+    overflow:hidden;
+  }
+  /* Chat window inside slot fills it */
+  #desktopChatSlot .chat-window,
+  #desktopChatSlot > .chat-window {
+    position:static!important;
+    transform:none!important;
+    display:flex!important;
+    flex-direction:column;
+    flex:1;
+    height:100%;
+  }
 }
 </style>
 </head>
@@ -357,6 +510,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
           </div>
         </div>
       </div>
+      <!-- Desktop: chat window sits here instead of fullscreen -->
+      <div class="chat-window-slot" id="desktopChatSlot">
+        <div class="chat-empty-state">
+          <div class="ico">💬</div>
+          <h3 style="font-size:.95rem;color:var(--head);margin-bottom:6px;">Select a conversation</h3>
+          <p style="font-size:.82rem;">Click a chat to start messaging</p>
+        </div>
+      </div>
     </div>
 
     <!-- USERS -->
@@ -388,24 +549,38 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
 
   </div>
 
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
+  <!-- BOTTOM NAV (mobile) / SIDEBAR (desktop) -->
+  <div class="bottom-nav" id="sideNav">
+    <!-- Desktop only: Report buttons at top -->
+    <div class="desktop-only" style="display:none;">
+      <button class="desktop-fab" onclick="openReportModal('lost')">📢 Report Lost Item</button>
+      <button class="desktop-fab" style="background:var(--steel);margin-top:0;" onclick="openReportModal('found')">🔍 Found Something</button>
+      <div style="height:1px;background:rgba(255,255,255,.1);margin:8px 0;"></div>
+    </div>
     <button class="bn-item active" id="bn-home" onclick="showPage('home')">
-      <span class="ico">🏠</span>Home
+      <span class="ico">🏠</span><span>Home</span>
     </button>
     <button class="bn-item" id="bn-items" onclick="showPage('items')">
-      <span class="ico">🔍</span>Browse
+      <span class="ico">🔍</span><span>Browse</span>
       <span class="bn-badge" id="bn-badge"></span>
     </button>
     <button class="bn-item" id="bn-chat" onclick="showPage('chat')">
-      <span class="ico">💬</span>Messages
+      <span class="ico">💬</span><span>Messages</span>
     </button>
     <button class="bn-item" id="bn-users" onclick="showPage('users')">
-      <span class="ico">👥</span>Students
+      <span class="ico">👥</span><span>Students</span>
     </button>
     <button class="bn-item" id="bn-profile" onclick="showPage('profile')">
-      <span class="ico">👤</span>Profile
+      <span class="ico">👤</span><span>Profile</span>
     </button>
+    <!-- Desktop only: sign out at bottom -->
+    <div class="desktop-only" style="display:none;margin-top:auto;padding:12px;">
+      <div style="height:1px;background:rgba(255,255,255,.1);margin-bottom:12px;"></div>
+      <div id="sideUserInfo" style="display:flex;align-items:center;gap:8px;padding:8px 8px 12px;">
+        <div id="sideAv" style="width:32px;height:32px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;">?</div>
+        <div style="min-width:0;"><div id="sideName" style="color:#fff;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">Guest</div></div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1456,6 +1631,89 @@ async function loadMatchInbox() {
     });
   }catch(e){}
 }
+
+// ── DESKTOP DETECTION ──
+const isDesktop = () => window.innerWidth >= 768;
+
+// Show desktop-only elements when on desktop
+function applyLayout() {
+  const desktop = isDesktop();
+  // Show/hide desktop-only elements
+  document.querySelectorAll('.desktop-only').forEach(el => {
+    el.style.display = desktop ? 'block' : 'none';
+  });
+  // On desktop, chat window goes inside the slot instead of fullscreen
+  if(desktop) {
+    const slot = document.getElementById('desktopChatSlot');
+    const win  = document.getElementById('chatWindow');
+    if(slot && win && !slot.contains(win)) {
+      slot.innerHTML = '';
+      slot.appendChild(win);
+      win.style.cssText = 'position:static;transform:none;display:flex;flex-direction:column;height:100%;';
+    }
+  }
+}
+
+// Override openChatWindow for desktop - show in slot instead of fullscreen overlay
+const _origOpenChat = window.openChatWindow;
+window.openChatWindow = async function(chatId, otherName, otherUid) {
+  if(isDesktop()) {
+    const win = document.getElementById('chatWindow');
+    // Make sure chat page is active
+    showPage('chat');
+    // Show the window inside slot
+    win.classList.add('open');
+    win.style.display = 'flex';
+    // Call original logic
+    await _origOpenChat(chatId, otherName, otherUid);
+  } else {
+    await _origOpenChat(chatId, otherName, otherUid);
+  }
+};
+
+window.closeChatWindow = function() {
+  if(isDesktop()) {
+    // On desktop just show empty state
+    const slot = document.getElementById('desktopChatSlot');
+    if(slot) slot.innerHTML = '<div class="chat-empty-state"><div class="ico">💬</div><h3 style="font-size:.95rem;color:var(--head);margin-bottom:6px;">Select a conversation</h3><p style="font-size:.82rem;">Click a chat to start messaging</p></div>';
+  } else {
+    document.getElementById('chatWindow').classList.remove('open');
+  }
+  if(unsubChat){unsubChat();unsubChat=null;}
+  activeChatId=null;
+};
+
+// Update sidebar user info on desktop
+function updateSideNav(user) {
+  if(!isDesktop()) return;
+  const sideAv   = document.getElementById('sideAv');
+  const sideName = document.getElementById('sideName');
+  if(!sideAv||!sideName) return;
+  if(user) {
+    sideAv.textContent = (user.displayName||'U').charAt(0).toUpperCase();
+    sideName.textContent = user.displayName||'Student';
+  } else {
+    sideAv.textContent = '?';
+    sideName.textContent = 'Guest';
+  }
+}
+
+// Call applyLayout on load and resize
+applyLayout();
+window.addEventListener('resize', applyLayout);
+
+// Patch onAuthStateChanged to also update sidebar
+const origUpdateTopBar = updateTopBar;
+window._patchedAuth = true;
+
+// Re-run layout after Firebase loads
+setTimeout(applyLayout, 500);
+
+// Also update side nav when user changes
+onAuthStateChanged(auth, user => {
+  updateSideNav(user);
+  if(isDesktop()) applyLayout();
+});
 
 })();
 </script>
