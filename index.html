@@ -210,8 +210,40 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);heig
     <button id="nav-users" onclick="showPage('users')">Users</button>
     <button id="nav-profile" onclick="showPage('profile')">Profile</button>
     <button id="authBtn" class="btn-auth" onclick="openAuthModal()">Sign In</button>
+    <button class="ham-btn" id="hamBtn" onclick="toggleDrawer()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<div class="mob-drawer" id="mobDrawer" onclick="closeDrawerOnBg(event)">
+  <div class="mob-menu">
+    <button class="mob-menu-item active" id="mob-home" onclick="mobNav('home')">
+      <span class="icon">🏠</span> Home
+    </button>
+    <button class="mob-menu-item" id="mob-items" onclick="mobNav('items')">
+      <span class="icon">🔍</span> Browse Items
+    </button>
+    <button class="mob-menu-item" id="mob-chat" onclick="mobNav('chat')">
+      <span class="icon">💬</span> Messages
+    </button>
+    <button class="mob-menu-item" id="mob-users" onclick="mobNav('users')">
+      <span class="icon">👥</span> Find Students
+    </button>
+    <button class="mob-menu-item" id="mob-profile" onclick="mobNav('profile')">
+      <span class="icon">👤</span> My Profile
+    </button>
+    <div class="mob-menu-divider"></div>
+    <button class="mob-menu-item" onclick="mobNav('report-lost')">
+      <span class="icon">📢</span> Report Lost Item
+    </button>
+    <button class="mob-menu-item" onclick="mobNav('report-found')">
+      <span class="icon">🔎</span> I Found Something
+    </button>
+    <div class="mob-menu-divider"></div>
+    <button class="mob-menu-signin" id="mobAuthBtn" onclick="mobNav('auth')">Sign In with Google</button>
+  </div>
+</div>
 
 <div class="toast-con" id="toastCon"></div>
 
@@ -640,6 +672,10 @@ window.showPage = function(page) {
   document.getElementById('page-'+page).classList.add('active');
   const nb = document.getElementById('nav-'+page);
   if(nb) nb.classList.add('active');
+  // Sync mobile menu
+  document.querySelectorAll('.mob-menu-item[id^="mob-"]').forEach(b => b.classList.remove('active'));
+  const mb = document.getElementById('mob-'+page);
+  if(mb) mb.classList.add('active');
   if(page === 'items' && !currentUser) {
     // Show items page but with sign-in prompt overlay on grid
     document.getElementById('itemsGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:12px">🔒</div><h3 style="margin-bottom:8px;color:var(--head)">Sign in to Browse</h3><p style="margin-bottom:16px;font-size:.88rem;">See all lost and found items reported by SMVDU students</p><button class="btn-p" onclick="openAuthModal()">Sign in with Google</button></div>';
@@ -746,6 +782,7 @@ window.saveProfile = async function() {
 };
 
 async function updateNavAuth(user) {
+  updateMobAuth(user);
   const btn = document.getElementById('authBtn');
   if(user) {
     btn.textContent = 'Sign Out';
@@ -1206,6 +1243,48 @@ async function loadMatchInbox() {
     });
   } catch(e) {}
 }
+// ── MOBILE DRAWER ──
+window.toggleDrawer = function() {
+  const drawer = document.getElementById('mobDrawer');
+  const btn    = document.getElementById('hamBtn');
+  drawer.classList.toggle('open');
+  btn.classList.toggle('open');
+};
+
+window.closeDrawerOnBg = function(e) {
+  if(e.target === document.getElementById('mobDrawer')) closeDrawer();
+};
+
+function closeDrawer() {
+  document.getElementById('mobDrawer').classList.remove('open');
+  document.getElementById('hamBtn').classList.remove('open');
+}
+
+window.mobNav = function(page) {
+  closeDrawer();
+  if(page === 'auth') { openAuthModal(); return; }
+  if(page === 'report-lost') { openReportModal('lost'); return; }
+  if(page === 'report-found') { openReportModal('found'); return; }
+  showPage(page);
+  // Sync active state in mobile menu
+  document.querySelectorAll('.mob-menu-item[id^="mob-"]').forEach(b => b.classList.remove('active'));
+  const mb = document.getElementById('mob-'+page);
+  if(mb) mb.classList.add('active');
+};
+
+// Update mobile menu auth button when user signs in/out
+function updateMobAuth(user) {
+  const btn = document.getElementById('mobAuthBtn');
+  if(!btn) return;
+  if(user) {
+    btn.textContent = 'Sign Out';
+    btn.onclick = async () => { closeDrawer(); await signOut(auth); };
+  } else {
+    btn.textContent = 'Sign In with Google';
+    btn.onclick = () => { closeDrawer(); openAuthModal(); };
+  }
+}
+
 // ── PROFILE EDIT ──
 let editPhotoFile = null;
 
