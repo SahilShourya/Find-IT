@@ -2,411 +2,452 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SMVDU FindIt — Lost & Found</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2C3E50">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>SMVDU FindIt</title>
 <style>
 :root{
   --navy:#1C3557;--blue:#2C3E50;--steel:#5A7FA3;
   --orange:#F47C20;--green:#28A745;--leaf:#3FAE49;
   --white:#fff;--off:#F4F6F8;--text:#4A4A4A;
   --head:#1F3A5F;--border:#D9D9D9;--muted:#888;--red:#DC3545;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--white);color:var(--text);font-size:14.5px;line-height:1.6;overflow-x:hidden;}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--steel)}
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;border-bottom:3px solid var(--orange);}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.logo svg{width:38px;height:38px;flex-shrink:0;}
-.logo-text{display:flex;flex-direction:column;line-height:1.2;}
-.logo-text .t{font-size:.58rem;font-weight:700;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;}
-.logo-text .b{font-size:.92rem;font-weight:700;color:#fff;}
-.logo-text .b span{color:var(--orange);}
-.nav-links{display:flex;align-items:center;gap:3px;}
-.nav-links button{background:transparent;border:none;color:rgba(255,255,255,.8);padding:6px 13px;border-radius:3px;font-size:.85rem;cursor:pointer;transition:all .15s;}
-.nav-links button:hover,.nav-links button.active{background:rgba(255,255,255,.12);color:#fff;}
-.btn-auth{background:var(--green)!important;color:#fff!important;font-weight:600;padding:6px 16px;border-radius:3px;}
-.page{display:none;min-height:100vh;padding-top:58px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--text);font-size:15px;}
+
+/* ── APP SHELL ── */
+#app{display:flex;flex-direction:column;height:100%;height:100dvh;}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;padding-top:var(--safe-top);flex-shrink:0;border-bottom:3px solid var(--orange);position:relative;z-index:100;}
+.topbar-logo{display:flex;align-items:center;gap:8px;}
+.topbar-logo svg{width:34px;height:34px;flex-shrink:0;}
+.topbar-logo .tb{display:flex;flex-direction:column;line-height:1.2;}
+.topbar-logo .tb .t{font-size:.55rem;font-weight:700;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;}
+.topbar-logo .tb .b{font-size:.88rem;font-weight:700;color:#fff;}
+.topbar-logo .tb .b span{color:var(--orange);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.topbar-auth{background:var(--green);color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:.82rem;font-weight:600;cursor:pointer;}
+
+/* ── PAGES ── */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;background:var(--off);}
 .page.active{display:block;}
-.hero{background:var(--navy);color:#fff;padding:52px 1.5rem 40px;text-align:center;}
-.hero-badge{display:inline-block;background:var(--orange);border-radius:2px;padding:3px 12px;font-size:.76rem;color:#fff;font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;}
-.hero h1{font-size:clamp(1.7rem,4vw,2.7rem);font-weight:700;line-height:1.2;margin-bottom:12px;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{display:flex;background:var(--white);border-top:1px solid var(--border);padding-bottom:var(--safe-bottom);flex-shrink:0;}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-size:.65rem;gap:3px;position:relative;transition:color .15s;}
+.bn-item .ico{font-size:1.35rem;line-height:1;}
+.bn-item.active{color:var(--orange);}
+.bn-item.active .ico{transform:scale(1.1);}
+.bn-badge{position:absolute;top:6px;right:calc(50% - 14px);background:var(--red);color:#fff;border-radius:10px;font-size:.6rem;padding:1px 5px;min-width:16px;text-align:center;display:none;}
+.bn-badge.show{display:block;}
+
+/* ── HOME PAGE ── */
+.hero{background:var(--navy);padding:28px 16px 24px;text-align:center;}
+.hero-badge{display:inline-block;background:var(--orange);border-radius:20px;padding:4px 14px;font-size:.72rem;color:#fff;font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.4px;}
+.hero h1{font-size:1.55rem;font-weight:700;color:#fff;line-height:1.25;margin-bottom:10px;}
 .hero h1 span{color:var(--orange);}
-.hero p{font-size:.96rem;color:rgba(255,255,255,.7);max-width:480px;margin:0 auto 26px;}
-.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.btn-p{background:var(--green);color:#fff;border:none;padding:10px 22px;border-radius:3px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .15s;display:inline-flex;align-items:center;gap:6px;}
-.btn-p:hover{background:var(--leaf);}
-.btn-s{background:transparent;color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.4);padding:10px 22px;border-radius:3px;font-size:.9rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
-.btn-s:hover{border-color:#fff;color:#fff;}
-.stats{display:flex;background:var(--blue);border-top:1px solid rgba(255,255,255,.07);}
-.stat{flex:1;padding:18px 12px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
-.stat:last-child{border-right:none;}
-.stat .n{font-size:1.7rem;font-weight:700;color:var(--orange);}
-.stat .l{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:2px;}
-.con{max-width:1100px;margin:0 auto;padding:28px 1.5rem;}
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);}
-.sec-title{font-size:1.15rem;font-weight:700;color:var(--head);}
-.sec-title span{color:var(--steel);}
-.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.fbtn{background:var(--off);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:3px;font-size:.82rem;cursor:pointer;transition:all .15s;}
-.fbtn:hover,.fbtn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
-.search-bar{display:flex;gap:8px;margin-bottom:16px;}
-.search-bar input{flex:1;background:var(--white);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:3px;font-size:.9rem;}
-.search-bar input:focus{outline:none;border-color:var(--steel);}
-.tab-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;}
-.tab-btn{background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);padding:9px 18px;font-size:.88rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
-.tab-btn.active{color:var(--navy);border-bottom-color:var(--orange);font-weight:600;}
-.badge{background:var(--off);color:var(--muted);padding:1px 6px;border-radius:10px;font-size:.7rem;}
-.tab-btn.active .badge{background:var(--orange);color:#fff;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:16px;}
-.card{background:var(--white);border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.06);animation:fadeUp .3s ease forwards;}
-.card:hover{box-shadow:0 4px 14px rgba(28,53,87,.14);border-color:var(--steel);transform:translateY(-2px);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.card-img{width:100%;height:155px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:2.4rem;border-bottom:1px solid var(--border);overflow:hidden;}
-.card-img img{width:100%;height:100%;object-fit:cover;}
-.card-body{padding:12px;}
-.tags{display:flex;gap:4px;margin-bottom:7px;flex-wrap:wrap;}
-.tag{font-size:.69rem;padding:2px 7px;border-radius:2px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+.hero p{font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:20px;line-height:1.6;}
+.hero-btns{display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;}
+.btn-hero-p{background:var(--green);color:#fff;border:none;padding:13px;border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer;width:100%;}
+.btn-hero-s{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);padding:13px;border-radius:10px;font-size:.92rem;cursor:pointer;width:100%;}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--blue);border-bottom:1px solid rgba(255,255,255,.07);}
+.stat-box{padding:14px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
+.stat-box:last-child{border-right:none;}
+.stat-box .n{font-size:1.4rem;font-weight:700;color:var(--orange);}
+.stat-box .l{font-size:.65rem;color:rgba(255,255,255,.55);margin-top:1px;}
+
+.home-body{padding:14px;}
+.guest-card{background:var(--navy);border-radius:12px;padding:20px;text-align:center;margin-bottom:16px;}
+.guest-card h3{color:#fff;font-size:1rem;margin-bottom:6px;}
+.guest-card p{color:rgba(255,255,255,.65);font-size:.83rem;margin-bottom:14px;line-height:1.5;}
+.guest-card button{background:var(--orange);color:#fff;border:none;padding:11px 28px;border-radius:20px;font-size:.88rem;font-weight:600;cursor:pointer;}
+
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.sec-title{font-size:1rem;font-weight:700;color:var(--head);}
+.sec-title span{color:var(--orange);}
+.sec-link{font-size:.8rem;color:var(--steel);cursor:pointer;}
+
+/* ── ITEM CARDS ── */
+.cards-list{display:flex;flex-direction:column;gap:10px;}
+.item-card{background:var(--white);border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.item-card-inner{display:flex;gap:0;}
+.item-thumb{width:88px;height:88px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;}
+.item-thumb img{width:100%;height:100%;object-fit:cover;}
+.item-info{flex:1;padding:10px 12px;min-width:0;}
+.item-tags{display:flex;gap:5px;margin-bottom:5px;flex-wrap:wrap;}
+.tag{font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;}
 .tag-lost{background:#fde8e8;color:var(--red);}
 .tag-found{background:#e6f5ec;color:var(--green);}
-.tag-cat{background:var(--off);color:var(--muted);border:1px solid var(--border);}
-.tag-done{background:#e8f3ff;color:var(--steel);}
-.card-title{font-size:.96rem;font-weight:700;margin-bottom:4px;color:var(--head);}
-.card-desc{font-size:.81rem;color:var(--muted);line-height:1.5;margin-bottom:9px;}
-.card-meta{display:flex;justify-content:space-between;align-items:center;font-size:.77rem;color:var(--muted);border-top:1px solid var(--border);padding-top:9px;}
-.act-btn{background:var(--navy);color:#fff;border:none;padding:4px 11px;border-radius:2px;font-size:.77rem;cursor:pointer;transition:background .15s;}
-.act-btn:hover{background:var(--steel);}
-.empty{text-align:center;padding:52px 20px;color:var(--muted);}
-.empty .icon{font-size:2.6rem;margin-bottom:11px;opacity:.35;}
-.empty h3{font-size:1rem;margin-bottom:5px;color:var(--head);}
-.overlay{display:none;position:fixed;inset:0;background:rgba(28,53,87,.55);z-index:2000;align-items:center;justify-content:center;padding:16px;}
+.tag-cat{background:var(--off);color:var(--muted);}
+.item-name{font-size:.92rem;font-weight:700;color:var(--head);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-loc{font-size:.76rem;color:var(--muted);}
+.item-date{font-size:.72rem;color:var(--muted);margin-top:2px;}
+
+/* ── BROWSE PAGE ── */
+.browse-head{background:var(--white);padding:12px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.search-inp{width:100%;background:var(--off);border:none;padding:10px 14px 10px 36px;border-radius:20px;font-size:.9rem;color:var(--text);outline:none;}
+.search-wrap{position:relative;}
+.search-wrap::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;}
+.tab-strip{display:flex;border-bottom:2px solid var(--border);background:var(--white);}
+.ts-btn{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;padding:10px;font-size:.82rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.ts-btn.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:600;}
+.ts-badge{background:var(--off);color:var(--muted);padding:1px 6px;border-radius:10px;font-size:.66rem;}
+.ts-btn.active .ts-badge{background:var(--orange);color:#fff;}
+.filter-scroll{display:flex;gap:7px;padding:10px 14px;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--border);}
+.filter-scroll::-webkit-scrollbar{display:none;}
+.f-chip{background:var(--off);border:1px solid var(--border);color:var(--text);padding:5px 13px;border-radius:20px;font-size:.78rem;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.f-chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+.browse-list{padding:12px;}
+
+/* ── CHAT PAGE ── */
+.chat-list-page{height:100%;display:flex;flex-direction:column;}
+.chat-list-hdr{background:var(--white);padding:14px 16px;border-bottom:1px solid var(--border);font-weight:700;font-size:1rem;color:var(--head);display:flex;align-items:center;justify-content:space-between;}
+.chat-list-scroll{flex:1;overflow-y:auto;}
+.chat-list-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--white);}
+.chat-list-item:active{background:var(--off);}
+.cl-av{width:46px;height:46px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0;overflow:hidden;}
+.cl-av img{width:100%;height:100%;object-fit:cover;}
+.cl-info{flex:1;min-width:0;}
+.cl-name{font-size:.92rem;font-weight:600;color:var(--head);}
+.cl-msg{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.cl-time{font-size:.7rem;color:var(--muted);flex-shrink:0;}
+.cl-unread{width:9px;height:9px;background:var(--green);border-radius:50%;flex-shrink:0;}
+.chat-empty-state{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:30px;text-align:center;color:var(--muted);}
+.chat-empty-state .ico{font-size:3rem;opacity:.3;}
+
+/* CHAT WINDOW (slides over) */
+.chat-window{position:fixed;inset:0;background:var(--off);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;}
+.chat-window.open{transform:translateX(0);}
+.cw-top{background:var(--blue);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 14px;padding-top:calc(10px + var(--safe-top));flex-shrink:0;}
+.cw-back{background:transparent;border:none;color:#fff;font-size:1.3rem;cursor:pointer;padding:4px;line-height:1;}
+.cw-av{width:38px;height:38px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0;}
+.cw-info{flex:1;}
+.cw-name{font-size:.95rem;font-weight:600;}
+.cw-status{font-size:.72rem;color:rgba(255,255,255,.7);}
+.cw-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8edf2' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.date-div{text-align:center;margin:6px 0;}
+.date-div span{background:rgba(255,255,255,.85);color:#667781;font-size:.72rem;padding:4px 12px;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
+.bubble{max-width:78%;padding:8px 11px 5px;border-radius:12px;font-size:.88rem;line-height:1.45;word-break:break-word;position:relative;}
+.bubble-in{background:var(--white);align-self:flex-start;border-radius:0 12px 12px 12px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
+.bubble-out{background:#dcf8c6;align-self:flex-end;border-radius:12px 0 12px 12px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
+.bubble-meta{display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:3px;}
+.b-time{font-size:.66rem;color:#667781;}
+.b-tick{font-size:.75rem;color:#aaa;line-height:1;}
+.b-tick.blue{color:#53bdeb;}
+.cw-inp-wrap{background:var(--off);padding:8px 10px;padding-bottom:calc(8px + var(--safe-bottom));display:flex;align-items:flex-end;gap:8px;border-top:1px solid var(--border);}
+.cw-inp{flex:1;background:var(--white);border:none;border-radius:20px;padding:10px 16px;font-size:.9rem;color:var(--text);outline:none;max-height:100px;resize:none;font-family:inherit;line-height:1.4;}
+.cw-send{width:44px;height:44px;border-radius:50%;background:var(--orange);border:none;color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── USERS PAGE ── */
+.users-hdr{background:var(--white);padding:12px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.users-list{padding:12px;display:flex;flex-direction:column;gap:8px;}
+.user-card{background:var(--white);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.user-av{width:46px;height:46px;border-radius:50%;background:var(--off);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden;}
+.user-av img{width:100%;height:100%;object-fit:cover;}
+.user-info{flex:1;min-width:0;}
+.user-name{font-size:.92rem;font-weight:700;color:var(--head);}
+.user-detail{font-size:.76rem;color:var(--muted);margin-top:2px;}
+.user-chat-btn{background:var(--steel);color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;flex-shrink:0;}
+
+/* ── PROFILE PAGE ── */
+.prof-top{background:var(--navy);padding:28px 16px 20px;text-align:center;border-bottom:4px solid var(--orange);}
+.prof-av-wrap{position:relative;display:inline-block;margin-bottom:12px;}
+.prof-av-big{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;}
+.prof-av-big img{width:100%;height:100%;object-fit:cover;}
+.prof-av-edit{position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--orange);border-radius:50%;border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;}
+.prof-name{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px;}
+.prof-sub{font-size:.8rem;color:rgba(255,255,255,.65);}
+.prof-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.prof-badge-pill{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:4px 12px;border-radius:20px;font-size:.75rem;}
+.prof-edit-btn{margin-top:14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:9px 22px;border-radius:20px;font-size:.82rem;cursor:pointer;}
+.prof-body{padding:14px;}
+.prof-stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.prof-stat{background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.prof-stat .n{font-size:1.3rem;font-weight:700;color:var(--orange);}
+.prof-stat .l{font-size:.68rem;color:var(--muted);margin-top:2px;}
+.match-card{background:var(--white);border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--orange);box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.my-item-card{background:var(--white);border-radius:12px;padding:12px;display:flex;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.my-item-thumb{width:56px;height:56px;background:var(--off);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;overflow:hidden;}
+.my-item-thumb img{width:100%;height:100%;object-fit:cover;}
+
+/* ── MODALS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end;justify-content:center;}
 .overlay.open{display:flex;}
-.prof-edit-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
-.prof-edit-av{width:56px;height:56px;border-radius:50%;background:var(--off);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;overflow:hidden;flex-shrink:0;}
-.prof-edit-av img{width:100%;height:100%;object-fit:cover;}
-.modal{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--navy);border-radius:4px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 28px rgba(28,53,87,.18);}
-.modal-hdr{padding:15px 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--off);}
-.modal-title{font-size:1.08rem;font-weight:700;color:var(--head);}
-.modal-x{background:transparent;border:1px solid var(--border);color:var(--muted);width:27px;height:27px;border-radius:3px;cursor:pointer;font-size:.88rem;display:flex;align-items:center;justify-content:center;}
-.modal-x:hover{border-color:var(--red);color:var(--red);}
-.modal-body{padding:17px;}
+.sheet{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:var(--safe-bottom);animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;}
+.sheet-hdr{padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.sheet-title{font-size:1rem;font-weight:700;color:var(--head);}
+.sheet-x{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.sheet-body{padding:16px 18px;}
+
+/* FORM */
 .fg{margin-bottom:12px;}
-.fl{display:block;font-size:.77rem;font-weight:600;color:var(--head);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
-.fi,.fs,.ft{width:100%;background:var(--white);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:3px;font-size:.9rem;transition:border-color .15s;}
-.fi:focus,.fs:focus,.ft:focus{outline:none;border-color:var(--steel);}
+.fl{display:block;font-size:.76rem;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+.fi,.fs,.ft{width:100%;background:var(--off);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:10px;font-size:.92rem;outline:none;-webkit-appearance:none;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--steel);}
 .fi::placeholder,.ft::placeholder{color:#bbb;}
-.ft{resize:vertical;min-height:76px;}
+.ft{resize:vertical;min-height:80px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.upload{border:2px dashed var(--border);border-radius:3px;padding:20px;text-align:center;cursor:pointer;background:var(--off);transition:all .15s;}
-.upload:hover{border-color:var(--steel);}
-.upload input{display:none;}
-.form-actions{display:flex;gap:8px;margin-top:14px;}
-.btn-sub{flex:1;background:var(--navy);color:#fff;border:none;padding:10px;border-radius:3px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .15s;}
-.btn-sub:hover{background:var(--steel);}
-.btn-can{background:var(--off);color:var(--muted);border:1px solid var(--border);padding:10px 15px;border-radius:3px;cursor:pointer;font-size:.87rem;}
-.btn-can:hover{border-color:var(--red);color:var(--red);}
-.detail-img{width:100%;height:185px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:3.2rem;margin-bottom:13px;overflow:hidden;border:1px solid var(--border);border-radius:3px;}
-.detail-img img{width:100%;height:100%;object-fit:cover;}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0;}
-.df{background:var(--off);border-radius:3px;padding:9px;border:1px solid var(--border);}
+.btn-full{width:100%;background:var(--navy);color:#fff;border:none;padding:14px;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:6px;}
+.btn-full.green{background:var(--green);}
+.btn-full.orange{background:var(--orange);}
+.btn-can-full{width:100%;background:var(--off);color:var(--muted);border:1px solid var(--border);padding:13px;border-radius:12px;font-size:.92rem;cursor:pointer;margin-top:8px;}
+
+/* UPLOAD */
+.upload-box{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--off);}
+.upload-box input{display:none;}
+
+/* AUTH SHEET */
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--white);cursor:pointer;font-size:.95rem;font-weight:600;color:#333;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+
+/* AVATAR PICKER */
+.av-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+.av-opt{font-size:1.8rem;cursor:pointer;padding:8px;border:2px solid var(--border);border-radius:10px;text-align:center;transition:all .15s;}
+.av-opt.sel{border-color:var(--orange);background:#fff5ee;}
+
+/* DETAIL SHEET */
+.detail-img-big{width:100%;height:200px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:4rem;border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.detail-img-big img{width:100%;height:100%;object-fit:cover;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.df{background:var(--off);border-radius:10px;padding:10px;}
 .dk{font-size:.69rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px;font-weight:600;}
-.dv{font-size:.87rem;font-weight:600;color:var(--head);}
-.chat-layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 58px);overflow:hidden;}
-.chat-sb{background:var(--white);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;}
-.chat-sb-hdr{padding:13px 15px;border-bottom:2px solid var(--orange);font-weight:700;font-size:.93rem;color:var(--head);background:var(--off);display:flex;align-items:center;justify-content:space-between;}
-.chat-item{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .1s;position:relative;}
-.chat-item:hover{background:#f8f9fa;}
-.chat-item.active{background:#e8f0fe;}
-.chat-item .unread-dot{width:9px;height:9px;background:var(--green);border-radius:50%;position:absolute;right:14px;top:50%;transform:translateY(-50%);}
-.chat-av{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;font-weight:600;overflow:hidden;}
-.chat-av img{width:100%;height:100%;object-fit:cover;}
-.chat-preview-name{font-size:.87rem;font-weight:600;color:var(--head);}
-.chat-preview-msg{font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;margin-top:1px;}
-.chat-preview-time{font-size:.7rem;color:var(--muted);position:absolute;right:14px;top:12px;}
-.chat-main{display:flex;flex-direction:column;background:#f0f2f5;}
-.chat-top{padding:10px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--white);}
-.chat-top-left{display:flex;align-items:center;gap:10px;}
-.chat-online{font-size:.72rem;color:var(--green);}
-.chat-msgs{flex:1;overflow-y:auto;padding:16px 16px;display:flex;flex-direction:column;gap:6px;}
-.msg{max-width:68%;padding:8px 12px 4px;border-radius:8px;font-size:.87rem;line-height:1.5;position:relative;word-break:break-word;}
-.msg-in{background:var(--white);align-self:flex-start;border-radius:0 8px 8px 8px;box-shadow:0 1px 2px rgba(0,0,0,.08);}
-.msg-out{background:#dcf8c6;color:#111;align-self:flex-end;border-radius:8px 0 8px 8px;box-shadow:0 1px 2px rgba(0,0,0,.08);}
-.msg-meta{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:2px;}
-.msg-time{font-size:.66rem;color:#667781;}
-.msg-tick{font-size:.72rem;color:#667781;}
-.msg-tick.seen{color:#53bdeb;}
-.msg-sender{font-size:.72rem;color:var(--orange);font-weight:600;margin-bottom:2px;}
-.date-divider{text-align:center;margin:8px 0;}
-.date-divider span{background:rgba(225,245,254,.9);color:#667781;font-size:.74rem;padding:3px 10px;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.08);}
-.chat-inp{padding:10px 13px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--white);align-items:center;}
-.chat-inp input{flex:1;background:#f0f2f5;border:none;color:var(--text);padding:10px 14px;border-radius:20px;font-size:.88rem;outline:none;}
-.chat-send{background:var(--orange);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
-.chat-send:hover{background:#d66910;}
-.chat-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;}
-.typing-indicator{display:none;padding:4px 14px;font-size:.76rem;color:var(--muted);font-style:italic;}
-.prof-hdr{background:var(--navy);padding:26px 1.5rem;color:#fff;border-bottom:4px solid var(--orange);}
-.prof-info{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:17px;}
-.prof-av{width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;overflow:hidden;}
-.prof-av img{width:100%;height:100%;object-fit:cover;}
-.toast-con{position:fixed;bottom:17px;right:17px;z-index:3000;display:flex;flex-direction:column;gap:5px;}
-.toast{background:var(--navy);color:#fff;border-left:3px solid var(--steel);padding:10px 14px;border-radius:3px;font-size:.83rem;max-width:270px;box-shadow:0 4px 12px rgba(28,53,87,.2);animation:tIn .22s ease;}
+.dv{font-size:.86rem;font-weight:600;color:var(--head);}
+.detail-btns{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.detail-btns button{padding:13px;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;border:none;}
+
+/* TOAST */
+.toast-wrap{position:fixed;top:calc(56px + 8px + var(--safe-top));left:12px;right:12px;z-index:500;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.toast{background:rgba(28,53,87,.95);color:#fff;padding:12px 16px;border-radius:12px;font-size:.85rem;border-left:3px solid var(--steel);box-shadow:0 4px 16px rgba(0,0,0,.2);animation:toastIn .25s ease;}
 .toast.success{border-left-color:var(--green);}
 .toast.error{border-left-color:var(--red);}
-@keyframes tIn{from{opacity:0;transform:translateX(13px)}to{opacity:1;transform:translateX(0)}}
-.loading{display:flex;align-items:center;justify-content:center;padding:46px;color:var(--muted);flex-direction:column;gap:9px;}
-.spin{width:25px;height:25px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:sp .75s linear infinite;}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOCK STATE */
+.lock-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;min-height:60vh;gap:12px;}
+.lock-screen .ico{font-size:3.5rem;opacity:.3;}
+.lock-screen h3{font-size:1rem;font-weight:700;color:var(--head);}
+.lock-screen p{font-size:.85rem;color:var(--muted);line-height:1.6;}
+.lock-screen button{background:var(--orange);color:#fff;border:none;padding:12px 28px;border-radius:20px;font-size:.9rem;font-weight:600;cursor:pointer;margin-top:6px;}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;flex-direction:column;gap:10px;color:var(--muted);}
+.spin{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg)}}
-.guest-lock{position:relative;pointer-events:none;user-select:none;}
-.guest-lock::after{content:'';position:absolute;inset:0;background:rgba(244,246,248,0.85);backdrop-filter:blur(3px);z-index:10;border-radius:4px;}
-.guest-banner{background:var(--navy);color:#fff;text-align:center;padding:18px;border-radius:4px;margin-bottom:20px;display:none;}
-.guest-banner h3{font-size:1rem;font-weight:700;margin-bottom:6px;}
-.guest-banner p{font-size:.84rem;color:rgba(255,255,255,.7);margin-bottom:12px;}
-.guest-banner button{background:var(--orange);color:#fff;border:none;padding:9px 24px;border-radius:3px;font-size:.88rem;font-weight:600;cursor:pointer;}
-@media(max-width:768px){
-  .chat-layout{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 58px);}
-  .chat-sb{display:none;}
-  .chat-layout{grid-template-columns:1fr;}
-  .chat-main{height:calc(100vh - 58px);}
-  .frow{grid-template-columns:1fr;}
-  .detail-grid{grid-template-columns:1fr;}
-  .stats{flex-wrap:wrap;}
-  .stat{min-width:50%;}
-  .prof-info{flex-direction:column;text-align:center;}
-  .page{overflow-y:auto;}
-  .con{padding:17px 1rem;}
-  .hero{padding:32px 1rem 24px;}
-  .hero h1{font-size:1.6rem;}
-  .nav-links button:not(.btn-auth){display:none;}
-  .grid{grid-template-columns:1fr;}
-  .modal{max-height:88vh;}
-  .tab-bar{width:100%;}
-  .tab-btn{flex:1;padding:7px 4px;font-size:.79rem;}
+
+/* DESKTOP */
+@media(min-width:600px){
+  #app{max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.15);}
+  .chat-window{max-width:480px;left:50%;transform:translateX(calc(-50% + 100vw));transition:transform .25s ease;}
+  .chat-window.open{transform:translateX(-50%);}
+  .overlay{align-items:center;}
+  .sheet{border-radius:16px;max-width:480px;margin-bottom:0;}
+  @keyframes slideUp{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+  .hero-btns{flex-direction:row;max-width:none;}
+  .cards-list{display:grid;grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
+<div id="app">
 
-<nav>
-  <div class="logo">
-    <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="22" cy="22" r="22" fill="#ffffff"/>
-      <circle cx="22" cy="22" r="20" fill="#1C3557"/>
-      <ellipse cx="22" cy="10" rx="4" ry="6" fill="#F47C20"/>
-      <ellipse cx="22" cy="12" rx="2.5" ry="4" fill="#FFB347"/>
-      <rect x="12" y="22" width="20" height="12" rx="2" fill="#ffffff" opacity="0.9"/>
-      <line x1="22" y1="22" x2="22" y2="34" stroke="#1C3557" stroke-width="1.2"/>
-      <ellipse cx="14" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(-30 14 20)"/>
-      <ellipse cx="30" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(30 30 20)"/>
-      <text x="22" y="40" text-anchor="middle" font-size="4.5" font-weight="bold" fill="#F47C20" font-family="Arial">SMVDU</text>
-    </svg>
-    <div class="logo-text">
-      <span class="t">SMVDU</span>
-      <span class="b">Find<span>It</span></span>
-    </div>
-  </div>
-  <div class="nav-links">
-    <button id="nav-home" class="active" onclick="showPage('home')">Home</button>
-    <button id="nav-items" onclick="showPage('items')">Browse</button>
-    <button id="nav-chat" onclick="showPage('chat')">Messages</button>
-    <button id="nav-users" onclick="showPage('users')">Users</button>
-    <button id="nav-profile" onclick="showPage('profile')">Profile</button>
-    <button id="authBtn" class="btn-auth" onclick="openAuthModal()">Sign In</button>
-    <button class="ham-btn" id="hamBtn" onclick="toggleDrawer()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-
-<div class="mob-drawer" id="mobDrawer" onclick="closeDrawerOnBg(event)">
-  <div class="mob-menu">
-    <button class="mob-menu-item active" id="mob-home" onclick="mobNav('home')">
-      <span class="icon">🏠</span> Home
-    </button>
-    <button class="mob-menu-item" id="mob-items" onclick="mobNav('items')">
-      <span class="icon">🔍</span> Browse Items
-    </button>
-    <button class="mob-menu-item" id="mob-chat" onclick="mobNav('chat')">
-      <span class="icon">💬</span> Messages
-    </button>
-    <button class="mob-menu-item" id="mob-users" onclick="mobNav('users')">
-      <span class="icon">👥</span> Find Students
-    </button>
-    <button class="mob-menu-item" id="mob-profile" onclick="mobNav('profile')">
-      <span class="icon">👤</span> My Profile
-    </button>
-    <div class="mob-menu-divider"></div>
-    <button class="mob-menu-item" onclick="mobNav('report-lost')">
-      <span class="icon">📢</span> Report Lost Item
-    </button>
-    <button class="mob-menu-item" onclick="mobNav('report-found')">
-      <span class="icon">🔎</span> I Found Something
-    </button>
-    <div class="mob-menu-divider"></div>
-    <button class="mob-menu-signin" id="mobAuthBtn" onclick="mobNav('auth')">Sign In with Google</button>
-  </div>
-</div>
-
-<div class="toast-con" id="toastCon"></div>
-
-<div class="page active" id="page-home">
-  <div class="hero">
-    <div class="hero-badge">Shri Mata Vaishno Devi University, Katra</div>
-    <h1>Lost something on campus?<br><span>We'll find it.</span></h1>
-    <p>SMVDU's dedicated lost and found platform. Report lost items, upload found ones, connect with students instantly.</p>
-    <div class="hero-btns">
-      <button class="btn-p" onclick="openReportModal('lost')">Report Lost Item</button>
-      <button class="btn-s" onclick="openReportModal('found')">I Found Something</button>
-    </div>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="n" id="statLost">0</div><div class="l">Items Reported Lost</div></div>
-    <div class="stat"><div class="n" id="statFound">0</div><div class="l">Items Found</div></div>
-    <div class="stat"><div class="n" id="statResolved">0</div><div class="l">Successfully Reunited</div></div>
-    <div class="stat"><div class="n">Whole</div><div class="l">Campus</div></div>
-  </div>
-  <div class="con">
-    <div id="guestBanner" class="guest-banner">
-      <h3>Sign in to use SMVDU FindIt</h3>
-      <p>Report lost items, find what others have found, and chat with fellow students.</p>
-      <button onclick="openAuthModal()">Sign in with Google</button>
-    </div>
-    <div style="margin-bottom:20px;">
-      <input type="text" id="homeSearch" placeholder="Quick search — item name or location..."
-        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:.9rem;color:var(--text);"
-        oninput="quickSearch(this.value)">
-    </div>
-    <div class="sec-hdr">
-      <div class="sec-title">Recent <span>Activity</span></div>
-      <button style="background:transparent;border:1px solid var(--steel);color:var(--steel);padding:6px 14px;border-radius:3px;font-size:.82rem;cursor:pointer;" onclick="showPage('items')">View All</button>
-    </div>
-    <div class="grid" id="recentItems"><div class="loading"><div class="spin"></div><span>Loading...</span></div></div>
-  </div>
-</div>
-
-<div class="page" id="page-items">
-  <div class="con">
-    <div class="sec-hdr">
-      <div class="sec-title">Browse <span>Items</span></div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-p" style="padding:7px 14px;font-size:.82rem;" onclick="openReportModal('lost')">+ Lost</button>
-        <button class="btn-p" style="padding:7px 14px;font-size:.82rem;background:var(--steel);" onclick="openReportModal('found')">+ Found</button>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="22" fill="#ffffff"/>
+        <circle cx="22" cy="22" r="20" fill="#1C3557"/>
+        <ellipse cx="22" cy="10" rx="4" ry="6" fill="#F47C20"/>
+        <ellipse cx="22" cy="12" rx="2.5" ry="4" fill="#FFB347"/>
+        <rect x="12" y="22" width="20" height="12" rx="2" fill="#ffffff" opacity="0.9"/>
+        <line x1="22" y1="22" x2="22" y2="34" stroke="#1C3557" stroke-width="1.2"/>
+        <ellipse cx="14" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(-30 14 20)"/>
+        <ellipse cx="30" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(30 30 20)"/>
+        <text x="22" y="40" text-anchor="middle" font-size="4.5" font-weight="bold" fill="#F47C20" font-family="Arial">SMVDU</text>
+      </svg>
+      <div class="tb">
+        <span class="t">SMVDU</span>
+        <span class="b">Find<span>It</span></span>
       </div>
     </div>
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tab-all" onclick="setTab('all')">All <span class="badge" id="badge-all">0</span></button>
-      <button class="tab-btn" id="tab-lost" onclick="setTab('lost')">Lost <span class="badge" id="badge-lost">0</span></button>
-      <button class="tab-btn" id="tab-found" onclick="setTab('found')">Found <span class="badge" id="badge-found">0</span></button>
+    <div class="topbar-right">
+      <button class="topbar-auth" id="authBtn" onclick="openAuthModal()">Sign In</button>
     </div>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search by name, description, location..." oninput="filterItems()">
-    </div>
-    <div class="filters">
-      <button class="fbtn active" onclick="setCatFilter('all',this)">All</button>
-      <button class="fbtn" onclick="setCatFilter('Electronics',this)">Electronics</button>
-      <button class="fbtn" onclick="setCatFilter('ID/Documents',this)">ID/Docs</button>
-      <button class="fbtn" onclick="setCatFilter('Keys',this)">Keys</button>
-      <button class="fbtn" onclick="setCatFilter('Wallet/Purse',this)">Wallet</button>
-      <button class="fbtn" onclick="setCatFilter('Bag/Backpack',this)">Bag</button>
-      <button class="fbtn" onclick="setCatFilter('Clothing',this)">Clothing</button>
-      <button class="fbtn" onclick="setCatFilter('Books/Notes',this)">Books</button>
-      <button class="fbtn" onclick="setCatFilter('Sports',this)">Sports</button>
-      <button class="fbtn" onclick="setCatFilter('Bottle',this)">Bottle</button>
-      <button class="fbtn" onclick="setCatFilter('Other',this)">Other</button>
-    </div>
-    <div class="grid" id="itemsGrid"><div class="loading"><div class="spin"></div><span>Loading...</span></div></div>
   </div>
-</div>
 
-<div class="page" id="page-chat">
-  <div class="chat-layout">
-    <div class="chat-sb">
-      <div class="chat-sb-hdr">Messages</div>
-      <div id="chatList"><div style="padding:18px;color:var(--muted);font-size:.84rem;text-align:center;">Sign in to view conversations</div></div>
+  <!-- PAGES -->
+  <div class="pages">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-badge">SMVDU, Katra</div>
+        <h1>Lost something<br>on campus? <span>We'll find it.</span></h1>
+        <p>Report lost items, find what others found, chat instantly.</p>
+        <div class="hero-btns">
+          <button class="btn-hero-p" onclick="openReportModal('lost')">📢 Report Lost</button>
+          <button class="btn-hero-s" onclick="openReportModal('found')">🔍 Found Something</button>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="n" id="statLost">--</div><div class="l">Lost</div></div>
+        <div class="stat-box"><div class="n" id="statFound">--</div><div class="l">Found</div></div>
+        <div class="stat-box"><div class="n" id="statResolved">--</div><div class="l">Reunited</div></div>
+      </div>
+      <div class="home-body">
+        <div id="guestCard" class="guest-card" style="display:none;">
+          <h3>Join SMVDU FindIt</h3>
+          <p>Sign in to report items, chat with students, and get notified when your lost item is found.</p>
+          <button onclick="openAuthModal()">Sign In with Google</button>
+        </div>
+        <div class="sec-head">
+          <div class="sec-title">Recent <span>Activity</span></div>
+          <span class="sec-link" onclick="showPage('items')">View all</span>
+        </div>
+        <div id="recentList" class="cards-list"><div class="loading"><div class="spin"></div></div></div>
+      </div>
     </div>
-    <div class="chat-main" id="chatMain">
-      <div class="chat-empty">
-        <div>
-          <div style="font-size:2.8rem;margin-bottom:12px;">💬</div>
-          <h3 style="font-size:1rem;margin-bottom:6px;color:var(--head);">Select a Conversation</h3>
-          <p style="color:var(--muted);font-size:.84rem;">Click an item to chat with finder or reporter</p>
+
+    <!-- BROWSE -->
+    <div class="page" id="page-items">
+      <div class="browse-head">
+        <div class="search-wrap">
+          <input class="search-inp" type="text" id="searchInput" placeholder="Search items..." oninput="filterItems()">
+        </div>
+      </div>
+      <div class="tab-strip">
+        <button class="ts-btn active" id="tab-all" onclick="setTab('all')">All <span class="ts-badge" id="badge-all">0</span></button>
+        <button class="ts-btn" id="tab-lost" onclick="setTab('lost')">Lost <span class="ts-badge" id="badge-lost">0</span></button>
+        <button class="ts-btn" id="tab-found" onclick="setTab('found')">Found <span class="ts-badge" id="badge-found">0</span></button>
+      </div>
+      <div class="filter-scroll">
+        <div class="f-chip active" onclick="setCatFilter('all',this)">All</div>
+        <div class="f-chip" onclick="setCatFilter('Electronics',this)">📱 Electronics</div>
+        <div class="f-chip" onclick="setCatFilter('ID/Documents',this)">🪪 ID/Docs</div>
+        <div class="f-chip" onclick="setCatFilter('Keys',this)">🔑 Keys</div>
+        <div class="f-chip" onclick="setCatFilter('Wallet/Purse',this)">👛 Wallet</div>
+        <div class="f-chip" onclick="setCatFilter('Bag/Backpack',this)">🎒 Bag</div>
+        <div class="f-chip" onclick="setCatFilter('Clothing',this)">👕 Clothing</div>
+        <div class="f-chip" onclick="setCatFilter('Books/Notes',this)">📚 Books</div>
+        <div class="f-chip" onclick="setCatFilter('Sports',this)">⚽ Sports</div>
+        <div class="f-chip" onclick="setCatFilter('Bottle',this)">🍶 Bottle</div>
+        <div class="f-chip" onclick="setCatFilter('Other',this)">📦 Other</div>
+      </div>
+      <div class="browse-list" id="itemsList"><div class="loading"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- CHAT LIST -->
+    <div class="page" id="page-chat">
+      <div id="chatListPage" class="chat-list-page">
+        <div class="chat-list-hdr">
+          <span>Messages</span>
+        </div>
+        <div class="chat-list-scroll" id="chatList">
+          <div class="chat-empty-state">
+            <div class="ico">💬</div>
+            <p>Sign in to see conversations</p>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="users-hdr">
+        <div class="search-wrap">
+          <input class="search-inp" type="text" id="userSearch" placeholder="Search students..." oninput="searchUsers(this.value)">
+        </div>
+      </div>
+      <div class="users-list" id="usersList">
+        <div style="text-align:center;padding:40px;color:var(--muted);">
+          <div style="font-size:2.5rem;margin-bottom:10px;">👥</div>
+          <p>Search for SMVDU students</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+      <div id="profContent">
+        <div class="lock-screen">
+          <div class="ico">🔒</div>
+          <h3>Sign in to view profile</h3>
+          <p>Your reports, matches and profile details will appear here.</p>
+          <button onclick="openAuthModal()">Sign In</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="bn-item active" id="bn-home" onclick="showPage('home')">
+      <span class="ico">🏠</span>Home
+    </button>
+    <button class="bn-item" id="bn-items" onclick="showPage('items')">
+      <span class="ico">🔍</span>Browse
+      <span class="bn-badge" id="bn-badge"></span>
+    </button>
+    <button class="bn-item" id="bn-chat" onclick="showPage('chat')">
+      <span class="ico">💬</span>Messages
+    </button>
+    <button class="bn-item" id="bn-users" onclick="showPage('users')">
+      <span class="ico">👥</span>Students
+    </button>
+    <button class="bn-item" id="bn-profile" onclick="showPage('profile')">
+      <span class="ico">👤</span>Profile
+    </button>
+  </div>
+
+</div>
+
+<!-- CHAT WINDOW (full screen slide) -->
+<div class="chat-window" id="chatWindow">
+  <div class="cw-top">
+    <button class="cw-back" onclick="closeChatWindow()">&#8592;</button>
+    <div class="cw-av" id="cwAv">?</div>
+    <div class="cw-info">
+      <div class="cw-name" id="cwName">Chat</div>
+      <div class="cw-status" id="cwStatus">Online</div>
+    </div>
+  </div>
+  <div class="cw-msgs" id="cwMsgs"></div>
+  <div class="cw-inp-wrap">
+    <textarea class="cw-inp" id="cwInp" placeholder="Type a message..." rows="1" oninput="autoResize(this)"></textarea>
+    <button class="cw-send" onclick="sendMsg()">&#10148;</button>
   </div>
 </div>
 
-<div class="page" id="page-users">
-  <div class="con">
-    <div class="sec-hdr">
-      <div class="sec-title">Find <span>Students</span></div>
-    </div>
-    <div class="search-bar">
-      <input type="text" id="userSearch" placeholder="Search by name, roll number, department..." oninput="searchUsers(this.value)">
-    </div>
-    <div class="grid" id="usersGrid">
-      <div class="empty"><div class="icon">🔍</div><h3>Search for students</h3><p>Type name or roll number above</p></div>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page-profile">
-  <div class="prof-hdr">
-    <div class="prof-info">
-      <div style="position:relative;flex-shrink:0;">
-        <div class="prof-av" id="profAv">👤</div>
-        <label for="profPhotoInput" style="position:absolute;bottom:0;right:0;background:var(--orange);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;border:2px solid var(--navy);">✏</label>
-        <input type="file" id="profPhotoInput" accept="image/*" style="display:none;" onchange="updatePhoto(this)">
-      </div>
-      <div>
-        <h2 id="profName" style="font-size:1.2rem;font-weight:700;color:#fff;">Guest User</h2>
-        <p id="profEmail" style="color:rgba(255,255,255,.6);font-size:.83rem;margin-top:2px;">Not signed in</p>
-        <div id="profBadge" style="margin-top:6px;font-size:.8rem;color:rgba(255,255,255,.75);">SMVDU Student</div>
-        <label for="profPhotoInput" style="font-size:.72rem;color:rgba(255,255,255,.45);cursor:pointer;text-decoration:underline;display:block;margin-top:4px;">Change profile photo</label>
-        <button onclick="openProfileEdit()" style="margin-top:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:3px;font-size:.78rem;cursor:pointer;">&#9998; Edit Profile</button>
-      </div>
-    </div>
-  </div>
-  <div class="con">
-    <div id="matchInboxSec" style="display:none;margin-bottom:28px;">
-      <div class="sec-hdr">
-        <div class="sec-title">Smart <span>Matches</span></div>
-        <span style="font-size:.8rem;color:var(--muted);">Potential matches for your lost items</span>
-      </div>
-      <div id="matchInbox"></div>
-    </div>
-    <div class="sec-hdr">
-      <div class="sec-title">My <span>Reports</span></div>
-      <span id="repCount" style="font-size:.8rem;color:var(--muted);background:var(--off);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
-    </div>
-    <div class="grid" id="myItems">
-      <div class="empty"><div class="icon">📋</div><h3>No reports yet</h3><p>Sign in and report a lost or found item</p></div>
-    </div>
-  </div>
-</div>
-
+<!-- AUTH MODAL -->
 <div class="overlay" id="authModal">
-  <div class="modal" style="max-width:420px;">
-    <div class="modal-hdr">
-      <div class="modal-title" id="authTitle">Welcome to <span style="color:var(--orange)">FindIt</span></div>
-      <button class="modal-x" onclick="closeModal('authModal')">✕</button>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="authTitle">Welcome to <span style="color:var(--orange)">FindIt</span></div>
+      <button class="sheet-x" onclick="closeModal('authModal')">&#x2715;</button>
     </div>
-    <div class="modal-body">
+    <div class="sheet-body">
       <div id="gSignInStep">
-        <p style="color:var(--muted);font-size:.88rem;margin-bottom:20px;text-align:center;">Sign in with your verified Google account</p>
-        <button id="googleBtn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;border:1px solid #ddd;border-radius:3px;background:#fff;cursor:pointer;font-size:.95rem;font-weight:bold;color:#333;">
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
+        <p style="color:var(--muted);font-size:.87rem;margin-bottom:18px;text-align:center;line-height:1.6;">Sign in with your Google account to report items, chat with students, and more.</p>
+        <button id="googleBtn" class="google-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
           Continue with Google
         </button>
-        <p style="font-size:.76rem;color:#aaa;text-align:center;margin-top:12px;">Only verified Google accounts allowed</p>
+        <p style="font-size:.74rem;color:#aaa;text-align:center;margin-top:12px;">Only verified SMVDU Google accounts</p>
       </div>
       <div id="profileStep" style="display:none;">
-        <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px;">Almost done! Fill in your SMVDU details:</p>
-        <div class="fg" style="text-align:center;margin-bottom:16px;">
-          <div id="avPreview" style="width:70px;height:70px;border-radius:50%;background:var(--off);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">🧑‍💻</div>
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px;">Complete your profile to get started:</p>
+        <div style="text-align:center;margin-bottom:14px;">
+          <div id="avPreview" style="width:72px;height:72px;border-radius:50%;background:var(--off);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">🧑‍💻</div>
           <label style="font-size:.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
             Upload photo
             <input type="file" id="regPhoto" accept="image/*" style="display:none;" onchange="previewRegPhoto(this)">
@@ -414,24 +455,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);heig
         </div>
         <div class="fg">
           <label class="fl">Choose Avatar</label>
-          <div id="avPicker" style="display:flex;gap:7px;flex-wrap:wrap;">
-            <span data-av="🧑‍💻" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--orange);border-radius:6px;background:#fff5ee;">🧑‍💻</span>
-            <span data-av="👨‍🎓" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">👨‍🎓</span>
-            <span data-av="👩‍🎓" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">👩‍🎓</span>
-            <span data-av="🧑‍🔬" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">🧑‍🔬</span>
-            <span data-av="🧑‍🏫" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">🧑‍🏫</span>
-            <span data-av="🦁" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">🦁</span>
-            <span data-av="🐯" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">🐯</span>
-            <span data-av="🦅" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">🦅</span>
-            <span data-av="⚡" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">⚡</span>
-            <span data-av="🏔️" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">🏔️</span>
+          <div class="av-grid" id="avPicker">
+            <div class="av-opt sel" data-av="🧑‍💻">🧑‍💻</div>
+            <div class="av-opt" data-av="👨‍🎓">👨‍🎓</div>
+            <div class="av-opt" data-av="👩‍🎓">👩‍🎓</div>
+            <div class="av-opt" data-av="🧑‍🔬">🧑‍🔬</div>
+            <div class="av-opt" data-av="🧑‍🏫">🧑‍🏫</div>
+            <div class="av-opt" data-av="🦁">🦁</div>
+            <div class="av-opt" data-av="🐯">🐯</div>
+            <div class="av-opt" data-av="🦅">🦅</div>
+            <div class="av-opt" data-av="⚡">⚡</div>
+            <div class="av-opt" data-av="🏔️">🏔️</div>
           </div>
           <input type="hidden" id="selAvatar" value="🧑‍💻">
         </div>
         <div class="frow">
           <div class="fg">
             <label class="fl">Roll Number *</label>
-            <input class="fi" type="text" id="regRoll" placeholder="e.g. 25BCS080" oninput="this.value=this.value.toUpperCase()">
+            <input class="fi" type="text" id="regRoll" placeholder="25BCS080" oninput="this.value=this.value.toUpperCase()">
           </div>
           <div class="fg">
             <label class="fl">Department</label>
@@ -451,7 +492,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);heig
           </div>
         </div>
         <div class="fg">
-          <label class="fl">Hostel (optional)</label>
+          <label class="fl">Hostel</label>
           <select class="fs" id="regHostel">
             <option value="">Select Hostel</option>
             <option>Nilgiri Hostel</option>
@@ -464,24 +505,26 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);heig
             <option>Old Basohli Hostel</option>
           </select>
         </div>
-        <button class="btn-sub" style="width:100%;margin-top:14px;" onclick="saveProfile()">Complete Registration</button>
+        <button class="btn-full green" onclick="saveProfile()">Complete Registration</button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- REPORT MODAL -->
 <div class="overlay" id="reportModal">
-  <div class="modal">
-    <div class="modal-hdr">
-      <div class="modal-title" id="repModalTitle">Report Item</div>
-      <button class="modal-x" onclick="closeModal('reportModal')">✕</button>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="repTitle">Report Item</div>
+      <button class="sheet-x" onclick="closeModal('reportModal')">&#x2715;</button>
     </div>
-    <div class="modal-body">
+    <div class="sheet-body">
       <input type="hidden" id="repType" value="lost">
       <div class="frow">
         <div class="fg">
           <label class="fl">Item Name *</label>
-          <input class="fi" type="text" id="itemName" placeholder="e.g. Black Laptop Bag">
+          <input class="fi" type="text" id="itemName" placeholder="Black Laptop Bag">
         </div>
         <div class="fg">
           <label class="fl">Category *</label>
@@ -502,904 +545,129 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);heig
       </div>
       <div class="fg">
         <label class="fl">Description *</label>
-        <textarea class="ft" id="itemDesc" placeholder="Color, brand, unique marks..."></textarea>
+        <textarea class="ft" id="itemDesc" placeholder="Color, brand, any unique marks..."></textarea>
       </div>
-      <div class="frow">
-        <div class="fg">
-          <label class="fl">Location on Campus *</label>
-          <select class="fs" id="itemLoc">
-            <option value="">Select Location</option>
-            <optgroup label="Academic">
-              <option>Main Academic Block</option>
-              <option>Central Library</option>
-              <option>Labs Block</option>
-              <option>LT 1</option>
-              <option>LT 2</option>
-              <option>LT 3</option>
-              <option>LT 4</option>
-              <option>Admin Block</option>
-            </optgroup>
-            <optgroup label="Hostels">
-              <option>Nilgiri Hostel</option>
-              <option>Vindhyanchal Hostel</option>
-              <option>Trikuta Hostel</option>
-              <option>Kailash Hostel</option>
-              <option>Shivalik Hostel</option>
-              <option>Vaishnavi Hostel</option>
-              <option>Basohli Hostel</option>
-              <option>Old Basohli Hostel</option>
-            </optgroup>
-            <optgroup label="Mess / Canteen">
-              <option>Canteen</option>
-              <option>Nilgiri Mess</option>
-              <option>Vindhyanchal Mess</option>
-              <option>Central Mess</option>
-              <option>Shivalik Mess</option>
-              <option>Vaishnavi Mess</option>
-              <option>Basohli Mess</option>
-            </optgroup>
-            <optgroup label="Other Areas">
-              <option>Sports Complex</option>
-              <option>Gym</option>
-              <option>Matrika Auditorium</option>
-              <option>Trikuta Ground</option>
-              <option>Ground Of Campus</option>
-              <option>Red Rocks</option>
-              <option>BC Junction</option>
-              <option>Parking Area</option>
-              <option>Bus Stand</option>
-              <option>Near Guest House</option>
-              <option>Near Medical Building</option>
-              <option>Near Workshop</option>
-              <option>Grocery</option>
-              <option>Medical Aid Center</option>
-            </optgroup>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label class="fl">Date *</label>
-          <input class="fi" type="date" id="itemDate">
-        </div>
+      <div class="fg">
+        <label class="fl">Location on Campus *</label>
+        <select class="fs" id="itemLoc">
+          <option value="">Select Location</option>
+          <optgroup label="Academic">
+            <option>Main Academic Block</option>
+            <option>Central Library</option>
+            <option>Labs Block</option>
+            <option>LT 1</option><option>LT 2</option><option>LT 3</option><option>LT 4</option>
+            <option>Admin Block</option>
+          </optgroup>
+          <optgroup label="Hostels">
+            <option>Nilgiri Hostel</option><option>Vindhyanchal Hostel</option>
+            <option>Trikuta Hostel</option><option>Kailash Hostel</option>
+            <option>Shivalik Hostel</option><option>Vaishnavi Hostel</option>
+            <option>Basohli Hostel</option><option>Old Basohli Hostel</option>
+          </optgroup>
+          <optgroup label="Mess / Canteen">
+            <option>Canteen</option><option>Nilgiri Mess</option>
+            <option>Vindhyanchal Mess</option><option>Central Mess</option>
+            <option>Shivalik Mess</option><option>Vaishnavi Mess</option><option>Basohli Mess</option>
+          </optgroup>
+          <optgroup label="Other Areas">
+            <option>Sports Complex</option><option>Gym</option>
+            <option>Matrika Auditorium</option><option>Trikuta Ground</option>
+            <option>Ground Of Campus</option><option>Red Rocks</option>
+            <option>BC Junction</option><option>Parking Area</option>
+            <option>Bus Stand</option><option>Near Guest House</option>
+            <option>Near Medical Building</option><option>Near Workshop</option>
+            <option>Grocery</option><option>Medical Aid Center</option>
+          </optgroup>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Date *</label>
+        <input class="fi" type="date" id="itemDate">
       </div>
       <div class="fg" id="verifyGrp" style="display:none;">
-        <label class="fl">Verification Question (only owner would know)</label>
-        <input class="fi" type="text" id="verifyQ" placeholder="e.g. What sticker is on your laptop?">
-        <input class="fi" type="text" id="verifyA" placeholder="Your answer (kept private)" style="margin-top:7px;">
+        <label class="fl">Verification Question (helps prove ownership)</label>
+        <input class="fi" type="text" id="verifyQ" placeholder="e.g. What sticker is on your laptop?" style="margin-bottom:8px;">
+        <input class="fi" type="text" id="verifyA" placeholder="Your answer (private)">
       </div>
       <div class="fg">
         <label class="fl">Photo (optional)</label>
-        <div class="upload" onclick="document.getElementById('itemPhoto').click()">
+        <div class="upload-box" onclick="document.getElementById('itemPhoto').click()">
           <input type="file" id="itemPhoto" accept="image/*" onchange="previewPhoto(this)">
-          <div id="uploadIcon" style="font-size:1.5rem;margin-bottom:5px;">📸</div>
-          <p id="uploadTxt" style="font-size:.79rem;color:var(--muted);">Click to upload photo</p>
+          <div id="uploadIcon" style="font-size:1.8rem;margin-bottom:6px;">📸</div>
+          <p id="uploadTxt" style="font-size:.8rem;color:var(--muted);">Tap to upload photo</p>
         </div>
       </div>
-      <div class="form-actions">
-        <button class="btn-can" onclick="closeModal('reportModal')">Cancel</button>
-        <button class="btn-sub" onclick="submitReport()">Submit Report</button>
-      </div>
+      <button class="btn-full green" onclick="submitReport()">Submit Report</button>
+      <button class="btn-can-full" onclick="closeModal('reportModal')">Cancel</button>
     </div>
   </div>
 </div>
 
+<!-- DETAIL MODAL -->
 <div class="overlay" id="detailModal">
-  <div class="modal" style="max-width:560px;">
-    <div class="modal-hdr">
-      <div class="modal-title" id="detailTitle">Item Details</div>
-      <button class="modal-x" onclick="closeModal('detailModal')">✕</button>
+  <div class="sheet" style="max-height:95vh;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="detailTitle">Item Details</div>
+      <button class="sheet-x" onclick="closeModal('detailModal')">&#x2715;</button>
     </div>
-    <div class="modal-body" id="detailBody"></div>
+    <div class="sheet-body" id="detailBody"></div>
   </div>
 </div>
 
+<!-- CLAIM MODAL -->
 <div class="overlay" id="claimModal">
-  <div class="modal" style="max-width:420px;">
-    <div class="modal-hdr">
-      <div class="modal-title">Claim This Item</div>
-      <button class="modal-x" onclick="closeModal('claimModal')">✕</button>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title">Verify Ownership</div>
+      <button class="sheet-x" onclick="closeModal('claimModal')">&#x2715;</button>
     </div>
-    <div class="modal-body">
-      <p style="color:var(--muted);font-size:.86rem;margin-bottom:16px;">Answer the secret question to prove ownership:</p>
+    <div class="sheet-body">
+      <p style="color:var(--muted);font-size:.87rem;margin-bottom:14px;line-height:1.6;">Answer the secret question set by the reporter to prove you're the owner:</p>
       <div class="fg">
-        <label class="fl" id="claimQ">Verification Question</label>
+        <label class="fl" id="claimQ">Question</label>
         <input class="fi" type="text" id="claimAns" placeholder="Your answer">
       </div>
       <input type="hidden" id="claimId">
-      <div class="form-actions">
-        <button class="btn-can" onclick="closeModal('claimModal')">Cancel</button>
-        <button class="btn-sub" onclick="submitClaim()">Verify &amp; Claim</button>
-      </div>
+      <button class="btn-full green" onclick="submitClaim()">Verify &amp; Claim</button>
+      <button class="btn-can-full" onclick="closeModal('claimModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-<script>
-(async function() {
-const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-const { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
-const { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, query, orderBy, onSnapshot, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBrwqF0UimXJonkwp8uV71MaGI2IzoyQfM",
-  authDomain: "find-it-b3fa2.firebaseapp.com",
-  projectId: "find-it-b3fa2",
-  storageBucket: "find-it-b3fa2.firebasestorage.app",
-  messagingSenderId: "521549279482",
-  appId: "1:521549279482:web:0bfb3509101dc380305943"
-};
-
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-let currentUser = null, allItems = [], currentTab = 'all', currentCat = 'all';
-let activeChatId = null, unsubChat = null, regPhotoFile = null;
-
-onAuthStateChanged(auth, user => {
-  currentUser = user;
-  updateNavAuth(user);
-  loadItems();
-  if(user) {
-    loadMyItems();
-    // User signed in — remove all locks
-    document.getElementById('guestBanner').style.display = 'none';
-    document.querySelectorAll('.guest-lock').forEach(el => el.classList.remove('guest-lock'));
-    // Re-enable hero buttons
-    document.querySelectorAll('.hero-btns button').forEach(b => b.style.pointerEvents = '');
-  } else {
-    // Not signed in — show lock state
-    document.getElementById('guestBanner').style.display = 'block';
-    // Lock recent items section
-    document.getElementById('recentItems').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:12px">🔒</div><p style="font-size:.9rem;">Sign in to see reported items</p></div>';
-    document.getElementById('statLost').textContent = '--';
-    document.getElementById('statFound').textContent = '--';
-    document.getElementById('statResolved').textContent = '--';
-  }
-});
-
-// PAGE NAVIGATION
-window.showPage = function(page) {
-  // Pages that need login
-  const authRequired = ['chat','users','profile'];
-  if(authRequired.includes(page) && !currentUser) {
-    showToast('Please sign in first','error');
-    openAuthModal();
-    return;
-  }
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-links button:not(.btn-auth)').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  const nb = document.getElementById('nav-'+page);
-  if(nb) nb.classList.add('active');
-  // Sync mobile menu
-  document.querySelectorAll('.mob-menu-item[id^="mob-"]').forEach(b => b.classList.remove('active'));
-  const mb = document.getElementById('mob-'+page);
-  if(mb) mb.classList.add('active');
-  if(page === 'items' && !currentUser) {
-    // Show items page but with sign-in prompt overlay on grid
-    document.getElementById('itemsGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:12px">🔒</div><h3 style="margin-bottom:8px;color:var(--head)">Sign in to Browse</h3><p style="margin-bottom:16px;font-size:.88rem;">See all lost and found items reported by SMVDU students</p><button class="btn-p" onclick="openAuthModal()">Sign in with Google</button></div>';
-    return;
-  }
-  if(page === 'profile' && currentUser) { loadMyItems(); loadMatchInbox(); }
-};
-
-window.openModal  = id => document.getElementById(id).classList.add('open');
-window.closeModal = id => document.getElementById(id).classList.remove('open');
-document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
-
-window.showToast = function(msg, type) {
-  const t = document.createElement('div');
-  t.className = 'toast'+(type?' '+type:'');
-  t.textContent = msg;
-  document.getElementById('toastCon').appendChild(t);
-  setTimeout(() => t.remove(), 4000);
-};
-
-// AUTH
-window.openAuthModal = function() {
-  document.getElementById('gSignInStep').style.display  = 'block';
-  document.getElementById('profileStep').style.display  = 'none';
-  document.getElementById('authTitle').innerHTML = 'Welcome to <span style="color:var(--orange)">FindIt</span>';
-  document.getElementById('authModal').classList.add('open');
-};
-
-document.getElementById('googleBtn').addEventListener('click', async () => {
-  try {
-    const result = await signInWithPopup(auth, new GoogleAuthProvider());
-    const user = result.user;
-    const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
-    if(snap.empty) {
-      document.getElementById('gSignInStep').style.display = 'none';
-      document.getElementById('profileStep').style.display = 'block';
-      document.getElementById('authTitle').innerHTML = 'Complete Your <span style="color:var(--orange)">Profile</span>';
-      regPhotoFile = null;
-      document.getElementById('regRoll').value = '';
-      document.getElementById('regDept').value = '';
-      document.getElementById('regHostel').value = '';
-      document.getElementById('selAvatar').value = '🧑‍💻';
-      document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">🧑‍💻</span>';
-      document.querySelectorAll('#avPicker span[data-av]').forEach((a,i) => {
-        a.style.borderColor = i===0?'var(--orange)':'var(--border)';
-        a.style.background  = i===0?'#fff5ee':'';
-      });
-    } else {
-      showToast('Welcome back, '+(user.displayName||'Student')+'!','success');
-      closeModal('authModal');
-    }
-  } catch(e) {
-    if(e.code !== 'auth/popup-closed-by-user') showToast('Login failed: '+e.message,'error');
-  }
-});
-
-// AVATAR PICKER
-document.addEventListener('click', e => {
-  const av = e.target.closest('#avPicker span[data-av]');
-  if(!av) return;
-  document.querySelectorAll('#avPicker span[data-av]').forEach(a => { a.style.borderColor='var(--border)'; a.style.background=''; });
-  av.style.borderColor = 'var(--orange)';
-  av.style.background  = '#fff5ee';
-  const emoji = av.getAttribute('data-av');
-  document.getElementById('selAvatar').value = emoji;
-  document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">'+emoji+'</span>';
-  regPhotoFile = null;
-});
-
-window.previewRegPhoto = function(input) {
-  if(!input.files||!input.files[0]) return;
-  regPhotoFile = input.files[0];
-  const r = new FileReader();
-  r.onload = e => {
-    document.getElementById('avPreview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-    document.querySelectorAll('#avPicker span[data-av]').forEach(a => { a.style.borderColor='var(--border)'; a.style.background=''; });
-    document.getElementById('selAvatar').value = '';
-  };
-  r.readAsDataURL(regPhotoFile);
-};
-
-window.saveProfile = async function() {
-  const user = auth.currentUser;
-  if(!user) { showToast('Not signed in','error'); return; }
-  const roll = document.getElementById('regRoll').value.trim().toUpperCase();
-  if(!roll) { showToast('Please enter Roll Number','error'); return; }
-  const dept   = document.getElementById('regDept').value;
-  const hostel = document.getElementById('regHostel').value;
-  const avatar = document.getElementById('selAvatar').value || '🧑‍💻';
-  let customPhoto = '';
-  if(regPhotoFile) {
-    try {
-      const fd = new FormData();
-      fd.append('file', regPhotoFile);
-      fd.append('upload_preset','smvdu-findit');
-      const res = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd});
-      customPhoto = (await res.json()).secure_url||'';
-    } catch(ex) {}
-  }
-  await addDoc(collection(db,'users'),{ uid:user.uid, name:user.displayName||'', email:user.email||'', avatar, customPhoto, roll, dept, hostel, createdAt:serverTimestamp() });
-  showToast('Welcome, '+(user.displayName||'Student')+'!','success');
-  closeModal('authModal');
-  updateNavAuth(user);
-};
-
-async function updateNavAuth(user) {
-  updateMobAuth(user);
-  const btn = document.getElementById('authBtn');
-  if(user) {
-    btn.textContent = 'Sign Out';
-    btn.onclick = async () => {
-      await signOut(auth);
-      document.getElementById('profAv').innerHTML = '👤';
-      document.getElementById('profName').textContent = 'Guest User';
-      document.getElementById('profEmail').textContent = 'Not signed in';
-      document.getElementById('profBadge').innerHTML = 'SMVDU Student';
-      showToast('Signed out','');
-    };
-    document.getElementById('profName').textContent  = user.displayName||'Student';
-    document.getElementById('profEmail').textContent = user.email;
-    try {
-      const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
-      if(!snap.empty) {
-        const u = snap.docs[0].data();
-        const avEl = document.getElementById('profAv');
-        if(u.customPhoto) avEl.innerHTML = '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-        else if(u.avatar)  avEl.innerHTML = '<span style="font-size:1.8rem">'+u.avatar+'</span>';
-        else if(user.photoURL) avEl.innerHTML = '<img src="'+user.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-        document.getElementById('profName').textContent = u.name||user.displayName||'Student';
-        document.getElementById('profBadge').innerHTML =
-          (u.roll?'🎓 '+u.roll:'') + (u.dept?' | 📚 '+u.dept:'') + (u.hostel?' | 🏠 '+u.hostel:'') || 'SMVDU Student';
-      } else if(user.photoURL) {
-        document.getElementById('profAv').innerHTML = '<img src="'+user.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-      }
-    } catch(ex) {}
-    loadChatList();
-  } else {
-    btn.textContent = 'Sign In';
-    btn.onclick = openAuthModal;
-  }
-}
-
-window.updatePhoto = async function(input) {
-  if(!currentUser||!input.files||!input.files[0]) return;
-  if(input.files[0].size>5*1024*1024) { showToast('Max 5MB','error'); return; }
-  showToast('Uploading...','');
-  try {
-    const fd = new FormData();
-    fd.append('file',input.files[0]);
-    fd.append('upload_preset','smvdu-findit');
-    const url = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url;
-    if(!url) { showToast('Upload failed','error'); return; }
-    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
-    if(!snap.empty) await updateDoc(doc(db,'users',snap.docs[0].id),{customPhoto:url});
-    document.getElementById('profAv').innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-    showToast('Photo updated!','success');
-  } catch(e) { showToast('Error: '+e.message,'error'); }
-};
-
-// ITEMS
-async function loadItems() {
-  onSnapshot(query(collection(db,'items'), orderBy('createdAt','desc')), snap => {
-    allItems = snap.docs.map(d => ({id:d.id,...d.data()}));
-    renderItems('recentItems', allItems.filter(i=>i.status!=='claimed').slice(0,6));
-    filterItems();
-    updateBadges();
-    updateStats();
-  });
-}
-
-async function loadMyItems() {
-  if(!currentUser) return;
-  onSnapshot(query(collection(db,'items'), where('userId','==',currentUser.uid)), snap => {
-    const mine = snap.docs.map(d => ({id:d.id,...d.data()}));
-    renderItems('myItems', mine);
-    const el = document.getElementById('repCount');
-    if(el) el.textContent = mine.length+' report'+(mine.length!==1?'s':'');
-    mine.filter(i=>i.type==='lost'&&i.status==='active').forEach(checkSmartMatches);
-  });
-}
-
-function renderItems(cid, items) {
-  const el = document.getElementById(cid);
-  if(!items||!items.length) { el.innerHTML='<div class="empty"><div class="icon">🔍</div><h3>No items found</h3><p>Be the first to report!</p></div>'; return; }
-  el.innerHTML = items.map(item => {
-    const img = item.imageUrl ? '<img src="'+item.imageUrl+'">' : emojiFor(item.category);
-    return '<div class="card" onclick="openDetail(\''+item.id+'\')">' +
-      '<div class="card-img">'+img+'</div>' +
-      '<div class="card-body">' +
-        '<div class="tags">' +
-          '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
-          '<span class="tag tag-cat">'+(item.category||'Other')+'</span>' +
-          (item.status==='claimed'?'<span class="tag tag-done">Claimed</span>':'') +
-        '</div>' +
-        '<div class="card-title">'+item.name+'</div>' +
-        '<div class="card-desc">'+(item.description||'').substring(0,80)+((item.description||'').length>80?'...':'')+'</div>' +
-        '<div class="card-meta">' +
-          '<span>📍 '+(item.location||'Unknown')+'</span>' +
-          '<button class="act-btn" onclick="event.stopPropagation();openDetail(\''+item.id+'\')">'+(item.type==='lost'?'I Found This':'Contact')+'</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
-
-function emojiFor(cat) {
-  return {'Electronics':'📱','ID/Documents':'🪪','Keys':'🔑','Wallet/Purse':'👛','Bag/Backpack':'🎒','Clothing':'👕','Books/Notes':'📚','Sports':'⚽','Bottle':'🍶'}[cat]||'📦';
-}
-
-function updateBadges() {
-  document.getElementById('badge-all').textContent   = allItems.filter(i=>i.status!=='claimed').length;
-  document.getElementById('badge-lost').textContent  = allItems.filter(i=>i.type==='lost'&&i.status!=='claimed').length;
-  document.getElementById('badge-found').textContent = allItems.filter(i=>i.type==='found'&&i.status!=='claimed').length;
-}
-
-function updateStats() {
-  document.getElementById('statLost').textContent     = allItems.filter(i=>i.type==='lost').length;
-  document.getElementById('statFound').textContent    = allItems.filter(i=>i.type==='found').length;
-  document.getElementById('statResolved').textContent = allItems.filter(i=>i.status==='claimed').length;
-}
-
-window.setTab = function(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  filterItems();
-};
-
-window.setCatFilter = function(cat, btn) {
-  currentCat = cat;
-  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filterItems();
-};
-
-window.filterItems = function() {
-  let items = allItems.filter(i => i.status !== 'claimed');
-  if(currentTab !== 'all') items = items.filter(i => i.type === currentTab);
-  if(currentCat !== 'all') items = items.filter(i => i.category === currentCat);
-  const q = (document.getElementById('searchInput').value||'').toLowerCase();
-  if(q) items = items.filter(i => (i.name+' '+i.description+' '+i.location).toLowerCase().includes(q));
-  renderItems('itemsGrid', items);
-};
-
-window.quickSearch = function(val) {
-  if(val.length > 1) {
-    showPage('items');
-    document.getElementById('searchInput').value = val;
-    filterItems();
-  }
-};
-
-// DETAIL
-window.openDetail = function(id) {
-  const item = allItems.find(i => i.id === id);
-  if(!item) return;
-  document.getElementById('detailTitle').textContent = item.name;
-  const isOwner = currentUser && currentUser.uid === item.userId;
-  const img = item.imageUrl ? '<img src="'+item.imageUrl+'">' : emojiFor(item.category);
-  let btns = '';
-  if(!isOwner && item.status!=='claimed') {
-    if(item.verifyQuestion && item.type==='found')
-      btns += '<button class="btn-sub" style="flex:1;" onclick="openClaimModal(\''+id+'\',\''+item.verifyQuestion.replace(/'/g,"\\'")+'\')"">This is Mine</button>';
-    btns += '<button class="btn-sub" style="flex:1;background:var(--steel);" onclick="startChat(\''+id+'\',\''+((item.userName||'User').replace(/'/g,"\\'")+'\',\''+item.userId+'\')">Contact '+(item.type==='lost'?'Reporter':'Finder'))+'</button>';
-  }
-  if(isOwner && item.status!=='claimed')
-    btns += '<button class="btn-sub" style="width:100%;background:var(--green);" onclick="markResolved(\''+id+'\')">Mark as Resolved</button>';
-  document.getElementById('detailBody').innerHTML =
-    '<div class="detail-img">'+img+'</div>' +
-    '<div style="display:flex;gap:7px;margin-bottom:14px;">' +
-      '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'" style="font-size:.83rem;padding:4px 12px;">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
-      '<span class="tag tag-cat" style="font-size:.83rem;padding:4px 12px;">'+item.category+'</span>' +
-      (item.status==='claimed'?'<span class="tag tag-done" style="font-size:.83rem;padding:4px 12px;">Reunited</span>':'') +
-    '</div>' +
-    '<p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:14px;">'+item.description+'</p>' +
-    '<div class="detail-grid">' +
-      '<div class="df"><div class="dk">Location</div><div class="dv">'+item.location+'</div></div>' +
-      '<div class="df"><div class="dk">Date</div><div class="dv">'+item.date+'</div></div>' +
-      '<div class="df"><div class="dk">Reported by</div><div class="dv">'+(item.userName||'Anonymous')+'</div></div>' +
-      '<div class="df"><div class="dk">Status</div><div class="dv" style="color:'+(item.status==='claimed'?'var(--green)':'var(--orange)')+'">'+( item.status==='claimed'?'Reunited':'Active')+'</div></div>' +
-    '</div>' +
-    (btns ? '<div style="display:flex;gap:8px;margin-top:14px;">'+btns+'</div>' : '');
-  document.getElementById('detailModal').classList.add('open');
-};
-
-window.openClaimModal = function(id, question) {
-  document.getElementById('claimId').value = id;
-  document.getElementById('claimQ').textContent = question;
-  document.getElementById('claimAns').value = '';
-  closeModal('detailModal');
-  document.getElementById('claimModal').classList.add('open');
-};
-
-window.submitClaim = async function() {
-  if(!currentUser) { showToast('Please sign in','error'); return; }
-  const id  = document.getElementById('claimId').value;
-  const ans = document.getElementById('claimAns').value.trim();
-  if(!ans) { showToast('Please enter answer','error'); return; }
-  const item = allItems.find(i => i.id === id);
-  if(!item) return;
-  if(ans.toLowerCase() === (item.verifyAnswer||'').toLowerCase()) {
-    await updateDoc(doc(db,'items',id),{status:'claimed'});
-    showToast('Claimed! Contact finder to collect.','success');
-    closeModal('claimModal');
-  } else showToast('Wrong answer. Try again.','error');
-};
-
-window.markResolved = async function(id) {
-  if(!currentUser) return;
-  await updateDoc(doc(db,'items',id),{status:'claimed'});
-  showToast('Marked as resolved!','success');
-  closeModal('detailModal');
-};
-
-// REPORT
-window.openReportModal = function(type) {
-  if(!currentUser) { openAuthModal(); return; }
-  document.getElementById('repType').value = type;
-  document.getElementById('repModalTitle').textContent = type==='lost'?'Report Lost Item':'Report Found Item';
-  document.getElementById('verifyGrp').style.display = type==='lost'?'block':'none';
-  document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
-  ['itemName','itemDesc','itemCat','itemLoc'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('uploadIcon').textContent = '📸';
-  document.getElementById('uploadTxt').textContent  = 'Click to upload photo';
-  document.getElementById('reportModal').classList.add('open');
-};
-
-window.previewPhoto = function(input) {
-  if(!input.files||!input.files[0]) return;
-  const r = new FileReader();
-  r.onload = e => {
-    document.getElementById('uploadIcon').innerHTML = '<img src="'+e.target.result+'" style="width:80px;height:60px;object-fit:cover;border-radius:6px;">';
-    document.getElementById('uploadTxt').textContent = input.files[0].name;
-  };
-  r.readAsDataURL(input.files[0]);
-};
-
-window.submitReport = async function() {
-  if(!currentUser) { showToast('Please sign in','error'); return; }
-  const type = document.getElementById('repType').value;
-  const name = document.getElementById('itemName').value.trim();
-  const cat  = document.getElementById('itemCat').value;
-  const desc = document.getElementById('itemDesc').value.trim();
-  const loc  = document.getElementById('itemLoc').value;
-  const date = document.getElementById('itemDate').value;
-  if(!name||!cat||!desc||!loc||!date) { showToast('Please fill all required fields','error'); return; }
-  let imageUrl = '';
-  const pf = document.getElementById('itemPhoto').files[0];
-  if(pf) {
-    try {
-      const fd = new FormData();
-      fd.append('file',pf); fd.append('upload_preset','smvdu-findit');
-      imageUrl = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
-    } catch(ex) {}
-  }
-  const data = { type, name, category:cat, description:desc, location:loc, date, userId:currentUser.uid, userName:currentUser.displayName||currentUser.email, status:'active', imageUrl, createdAt:serverTimestamp() };
-  if(type==='lost') { data.verifyQuestion=document.getElementById('verifyQ').value; data.verifyAnswer=document.getElementById('verifyA').value; }
-  await addDoc(collection(db,'items'),data);
-  showToast((type==='lost'?'Lost':'Found')+' item reported!','success');
-  closeModal('reportModal');
-};
-
-// CHAT
-window.startChat = function(itemId, otherName, otherUserId) {
-  if(!currentUser) { showToast('Please sign in','error'); return; }
-  if(otherUserId===currentUser.uid) { showToast('This is your own item!','error'); return; }
-  closeModal('detailModal');
-  showPage('chat');
-  openChat([currentUser.uid,otherUserId].sort().join('_')+'_'+itemId, otherName, otherUserId);
-};
-
-window.startDirectChat = function(uid, name) {
-  if(!currentUser) { showToast('Please sign in','error'); return; }
-  if(uid===currentUser.uid) { showToast('Cannot chat with yourself','error'); return; }
-  showPage('chat');
-  openChat([currentUser.uid,uid].sort().join('_'), name, uid);
-};
-
-window.openChat = async function(chatId, otherName, otherUid) {
-  if(!currentUser) return;
-  activeChatId = chatId;
-  if(unsubChat) unsubChat();
-
-  document.getElementById('chatMain').innerHTML =
-    '<div class="chat-top">' +
-      '<div class="chat-top-left">' +
-        '<div class="chat-av" style="background:var(--orange)">'+otherName.charAt(0).toUpperCase()+'</div>' +
-        '<div>' +
-          '<div class="chat-preview-name">'+otherName+'</div>' +
-          '<div class="chat-online" id="chatOnlineStatus">Online</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="chat-msgs" id="chatMsgs"></div>' +
-    '<div class="typing-indicator" id="typingIndicator">'+otherName+' is typing...</div>' +
-    '<div class="chat-inp"><input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off"><button class="chat-send" onclick="sendMsg()">&#10148;</button></div>';
-
-  // Create/update chat doc
-  try {
-    await setDoc(doc(db,'chats',chatId), {
-      participants: [currentUser.uid, otherUid].filter(Boolean),
-      participantNames: [currentUser.displayName||'User', otherName],
-      lastMessage: '', lastUpdated: serverTimestamp()
-    }, {merge:true});
-  } catch(e) {}
-
-  // Mark messages as seen when opening chat
-  setTimeout(async () => {
-    try {
-      const unread = await getDocs(query(
-        collection(db,'chats',chatId,'messages'),
-        where('senderId','!=',currentUser.uid),
-        where('seen','==',false)
-      ));
-      unread.forEach(async d => {
-        await updateDoc(doc(db,'chats',chatId,'messages',d.id), {seen:true});
-      });
-    } catch(e) {}
-  }, 500);
-
-  // Real-time messages listener
-  let lastDate = '';
-  unsubChat = onSnapshot(query(collection(db,'chats',chatId,'messages'), orderBy('time')), snap => {
-    const box = document.getElementById('chatMsgs');
-    if(!box) return;
-    const atBot = box.scrollHeight - box.clientHeight <= box.scrollTop + 80;
-    lastDate = '';
-    box.innerHTML = snap.docs.map(d => {
-      const m = d.data();
-      const mine = m.senderId === currentUser.uid;
-      let timeStr = '', dateStr = '', dateDiv = '';
-      if(m.time && m.time.toDate) {
-        const dt = m.time.toDate();
-        timeStr = dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-        dateStr = dt.toLocaleDateString([],{day:'numeric',month:'short',year:'numeric'});
-        if(dateStr !== lastDate) {
-          lastDate = dateStr;
-          const today = new Date().toLocaleDateString([],{day:'numeric',month:'short',year:'numeric'});
-          const yesterday = new Date(Date.now()-86400000).toLocaleDateString([],{day:'numeric',month:'short',year:'numeric'});
-          const label = dateStr===today?'Today':dateStr===yesterday?'Yesterday':dateStr;
-          dateDiv = '<div class="date-divider"><span>'+label+'</span></div>';
-        }
-      }
-      // Seen ticks for sent messages
-      let ticks = '';
-      if(mine) {
-        if(m.seen) ticks = '<span class="msg-tick seen">&#10003;&#10003;</span>';
-        else if(m.delivered) ticks = '<span class="msg-tick">&#10003;&#10003;</span>';
-        else ticks = '<span class="msg-tick">&#10003;</span>';
-      }
-      return dateDiv +
-        '<div class="msg '+(mine?'msg-out':'msg-in')+'">' +
-          m.text +
-          '<div class="msg-meta"><span class="msg-time">'+timeStr+'</span>'+ticks+'</div>' +
-        '</div>';
-    }).join('');
-    if(atBot || snap.docChanges().some(c=>c.type==='added')) box.scrollTop = box.scrollHeight;
-    // Mark as seen
-    if(document.visibilityState === 'visible') {
-      snap.docChanges().filter(c=>c.type==='added').forEach(async c => {
-        const m = c.doc.data();
-        if(m.senderId !== currentUser.uid && !m.seen) {
-          try { await updateDoc(doc(db,'chats',chatId,'messages',c.doc.id),{seen:true}); } catch(ex){}
-        }
-      });
-    }
-  });
-};
-
-window.sendMsg = async function() {
-  if(!currentUser||!activeChatId) return;
-  const input = document.getElementById('chatInput');
-  const text  = input.value.trim();
-  if(!text) return;
-  input.value = '';
-  input.focus();
-  // Add message with delivered=true, seen=false
-  await addDoc(collection(db,'chats',activeChatId,'messages'), {
-    text,
-    senderId: currentUser.uid,
-    senderName: currentUser.displayName||'User',
-    time: serverTimestamp(),
-    delivered: true,
-    seen: false
-  });
-  await updateDoc(doc(db,'chats',activeChatId), {
-    lastMessage: text,
-    lastUpdated: serverTimestamp(),
-    ['lastSeen_'+currentUser.uid]: serverTimestamp()
-  });
-};
-
-async function loadChatList() {
-  if(!currentUser) return;
-  onSnapshot(query(collection(db,'chats'), where('participants','array-contains',currentUser.uid)), snap => {
-    const list = document.getElementById('chatList');
-    if(snap.empty) { list.innerHTML='<div style="padding:18px;color:var(--muted);font-size:.84rem;text-align:center;">No conversations yet</div>'; return; }
-    list.innerHTML = snap.docs.map(d => {
-      const dt=d.data(), other=(dt.participantNames||[]).find(n=>n!==currentUser.displayName)||'Student';
-      return '<div class="chat-item'+(activeChatId===d.id?' active':'')+'" onclick="openChat(\''+d.id+'\',\''+other+'\',\'\')">' +
-        '<div class="chat-av">'+other.charAt(0).toUpperCase()+'</div>' +
-        '<div style="min-width:0"><div style="font-size:.86rem;font-weight:600;color:var(--head)">'+other+'</div><div style="font-size:.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:145px">'+(dt.lastMessage||'No messages yet')+'</div></div>' +
-      '</div>';
-    }).join('');
-  });
-}
-
-// USER SEARCH
-window.searchUsers = async function(val) {
-  const grid = document.getElementById('usersGrid');
-  if(!val||val.length<2) { grid.innerHTML='<div class="empty"><div class="icon">🔍</div><h3>Search for students</h3></div>'; return; }
-  grid.innerHTML='<div class="loading"><div class="spin"></div><span>Searching...</span></div>';
-  try {
-    const snap = await getDocs(collection(db,'users'));
-    const q = val.toLowerCase();
-    const users = snap.docs.map(d=>d.data()).filter(u => (u.name||'').toLowerCase().includes(q)||(u.roll||'').toLowerCase().includes(q)||(u.dept||'').toLowerCase().includes(q));
-    if(!users.length) { grid.innerHTML='<div class="empty"><div class="icon">😕</div><h3>No students found</h3></div>'; return; }
-    grid.innerHTML = users.map(u => {
-      const isMe = currentUser && u.uid===currentUser.uid;
-      const av = u.customPhoto ? '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : '<span style="font-size:1.6rem">'+(u.avatar||'👤')+'</span>';
-      return '<div style="background:var(--white);border:1px solid var(--border);border-radius:4px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);">' +
-        '<div style="width:46px;height:46px;border-radius:50%;background:var(--off);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'+av+'</div>' +
-        '<div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--head);font-size:.93rem">'+(u.name||'Student')+'</div><div style="font-size:.76rem;color:var(--muted)">'+(u.roll?'Roll: '+u.roll:'')+(u.dept?' | '+u.dept:'')+'</div><div style="font-size:.74rem;color:var(--muted)">'+(u.hostel||'')+'</div></div>' +
-        (!isMe&&currentUser ? '<button class="act-btn" onclick="startDirectChat(\''+u.uid+'\',\''+((u.name||'Student').replace(/'/g,"\\'")+'\')">Chat</button>') : (isMe?'<span style="font-size:.74rem;color:var(--muted)">You</span>':'')) +
-      '</div>';
-    }).join('');
-  } catch(e) { grid.innerHTML='<div class="empty"><div class="icon">❌</div><h3>Error loading</h3></div>'; }
-};
-
-// SMART MATCHING
-async function checkSmartMatches(lostItem) {
-  if(!currentUser) return;
-  try {
-    const snap = await getDocs(query(collection(db,'items'), where('type','==','found'), where('status','==','active')));
-    const matches = snap.docs.map(d=>({id:d.id,...d.data()})).filter(f => {
-      let s=0;
-      if(lostItem.category&&f.category&&lostItem.category===f.category) s+=40;
-      if(lostItem.location&&f.location&&lostItem.location===f.location) s+=30;
-      if(lostItem.name&&f.name&&(lostItem.name.toLowerCase().includes(f.name.toLowerCase())||f.name.toLowerCase().includes(lostItem.name.toLowerCase()))) s+=25;
-      return s>=40;
-    });
-    if(matches.length>0) {
-      const ex = await getDocs(query(collection(db,'notifications'), where('lostItemId','==',lostItem.id), where('userId','==',currentUser.uid)));
-      if(ex.empty) {
-        await addDoc(collection(db,'notifications'),{ userId:currentUser.uid, lostItemId:lostItem.id, lostItemName:lostItem.name, matches:matches.map(m=>({id:m.id,name:m.name,location:m.location})), read:false, createdAt:serverTimestamp() });
-        showToast('Match found for "'+lostItem.name+'"! Check Profile.','success');
-      }
-    }
-  } catch(e) {}
-}
-
-async function loadMatchInbox() {
-  if(!currentUser) return;
-  try {
-    onSnapshot(query(collection(db,'notifications'), where('userId','==',currentUser.uid), orderBy('createdAt','desc')), snap => {
-      if(snap.empty) { document.getElementById('matchInboxSec').style.display='none'; return; }
-      document.getElementById('matchInboxSec').style.display='block';
-      document.getElementById('matchInbox').innerHTML = snap.docs.map(d => {
-        const n=d.data();
-        return '<div style="background:var(--white);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:4px;padding:14px;margin-bottom:10px;">' +
-          '<div style="font-weight:700;color:var(--head);margin-bottom:8px;">Your lost "'+n.lostItemName+'" may have been found!</div>' +
-          (n.matches||[]).map(m => '<div style="background:var(--off);border-radius:3px;padding:9px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-weight:600;font-size:.88rem">'+m.name+'</div><div style="font-size:.78rem;color:var(--muted)">'+m.location+'</div></div><button class="act-btn" onclick="openDetail(\''+m.id+'\')">View</button></div>').join('') +
-        '</div>';
-      }).join('');
-    });
-  } catch(e) {}
-}
-// ── MOBILE DRAWER ──
-window.toggleDrawer = function() {
-  const drawer = document.getElementById('mobDrawer');
-  const btn    = document.getElementById('hamBtn');
-  drawer.classList.toggle('open');
-  btn.classList.toggle('open');
-};
-
-window.closeDrawerOnBg = function(e) {
-  if(e.target === document.getElementById('mobDrawer')) closeDrawer();
-};
-
-function closeDrawer() {
-  document.getElementById('mobDrawer').classList.remove('open');
-  document.getElementById('hamBtn').classList.remove('open');
-}
-
-window.mobNav = function(page) {
-  closeDrawer();
-  if(page === 'auth') { openAuthModal(); return; }
-  if(page === 'report-lost') { openReportModal('lost'); return; }
-  if(page === 'report-found') { openReportModal('found'); return; }
-  showPage(page);
-  // Sync active state in mobile menu
-  document.querySelectorAll('.mob-menu-item[id^="mob-"]').forEach(b => b.classList.remove('active'));
-  const mb = document.getElementById('mob-'+page);
-  if(mb) mb.classList.add('active');
-};
-
-// Update mobile menu auth button when user signs in/out
-function updateMobAuth(user) {
-  const btn = document.getElementById('mobAuthBtn');
-  if(!btn) return;
-  if(user) {
-    btn.textContent = 'Sign Out';
-    btn.onclick = async () => { closeDrawer(); await signOut(auth); };
-  } else {
-    btn.textContent = 'Sign In with Google';
-    btn.onclick = () => { closeDrawer(); openAuthModal(); };
-  }
-}
-
-// ── PROFILE EDIT ──
-let editPhotoFile = null;
-
-window.openProfileEdit = async function() {
-  if(!currentUser) return;
-  try {
-    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
-    if(!snap.empty) {
-      const u = snap.docs[0].data();
-      document.getElementById('editRoll').value    = u.roll||'';
-      document.getElementById('editDept').value    = u.dept||'';
-      document.getElementById('editHostel').value  = u.hostel||'';
-      document.getElementById('editNameDisplay').textContent = u.name||currentUser.displayName||'';
-      const avEl = document.getElementById('editAvPreview');
-      if(u.customPhoto) avEl.innerHTML = '<img src="'+u.customPhoto+'">';
-      else if(u.avatar) avEl.innerHTML = '<span style="font-size:1.6rem">'+u.avatar+'</span>';
-      else avEl.innerHTML = '👤';
-      // Highlight current avatar
-      document.querySelectorAll('#editAvPicker span[data-eav]').forEach(a => {
-        a.style.borderColor = a.getAttribute('data-eav')===u.avatar?'var(--orange)':'var(--border)';
-        a.style.background  = a.getAttribute('data-eav')===u.avatar?'#fff5ee':'';
-      });
-      document.getElementById('editAvPicker').setAttribute('data-selected', u.avatar||'');
-    }
-  } catch(e) {}
-  editPhotoFile = null;
-  document.getElementById('editProfileModal').classList.add('open');
-};
-
-window.previewEditPhoto = function(input) {
-  if(!input.files||!input.files[0]) return;
-  editPhotoFile = input.files[0];
-  const r = new FileReader();
-  r.onload = e => {
-    document.getElementById('editAvPreview').innerHTML = '<img src="'+e.target.result+'">';
-    document.querySelectorAll('#editAvPicker span[data-eav]').forEach(a=>{a.style.borderColor='var(--border)';a.style.background='';});
-    document.getElementById('editAvPicker').setAttribute('data-selected','');
-  };
-  r.readAsDataURL(editPhotoFile);
-};
-
-// Edit avatar picker
-document.addEventListener('click', e => {
-  const av = e.target.closest('#editAvPicker span[data-eav]');
-  if(!av) return;
-  document.querySelectorAll('#editAvPicker span[data-eav]').forEach(a=>{a.style.borderColor='var(--border)';a.style.background='';});
-  av.style.borderColor = 'var(--orange)';
-  av.style.background  = '#fff5ee';
-  document.getElementById('editAvPicker').setAttribute('data-selected', av.getAttribute('data-eav'));
-  document.getElementById('editAvPreview').innerHTML = '<span style="font-size:1.6rem">'+av.getAttribute('data-eav')+'</span>';
-  editPhotoFile = null;
-});
-
-window.saveProfileEdit = async function() {
-  if(!currentUser) return;
-  const roll   = document.getElementById('editRoll').value.trim().toUpperCase();
-  const dept   = document.getElementById('editDept').value;
-  const hostel = document.getElementById('editHostel').value;
-  const avatar = document.getElementById('editAvPicker').getAttribute('data-selected')||'';
-  let customPhoto = '';
-  if(editPhotoFile) {
-    try {
-      const fd = new FormData();
-      fd.append('file', editPhotoFile);
-      fd.append('upload_preset','smvdu-findit');
-      customPhoto = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
-    } catch(ex) {}
-  }
-  try {
-    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
-    const updates = { roll, dept, hostel };
-    if(avatar) updates.avatar = avatar;
-    if(customPhoto) updates.customPhoto = customPhoto;
-    if(!snap.empty) {
-      await updateDoc(doc(db,'users',snap.docs[0].id), updates);
-    }
-    showToast('Profile updated!','success');
-    closeModal('editProfileModal');
-    updateNavAuth(currentUser);
-  } catch(e) { showToast('Error: '+e.message,'error'); }
-};
-
-})();
-</script>
+<!-- EDIT PROFILE MODAL -->
 <div class="overlay" id="editProfileModal">
-  <div class="modal" style="max-width:460px;">
-    <div class="modal-hdr">
-      <div class="modal-title">Edit Profile</div>
-      <button class="modal-x" onclick="closeModal('editProfileModal')">&#x2715;</button>
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title">Edit Profile</div>
+      <button class="sheet-x" onclick="closeModal('editProfileModal')">&#x2715;</button>
     </div>
-    <div class="modal-body">
-      <div class="prof-edit-row">
-        <div class="prof-edit-av" id="editAvPreview">👤</div>
-        <div>
-          <div style="font-weight:600;color:var(--head);margin-bottom:4px;" id="editNameDisplay">Your Name</div>
-          <label style="font-size:.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
-            Change photo
-            <input type="file" id="editPhoto" accept="image/*" style="display:none;" onchange="previewEditPhoto(this)">
-          </label>
-        </div>
+    <div class="sheet-body">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div id="editAvPreview" style="width:70px;height:70px;border-radius:50%;background:var(--off);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">👤</div>
+        <label style="font-size:.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
+          Change photo
+          <input type="file" id="editPhoto" accept="image/*" style="display:none;" onchange="previewEditPhoto(this)">
+        </label>
       </div>
       <div class="fg">
         <label class="fl">Choose Avatar</label>
-        <div id="editAvPicker" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:4px;">
-          <span data-eav="🧑‍💻" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">🧑‍💻</span>
-          <span data-eav="👨‍🎓" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">👨‍🎓</span>
-          <span data-eav="👩‍🎓" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">👩‍🎓</span>
-          <span data-eav="🧑‍🔬" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">🧑‍🔬</span>
-          <span data-eav="🧑‍🏫" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">🧑‍🏫</span>
-          <span data-eav="🦁" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">🦁</span>
-          <span data-eav="🐯" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">🐯</span>
-          <span data-eav="🦅" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">🦅</span>
-          <span data-eav="⚡" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">⚡</span>
-          <span data-eav="🏔️" style="font-size:1.6rem;cursor:pointer;padding:4px;border:2px solid var(--border);border-radius:6px;">🏔️</span>
+        <div class="av-grid" id="editAvPicker">
+          <div class="av-opt" data-eav="🧑‍💻">🧑‍💻</div>
+          <div class="av-opt" data-eav="👨‍🎓">👨‍🎓</div>
+          <div class="av-opt" data-eav="👩‍🎓">👩‍🎓</div>
+          <div class="av-opt" data-eav="🧑‍🔬">🧑‍🔬</div>
+          <div class="av-opt" data-eav="🧑‍🏫">🧑‍🏫</div>
+          <div class="av-opt" data-eav="🦁">🦁</div>
+          <div class="av-opt" data-eav="🐯">🐯</div>
+          <div class="av-opt" data-eav="🦅">🦅</div>
+          <div class="av-opt" data-eav="⚡">⚡</div>
+          <div class="av-opt" data-eav="🏔️">🏔️</div>
         </div>
+        <input type="hidden" id="editSelAv" value="">
       </div>
       <div class="frow">
         <div class="fg">
@@ -1426,24 +694,770 @@ window.saveProfileEdit = async function() {
       <div class="fg">
         <label class="fl">Hostel</label>
         <select class="fs" id="editHostel">
-          <option value="">Select Hostel</option>
-          <option>Nilgiri Hostel</option>
-          <option>Vindhyanchal Hostel</option>
-          <option>Trikuta Hostel</option>
-          <option>Kailash Hostel</option>
-          <option>Shivalik Hostel</option>
-          <option>Vaishnavi Hostel</option>
-          <option>Basohli Hostel</option>
-          <option>Old Basohli Hostel</option>
+          <option value="">Select</option>
+          <option>Nilgiri Hostel</option><option>Vindhyanchal Hostel</option>
+          <option>Trikuta Hostel</option><option>Kailash Hostel</option>
+          <option>Shivalik Hostel</option><option>Vaishnavi Hostel</option>
+          <option>Basohli Hostel</option><option>Old Basohli Hostel</option>
         </select>
       </div>
-      <div class="form-actions">
-        <button class="btn-can" onclick="closeModal('editProfileModal')">Cancel</button>
-        <button class="btn-sub" onclick="saveProfileEdit()">Save Changes</button>
-      </div>
+      <button class="btn-full" onclick="saveProfileEdit()">Save Changes</button>
+      <button class="btn-can-full" onclick="closeModal('editProfileModal')">Cancel</button>
     </div>
   </div>
 </div>
 
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+(async function() {
+
+const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, query, orderBy, onSnapshot, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBrwqF0UimXJonkwp8uV71MaGI2IzoyQfM",
+  authDomain: "find-it-b3fa2.firebaseapp.com",
+  projectId: "find-it-b3fa2",
+  storageBucket: "find-it-b3fa2.firebasestorage.app",
+  messagingSenderId: "521549279482",
+  appId: "1:521549279482:web:0bfb3509101dc380305943"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUser = null, allItems = [], currentTab = 'all', currentCat = 'all';
+let activeChatId = null, unsubChat = null, regPhotoFile = null, editPhotoFile = null;
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  updateTopBar(user);
+  loadItems();
+  if(user) {
+    loadMyItems();
+    loadChatList();
+    document.getElementById('guestCard').style.display = 'none';
+    renderProfilePage(user);
+  } else {
+    document.getElementById('guestCard').style.display = 'block';
+    document.getElementById('statLost').textContent = '--';
+    document.getElementById('statFound').textContent = '--';
+    document.getElementById('statResolved').textContent = '--';
+    document.getElementById('recentList').innerHTML = '<div class="loading"><div style="font-size:2rem;margin-bottom:8px">🔒</div><p style="font-size:.85rem">Sign in to see activity</p></div>';
+    document.getElementById('profContent').innerHTML = '<div class="lock-screen"><div class="ico">🔒</div><h3>Sign in to view profile</h3><p>Your reports and profile details will appear here.</p><button onclick="openAuthModal()">Sign In</button></div>';
+  }
+});
+
+function updateTopBar(user) {
+  const btn = document.getElementById('authBtn');
+  if(user) {
+    btn.textContent = 'Sign Out';
+    btn.onclick = async () => { await signOut(auth); };
+  } else {
+    btn.textContent = 'Sign In';
+    btn.onclick = openAuthModal;
+  }
+}
+
+// ── PAGE NAV ──
+window.showPage = function(page) {
+  const authPages = ['chat','users','profile'];
+  if(authPages.includes(page) && !currentUser) {
+    showToast('Please sign in first','error');
+    openAuthModal();
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('bn-'+page).classList.add('active');
+  if(page==='profile' && currentUser) { loadMyItems(); loadMatchInbox(); }
+};
+
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+window.openModal  = id => document.getElementById(id).classList.add('open');
+
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
+  if(e.target===o) o.classList.remove('open');
+}));
+
+window.showToast = function(msg, type) {
+  const t = document.createElement('div');
+  t.className = 'toast'+(type?' '+type:'');
+  t.textContent = msg;
+  document.getElementById('toastWrap').appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+};
+
+// ── AUTH ──
+window.openAuthModal = function() {
+  document.getElementById('gSignInStep').style.display = 'block';
+  document.getElementById('profileStep').style.display = 'none';
+  document.getElementById('authTitle').innerHTML = 'Welcome to <span style="color:var(--orange)">FindIt</span>';
+  document.getElementById('authModal').classList.add('open');
+};
+
+document.getElementById('googleBtn').addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, new GoogleAuthProvider());
+    const user = result.user;
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
+    if(snap.empty) {
+      document.getElementById('gSignInStep').style.display = 'none';
+      document.getElementById('profileStep').style.display = 'block';
+      document.getElementById('authTitle').innerHTML = 'Complete <span style="color:var(--orange)">Profile</span>';
+      regPhotoFile = null;
+      document.getElementById('regRoll').value = '';
+      document.getElementById('regDept').value = '';
+      document.getElementById('regHostel').value = '';
+      document.getElementById('selAvatar').value = '🧑‍💻';
+      document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">🧑‍💻</span>';
+      document.querySelectorAll('#avPicker .av-opt').forEach((a,i) => {
+        a.classList.toggle('sel', i===0);
+      });
+    } else {
+      showToast('Welcome back, '+(user.displayName||'Student')+'!','success');
+      closeModal('authModal');
+    }
+  } catch(e) {
+    if(e.code !== 'auth/popup-closed-by-user') showToast('Login failed: '+e.message,'error');
+  }
+});
+
+// Avatar pickers
+document.addEventListener('click', e => {
+  // Reg avatar
+  const av = e.target.closest('#avPicker .av-opt');
+  if(av) {
+    document.querySelectorAll('#avPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    av.classList.add('sel');
+    document.getElementById('selAvatar').value = av.getAttribute('data-av');
+    document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">'+av.getAttribute('data-av')+'</span>';
+    regPhotoFile = null;
+  }
+  // Edit avatar
+  const eav = e.target.closest('#editAvPicker .av-opt');
+  if(eav) {
+    document.querySelectorAll('#editAvPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    eav.classList.add('sel');
+    document.getElementById('editSelAv').value = eav.getAttribute('data-eav');
+    document.getElementById('editAvPreview').innerHTML = '<span style="font-size:2rem">'+eav.getAttribute('data-eav')+'</span>';
+    editPhotoFile = null;
+  }
+});
+
+window.previewRegPhoto = function(input) {
+  if(!input.files||!input.files[0]) return;
+  regPhotoFile = input.files[0];
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('avPreview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    document.querySelectorAll('#avPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    document.getElementById('selAvatar').value = '';
+  };
+  r.readAsDataURL(regPhotoFile);
+};
+
+window.saveProfile = async function() {
+  const user = auth.currentUser;
+  if(!user) return;
+  const roll = document.getElementById('regRoll').value.trim().toUpperCase();
+  if(!roll) { showToast('Please enter Roll Number','error'); return; }
+  const dept   = document.getElementById('regDept').value;
+  const hostel = document.getElementById('regHostel').value;
+  const avatar = document.getElementById('selAvatar').value || '🧑‍💻';
+  let customPhoto = '';
+  if(regPhotoFile) {
+    try {
+      const fd = new FormData();
+      fd.append('file',regPhotoFile);
+      fd.append('upload_preset','smvdu-findit');
+      customPhoto = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
+    } catch(ex) {}
+  }
+  await addDoc(collection(db,'users'),{ uid:user.uid, name:user.displayName||'', email:user.email||'', avatar, customPhoto, roll, dept, hostel, createdAt:serverTimestamp() });
+  showToast('Welcome, '+(user.displayName||'Student')+'!','success');
+  closeModal('authModal');
+  renderProfilePage(user);
+};
+
+// ── PROFILE PAGE ──
+async function renderProfilePage(user) {
+  if(!user) return;
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
+    const u = snap.empty ? {} : snap.docs[0].data();
+    const avHtml = u.customPhoto
+      ? '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      : (u.avatar ? '<span style="font-size:2rem">'+u.avatar+'</span>' : '👤');
+    document.getElementById('profContent').innerHTML = `
+      <div class="prof-top">
+        <div class="prof-av-wrap">
+          <div class="prof-av-big" id="profAvBig">${avHtml}</div>
+          <label for="profPhotoInput" class="prof-av-edit">✏</label>
+          <input type="file" id="profPhotoInput" accept="image/*" style="display:none;" onchange="updatePhoto(this)">
+        </div>
+        <div class="prof-name">${u.name||user.displayName||'Student'}</div>
+        <div class="prof-sub">${user.email}</div>
+        <div class="prof-badges">
+          ${u.roll?'<span class="prof-badge-pill">🎓 '+u.roll+'</span>':''}
+          ${u.dept?'<span class="prof-badge-pill">📚 '+u.dept+'</span>':''}
+          ${u.hostel?'<span class="prof-badge-pill">🏠 '+u.hostel+'</span>':''}
+        </div>
+        <button class="prof-edit-btn" onclick="openProfileEdit()">✏ Edit Profile</button>
+      </div>
+      <div class="prof-body">
+        <div class="prof-stat-row">
+          <div class="prof-stat"><div class="n" id="pStatLost">0</div><div class="l">Lost</div></div>
+          <div class="prof-stat"><div class="n" id="pStatFound">0</div><div class="l">Found</div></div>
+          <div class="prof-stat"><div class="n" id="pStatDone">0</div><div class="l">Resolved</div></div>
+        </div>
+        <div id="matchInboxSec" style="display:none;margin-bottom:16px;">
+          <div class="sec-head"><div class="sec-title">Smart <span>Matches</span></div></div>
+          <div id="matchInbox"></div>
+        </div>
+        <div class="sec-head">
+          <div class="sec-title">My <span>Reports</span></div>
+          <span id="repCount" style="font-size:.78rem;color:var(--muted);background:var(--off);padding:3px 10px;border-radius:10px;">0</span>
+        </div>
+        <div id="myItems" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="loading"><div class="spin"></div></div>
+        </div>
+      </div>`;
+  } catch(e) {}
+}
+
+window.updatePhoto = async function(input) {
+  if(!currentUser||!input.files||!input.files[0]) return;
+  showToast('Uploading...','');
+  try {
+    const fd = new FormData();
+    fd.append('file',input.files[0]);
+    fd.append('upload_preset','smvdu-findit');
+    const url = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url;
+    if(!url) { showToast('Upload failed','error'); return; }
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
+    if(!snap.empty) await updateDoc(doc(db,'users',snap.docs[0].id),{customPhoto:url});
+    const avEl = document.getElementById('profAvBig');
+    if(avEl) avEl.innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    showToast('Photo updated!','success');
+  } catch(e) { showToast('Error','error'); }
+};
+
+window.previewEditPhoto = function(input) {
+  if(!input.files||!input.files[0]) return;
+  editPhotoFile = input.files[0];
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('editAvPreview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    document.querySelectorAll('#editAvPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    document.getElementById('editSelAv').value = '';
+  };
+  r.readAsDataURL(editPhotoFile);
+};
+
+window.openProfileEdit = async function() {
+  if(!currentUser) return;
+  editPhotoFile = null;
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
+    if(!snap.empty) {
+      const u = snap.docs[0].data();
+      document.getElementById('editRoll').value   = u.roll||'';
+      document.getElementById('editDept').value   = u.dept||'';
+      document.getElementById('editHostel').value = u.hostel||'';
+      const avEl = document.getElementById('editAvPreview');
+      if(u.customPhoto) avEl.innerHTML = '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      else if(u.avatar) avEl.innerHTML = '<span style="font-size:2rem">'+u.avatar+'</span>';
+      document.getElementById('editSelAv').value = u.avatar||'';
+      document.querySelectorAll('#editAvPicker .av-opt').forEach(a => {
+        a.classList.toggle('sel', a.getAttribute('data-eav')===u.avatar);
+      });
+    }
+  } catch(e) {}
+  document.getElementById('editProfileModal').classList.add('open');
+};
+
+window.saveProfileEdit = async function() {
+  if(!currentUser) return;
+  const roll   = document.getElementById('editRoll').value.trim().toUpperCase();
+  const dept   = document.getElementById('editDept').value;
+  const hostel = document.getElementById('editHostel').value;
+  const avatar = document.getElementById('editSelAv').value;
+  let customPhoto = '';
+  if(editPhotoFile) {
+    try {
+      const fd = new FormData();
+      fd.append('file',editPhotoFile);
+      fd.append('upload_preset','smvdu-findit');
+      customPhoto = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
+    } catch(ex) {}
+  }
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
+    const updates = {roll,dept,hostel};
+    if(avatar) updates.avatar = avatar;
+    if(customPhoto) updates.customPhoto = customPhoto;
+    if(!snap.empty) await updateDoc(doc(db,'users',snap.docs[0].id),updates);
+    showToast('Profile updated!','success');
+    closeModal('editProfileModal');
+    renderProfilePage(currentUser);
+  } catch(e) { showToast('Error','error'); }
+};
+
+// ── ITEMS ──
+async function loadItems() {
+  onSnapshot(query(collection(db,'items'), orderBy('createdAt','desc')), snap => {
+    allItems = snap.docs.map(d => ({id:d.id,...d.data()}));
+    const active = allItems.filter(i=>i.status!=='claimed');
+    if(currentUser) renderCards('recentList', active.slice(0,8));
+    filterItems();
+    updateBadges();
+    updateStats();
+  });
+}
+
+async function loadMyItems() {
+  if(!currentUser) return;
+  onSnapshot(query(collection(db,'items'), where('userId','==',currentUser.uid)), snap => {
+    const mine = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const el = document.getElementById('myItems');
+    if(!el) return;
+    const lost  = mine.filter(i=>i.type==='lost').length;
+    const found = mine.filter(i=>i.type==='found').length;
+    const done  = mine.filter(i=>i.status==='claimed').length;
+    const pL = document.getElementById('pStatLost');
+    const pF = document.getElementById('pStatFound');
+    const pD = document.getElementById('pStatDone');
+    if(pL) pL.textContent=lost;
+    if(pF) pF.textContent=found;
+    if(pD) pD.textContent=done;
+    const rc = document.getElementById('repCount');
+    if(rc) rc.textContent = mine.length;
+    if(!mine.length) {
+      el.innerHTML = '<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px">📋</div><p style="font-size:.84rem">No reports yet</p></div>';
+      return;
+    }
+    el.innerHTML = mine.map(item => {
+      const img = item.imageUrl?'<img src="'+item.imageUrl+'">':emojiFor(item.category);
+      return '<div class="my-item-card" onclick="openDetail(\''+item.id+'\')">' +
+        '<div class="my-item-thumb">'+img+'</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="display:flex;gap:5px;margin-bottom:4px;">' +
+            '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+            (item.status==='claimed'?'<span class="tag" style="background:#e8f3ff;color:var(--steel)">Resolved</span>':'') +
+          '</div>' +
+          '<div style="font-weight:700;font-size:.9rem;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+item.name+'</div>' +
+          '<div style="font-size:.76rem;color:var(--muted);margin-top:2px;">📍 '+item.location+'</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    mine.filter(i=>i.type==='lost'&&i.status==='active').forEach(checkSmartMatches);
+  });
+}
+
+function renderCards(cid, items) {
+  const el = document.getElementById(cid);
+  if(!el) return;
+  if(!items||!items.length) {
+    el.innerHTML='<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px">🔍</div><p style="font-size:.85rem">No items found</p></div>';
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const img = item.imageUrl?'<img src="'+item.imageUrl+'">':emojiFor(item.category);
+    return '<div class="item-card" onclick="openDetail(\''+item.id+'\')">' +
+      '<div class="item-card-inner">' +
+        '<div class="item-thumb">'+img+'</div>' +
+        '<div class="item-info">' +
+          '<div class="item-tags">' +
+            '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+            '<span class="tag tag-cat">'+(item.category||'Other')+'</span>' +
+          '</div>' +
+          '<div class="item-name">'+item.name+'</div>' +
+          '<div class="item-loc">📍 '+(item.location||'Unknown')+'</div>' +
+          '<div class="item-date">'+(item.date||'')+'</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function emojiFor(cat) {
+  return {'Electronics':'📱','ID/Documents':'🪪','Keys':'🔑','Wallet/Purse':'👛','Bag/Backpack':'🎒','Clothing':'👕','Books/Notes':'📚','Sports':'⚽','Bottle':'🍶'}[cat]||'📦';
+}
+
+function updateBadges() {
+  const a = allItems.filter(i=>i.status!=='claimed');
+  document.getElementById('badge-all').textContent  = a.length;
+  document.getElementById('badge-lost').textContent = a.filter(i=>i.type==='lost').length;
+  document.getElementById('badge-found').textContent= a.filter(i=>i.type==='found').length;
+}
+
+function updateStats() {
+  if(!currentUser) return;
+  document.getElementById('statLost').textContent     = allItems.filter(i=>i.type==='lost').length;
+  document.getElementById('statFound').textContent    = allItems.filter(i=>i.type==='found').length;
+  document.getElementById('statResolved').textContent = allItems.filter(i=>i.status==='claimed').length;
+}
+
+window.setTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  filterItems();
+};
+
+window.setCatFilter = function(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.f-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  filterItems();
+};
+
+window.filterItems = function() {
+  let items = allItems.filter(i=>i.status!=='claimed');
+  if(currentTab!=='all') items = items.filter(i=>i.type===currentTab);
+  if(currentCat!=='all') items = items.filter(i=>i.category===currentCat);
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  if(q) items = items.filter(i=>(i.name+' '+i.description+' '+i.location).toLowerCase().includes(q));
+  if(!currentUser) {
+    document.getElementById('itemsList').innerHTML = '<div class="lock-screen"><div class="ico">🔒</div><h3>Sign in to Browse</h3><p>See all lost and found items from SMVDU campus</p><button onclick="openAuthModal()">Sign In</button></div>';
+    return;
+  }
+  renderCards('itemsList', items);
+};
+
+// ── DETAIL ──
+window.openDetail = function(id) {
+  const item = allItems.find(i=>i.id===id);
+  if(!item) return;
+  document.getElementById('detailTitle').textContent = item.name;
+  const isOwner = currentUser && currentUser.uid===item.userId;
+  const img = item.imageUrl?'<img src="'+item.imageUrl+'">':emojiFor(item.category);
+  let btns = '';
+  if(!isOwner && item.status!=='claimed' && currentUser) {
+    if(item.verifyQuestion && item.type==='found')
+      btns += '<button style="background:var(--steel);color:#fff;" onclick="openClaimModal(\''+id+'\',\''+item.verifyQuestion.replace(/'/g,"\\'")+'\')"">This is Mine</button>';
+    btns += '<button style="background:var(--orange);color:#fff;" onclick="startChat(\''+id+'\',\''+((item.userName||'User').replace(/'/g,"\\'")+'\',\''+item.userId+'\')"">💬 Contact '+(item.type==='lost'?'Reporter':'Finder'))+'</button>';
+  }
+  if(isOwner && item.status!=='claimed')
+    btns += '<button style="background:var(--green);color:#fff;" onclick="markResolved(\''+id+'\')">Mark as Resolved</button>';
+  if(!currentUser)
+    btns += '<button style="background:var(--orange);color:#fff;" onclick="closeModal(\'detailModal\');openAuthModal()">Sign In to Contact</button>';
+  document.getElementById('detailBody').innerHTML =
+    '<div class="detail-img-big">'+img+'</div>' +
+    '<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">' +
+      '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'" style="font-size:.78rem;padding:4px 12px;">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+      '<span class="tag tag-cat" style="font-size:.78rem;padding:4px 12px;">'+item.category+'</span>' +
+      (item.status==='claimed'?'<span class="tag" style="background:#e8f3ff;color:var(--steel);font-size:.78rem;padding:4px 12px;">Reunited</span>':'') +
+    '</div>' +
+    '<p style="color:var(--text);font-size:.88rem;line-height:1.6;margin-bottom:14px;">'+item.description+'</p>' +
+    '<div class="detail-grid">' +
+      '<div class="df"><div class="dk">Location</div><div class="dv">'+item.location+'</div></div>' +
+      '<div class="df"><div class="dk">Date</div><div class="dv">'+item.date+'</div></div>' +
+      '<div class="df"><div class="dk">Reported by</div><div class="dv">'+(item.userName||'Anonymous')+'</div></div>' +
+      '<div class="df"><div class="dk">Status</div><div class="dv" style="color:'+(item.status==='claimed'?'var(--green)':'var(--orange)')+'">'+( item.status==='claimed'?'Reunited':'Active')+'</div></div>' +
+    '</div>' +
+    '<div class="detail-btns">'+btns+'</div>';
+  document.getElementById('detailModal').classList.add('open');
+};
+
+window.openClaimModal = function(id, q) {
+  document.getElementById('claimId').value = id;
+  document.getElementById('claimQ').textContent = q;
+  document.getElementById('claimAns').value = '';
+  closeModal('detailModal');
+  document.getElementById('claimModal').classList.add('open');
+};
+
+window.submitClaim = async function() {
+  if(!currentUser) return;
+  const id  = document.getElementById('claimId').value;
+  const ans = document.getElementById('claimAns').value.trim();
+  if(!ans) { showToast('Enter your answer','error'); return; }
+  const item = allItems.find(i=>i.id===id);
+  if(!item) return;
+  if(ans.toLowerCase()===(item.verifyAnswer||'').toLowerCase()) {
+    await updateDoc(doc(db,'items',id),{status:'claimed'});
+    showToast('Claimed! Contact the finder.','success');
+    closeModal('claimModal');
+  } else showToast('Wrong answer','error');
+};
+
+window.markResolved = async function(id) {
+  if(!currentUser) return;
+  await updateDoc(doc(db,'items',id),{status:'claimed'});
+  showToast('Marked as resolved!','success');
+  closeModal('detailModal');
+};
+
+// ── REPORT ──
+window.openReportModal = function(type) {
+  if(!currentUser) { openAuthModal(); return; }
+  document.getElementById('repType').value = type;
+  document.getElementById('repTitle').textContent = type==='lost'?'Report Lost Item':'Report Found Item';
+  document.getElementById('verifyGrp').style.display = type==='lost'?'block':'none';
+  document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
+  ['itemName','itemDesc','itemCat','itemLoc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('uploadIcon').textContent='📸';
+  document.getElementById('uploadTxt').textContent='Tap to upload photo';
+  document.getElementById('reportModal').classList.add('open');
+};
+
+window.previewPhoto = function(input) {
+  if(!input.files||!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('uploadIcon').innerHTML='<img src="'+e.target.result+'" style="width:80px;height:60px;object-fit:cover;border-radius:8px;">';
+    document.getElementById('uploadTxt').textContent=input.files[0].name;
+  };
+  r.readAsDataURL(input.files[0]);
+};
+
+window.submitReport = async function() {
+  if(!currentUser) return;
+  const type=document.getElementById('repType').value;
+  const name=document.getElementById('itemName').value.trim();
+  const cat =document.getElementById('itemCat').value;
+  const desc=document.getElementById('itemDesc').value.trim();
+  const loc =document.getElementById('itemLoc').value;
+  const date=document.getElementById('itemDate').value;
+  if(!name||!cat||!desc||!loc||!date){showToast('Fill all required fields','error');return;}
+  let imageUrl='';
+  const pf=document.getElementById('itemPhoto').files[0];
+  if(pf){try{const fd=new FormData();fd.append('file',pf);fd.append('upload_preset','smvdu-findit');imageUrl=(await(await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';}catch(ex){}}
+  const data={type,name,category:cat,description:desc,location:loc,date,userId:currentUser.uid,userName:currentUser.displayName||currentUser.email,status:'active',imageUrl,createdAt:serverTimestamp()};
+  if(type==='lost'){data.verifyQuestion=document.getElementById('verifyQ').value;data.verifyAnswer=document.getElementById('verifyA').value;}
+  await addDoc(collection(db,'items'),data);
+  showToast((type==='lost'?'Lost':'Found')+' item reported!','success');
+  closeModal('reportModal');
+};
+
+// ── CHAT ──
+window.startChat = function(itemId, otherName, otherUid) {
+  if(!currentUser){openAuthModal();return;}
+  if(otherUid===currentUser.uid){showToast('This is your own item!','error');return;}
+  closeModal('detailModal');
+  const chatId=[currentUser.uid,otherUid].sort().join('_')+'_'+itemId;
+  openChatWindow(chatId, otherName, otherUid);
+};
+
+window.startDirectChat = function(uid, name) {
+  if(!currentUser){openAuthModal();return;}
+  if(uid===currentUser.uid){showToast('Cannot chat with yourself','error');return;}
+  showPage('chat');
+  openChatWindow([currentUser.uid,uid].sort().join('_'), name, uid);
+};
+
+window.openChatWindow = async function(chatId, otherName, otherUid) {
+  if(!currentUser) return;
+  activeChatId = chatId;
+  if(unsubChat) unsubChat();
+
+  document.getElementById('cwName').textContent = otherName;
+  document.getElementById('cwAv').textContent = otherName.charAt(0).toUpperCase();
+  document.getElementById('cwStatus').textContent = 'Online';
+  document.getElementById('cwMsgs').innerHTML = '<div class="loading"><div class="spin"></div></div>';
+  document.getElementById('cwInp').value = '';
+  document.getElementById('chatWindow').classList.add('open');
+
+  // Create/update chat doc
+  try {
+    await setDoc(doc(db,'chats',chatId),{
+      participants:[currentUser.uid,otherUid].filter(Boolean),
+      participantNames:[currentUser.displayName||'User',otherName],
+      lastMessage:'',lastUpdated:serverTimestamp()
+    },{merge:true});
+  } catch(e){}
+
+  // Mark incoming as seen
+  setTimeout(async()=>{
+    try{
+      const q=query(collection(db,'chats',chatId,'messages'),where('senderId','!=',currentUser.uid),where('seen','==',false));
+      const s=await getDocs(q);
+      s.forEach(async d=>await updateDoc(doc(db,'chats',chatId,'messages',d.id),{seen:true}));
+    }catch(e){}
+  },600);
+
+  // Real-time listener
+  let lastDate='';
+  unsubChat = onSnapshot(query(collection(db,'chats',chatId,'messages'),orderBy('time')), snap=>{
+    const box=document.getElementById('cwMsgs');
+    if(!box) return;
+    const atBot=box.scrollHeight-box.clientHeight<=box.scrollTop+80;
+    lastDate='';
+    box.innerHTML=snap.docs.map(d=>{
+      const m=d.data();
+      const mine=m.senderId===currentUser.uid;
+      let timeStr='',dateDiv='';
+      if(m.time&&m.time.toDate){
+        const dt=m.time.toDate();
+        timeStr=dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        const ds=dt.toDateString();
+        if(ds!==lastDate){
+          lastDate=ds;
+          const now=new Date();
+          const label=ds===now.toDateString()?'Today':ds===new Date(Date.now()-86400000).toDateString()?'Yesterday':dt.toLocaleDateString([],{day:'numeric',month:'short'});
+          dateDiv='<div class="date-div"><span>'+label+'</span></div>';
+        }
+      }
+      let ticks='';
+      if(mine){
+        if(m.seen) ticks='<span class="b-tick blue">&#10003;&#10003;</span>';
+        else if(m.delivered) ticks='<span class="b-tick">&#10003;&#10003;</span>';
+        else ticks='<span class="b-tick">&#10003;</span>';
+      }
+      return dateDiv+
+        '<div class="bubble '+(mine?'bubble-out':'bubble-in')+'">'+
+          m.text+
+          '<div class="bubble-meta"><span class="b-time">'+timeStr+'</span>'+ticks+'</div>'+
+        '</div>';
+    }).join('');
+    if(atBot||snap.docChanges().some(c=>c.type==='added')) box.scrollTop=box.scrollHeight;
+    // Mark new incoming as seen
+    snap.docChanges().filter(c=>c.type==='added').forEach(async c=>{
+      const m=c.doc.data();
+      if(m.senderId!==currentUser.uid&&!m.seen){
+        try{await updateDoc(doc(db,'chats',chatId,'messages',c.doc.id),{seen:true});}catch(ex){}
+      }
+    });
+  });
+};
+
+window.closeChatWindow = function() {
+  document.getElementById('chatWindow').classList.remove('open');
+  if(unsubChat){unsubChat();unsubChat=null;}
+  activeChatId=null;
+};
+
+window.sendMsg = async function() {
+  if(!currentUser||!activeChatId) return;
+  const inp=document.getElementById('cwInp');
+  const text=inp.value.trim();
+  if(!text) return;
+  inp.value=''; inp.style.height=''; inp.focus();
+  await addDoc(collection(db,'chats',activeChatId,'messages'),{
+    text, senderId:currentUser.uid, senderName:currentUser.displayName||'User',
+    time:serverTimestamp(), delivered:true, seen:false
+  });
+  await updateDoc(doc(db,'chats',activeChatId),{lastMessage:text,lastUpdated:serverTimestamp()});
+};
+
+// Enter to send
+document.getElementById('cwInp').addEventListener('keydown', e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+});
+
+window.autoResize = function(el) {
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,100)+'px';
+};
+
+async function loadChatList() {
+  if(!currentUser) return;
+  onSnapshot(query(collection(db,'chats'),where('participants','array-contains',currentUser.uid),orderBy('lastUpdated','desc')), snap=>{
+    const list=document.getElementById('chatList');
+    if(snap.empty){
+      list.innerHTML='<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet.<br>Contact someone about a lost item!</p></div>';
+      return;
+    }
+    list.innerHTML=snap.docs.map(d=>{
+      const dt=d.data();
+      const other=(dt.participantNames||[]).find(n=>n!==currentUser.displayName)||'Student';
+      const otherUid=(dt.participants||[]).find(u=>u!==currentUser.uid)||'';
+      let timeStr='';
+      if(dt.lastUpdated&&dt.lastUpdated.toDate){
+        const t=dt.lastUpdated.toDate(),now=new Date();
+        timeStr=t.toDateString()===now.toDateString()?t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):t.toLocaleDateString([],{day:'numeric',month:'short'});
+      }
+      return '<div class="chat-list-item" onclick="openChatWindow(\''+d.id+'\',\''+other+'\',\''+otherUid+'\')">'+
+        '<div class="cl-av">'+other.charAt(0).toUpperCase()+'</div>'+
+        '<div class="cl-info">'+
+          '<div class="cl-name">'+other+'</div>'+
+          '<div class="cl-msg">'+(dt.lastMessage||'No messages yet')+'</div>'+
+        '</div>'+
+        (timeStr?'<div class="cl-time">'+timeStr+'</div>':'')+
+      '</div>';
+    }).join('');
+  });
+}
+
+// ── USERS ──
+window.searchUsers = async function(val) {
+  const list=document.getElementById('usersList');
+  if(!val||val.length<2){
+    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:2.5rem;margin-bottom:10px;">👥</div><p>Search for SMVDU students</p></div>';
+    return;
+  }
+  list.innerHTML='<div class="loading"><div class="spin"></div></div>';
+  try{
+    const snap=await getDocs(collection(db,'users'));
+    const q=val.toLowerCase();
+    const users=snap.docs.map(d=>d.data()).filter(u=>(u.name||'').toLowerCase().includes(q)||(u.roll||'').toLowerCase().includes(q)||(u.dept||'').toLowerCase().includes(q));
+    if(!users.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);">No students found</div>';return;}
+    list.innerHTML=users.map(u=>{
+      const isMe=currentUser&&u.uid===currentUser.uid;
+      const av=u.customPhoto?'<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':'<span style="font-size:1.4rem">'+(u.avatar||'👤')+'</span>';
+      return '<div class="user-card">'+
+        '<div class="user-av">'+av+'</div>'+
+        '<div class="user-info">'+
+          '<div class="user-name">'+(u.name||'Student')+'</div>'+
+          '<div class="user-detail">'+(u.roll?'🎓 '+u.roll:'')+( u.dept?' · '+u.dept:'')+'</div>'+
+          '<div class="user-detail">'+(u.hostel?'🏠 '+u.hostel:'')+'</div>'+
+        '</div>'+
+        (!isMe&&currentUser?'<button class="user-chat-btn" onclick="startDirectChat(\''+u.uid+'\',\''+((u.name||'Student').replace(/'/g,"\\'")+'\')">Chat</button>'):(isMe?'<span style="font-size:.75rem;color:var(--muted)">You</span>':''))+
+      '</div>';
+    }).join('');
+  }catch(e){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--red);">Error loading</div>';}
+};
+
+// ── SMART MATCHING ──
+async function checkSmartMatches(lostItem) {
+  if(!currentUser) return;
+  try{
+    const snap=await getDocs(query(collection(db,'items'),where('type','==','found'),where('status','==','active')));
+    const matches=snap.docs.map(d=>({id:d.id,...d.data()})).filter(f=>{
+      let s=0;
+      if(lostItem.category&&f.category&&lostItem.category===f.category)s+=40;
+      if(lostItem.location&&f.location&&lostItem.location===f.location)s+=30;
+      if(lostItem.name&&f.name&&(lostItem.name.toLowerCase().includes(f.name.toLowerCase())||f.name.toLowerCase().includes(lostItem.name.toLowerCase())))s+=25;
+      return s>=40;
+    });
+    if(matches.length>0){
+      const ex=await getDocs(query(collection(db,'notifications'),where('lostItemId','==',lostItem.id),where('userId','==',currentUser.uid)));
+      if(ex.empty){
+        await addDoc(collection(db,'notifications'),{userId:currentUser.uid,lostItemId:lostItem.id,lostItemName:lostItem.name,matches:matches.map(m=>({id:m.id,name:m.name,location:m.location})),read:false,createdAt:serverTimestamp()});
+        showToast('Match found for "'+lostItem.name+'"!','success');
+      }
+    }
+  }catch(e){}
+}
+
+async function loadMatchInbox() {
+  if(!currentUser) return;
+  try{
+    onSnapshot(query(collection(db,'notifications'),where('userId','==',currentUser.uid),orderBy('createdAt','desc')),snap=>{
+      const sec=document.getElementById('matchInboxSec');
+      const inbox=document.getElementById('matchInbox');
+      if(!sec||!inbox) return;
+      if(snap.empty){sec.style.display='none';return;}
+      sec.style.display='block';
+      inbox.innerHTML=snap.docs.map(d=>{
+        const n=d.data();
+        return '<div class="match-card">'+
+          '<div style="font-weight:700;color:var(--head);font-size:.9rem;margin-bottom:8px;">Your lost "'+n.lostItemName+'" may have been found!</div>'+
+          (n.matches||[]).map(m=>'<div style="background:var(--off);border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-weight:600;font-size:.87rem">'+m.name+'</div><div style="font-size:.76rem;color:var(--muted)">'+m.location+'</div></div><button class="user-chat-btn" onclick="openDetail(\''+m.id+'\')">View</button></div>').join('')+
+        '</div>';
+      }).join('');
+    });
+  }catch(e){}
+}
+
+})();
+</script>
 </body>
 </html>
