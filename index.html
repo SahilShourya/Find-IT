@@ -3,422 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SMVDU Lost & Found</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<title>SMVDU FindIt — Lost & Found</title>
 <style>
-  :root {
-    --navy:    #1C3557;
-    --blue:    #2C3E50;
-    --steel:   #5A7FA3;
-    --orange:  #F47C20;
-    --green:   #28A745;
-    --leaf:    #3FAE49;
-    --white:   #FFFFFF;
-    --offwhite:#F4F6F8;
-    --text:    #4A4A4A;
-    --heading: #1F3A5F;
-    --border:  #D9D9D9;
-    --muted:   #888;
-    --red:     #DC3545;
-  }
-
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--white);
-    color: var(--text);
-    font-size: 14.5px;
-    line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: var(--offwhite); }
-  ::-webkit-scrollbar-thumb { background: var(--steel); }
-
-  /* NAV */
-  nav {
-    position: fixed; top:0; left:0; right:0; z-index:1000;
-    background: var(--blue);
-    height: 58px;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 1.5rem;
-    border-bottom: 3px solid var(--orange);
-  }
-  .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-  .nav-logo img.smvdu-logo, .nav-logo svg.smvdu-logo {
-    height:36px; width:36px; border-radius:50%; background:#fff; padding:2px; flex-shrink:0;
-  }
-  .nav-logo .logo-text { display:flex; flex-direction:column; line-height:1.2; }
-  .nav-logo .logo-text .top { font-size:0.58rem; font-weight:700; color:var(--orange); letter-spacing:1.5px; text-transform:uppercase; }
-  .nav-logo .logo-text .bottom { font-size:0.92rem; font-weight:700; color:#fff; }
-  .nav-logo .logo-text .bottom span { color:var(--orange); }
-
-  .nav-links { display:flex; align-items:center; gap:3px; }
-  .nav-links button {
-    background:transparent; border:none; color:rgba(255,255,255,0.8);
-    padding:6px 13px; border-radius:3px; font-size:0.85rem; cursor:pointer; transition:all 0.15s;
-  }
-  .nav-links button:hover, .nav-links button.active { background:rgba(255,255,255,0.12); color:#fff; }
-  .nav-links .btn-auth {
-    background: var(--green); color:#fff; font-weight:600;
-    padding:6px 16px; border-radius:3px; border:none;
-  }
-  .nav-links .btn-auth:hover { background: var(--leaf); }
-
-  /* PAGES */
-  .page { display:none; min-height:100vh; padding-top:58px; }
-  .page.active { display:block; }
-
-  /* HERO */
-  .hero {
-    background: var(--navy);
-    color: #fff;
-    padding: 52px 1.5rem 40px;
-    text-align: center;
-  }
-  .hero-badge {
-    display: inline-block;
-    background: var(--orange);
-    border-radius: 2px;
-    padding: 3px 12px;
-    font-size: 0.76rem; color: #fff; font-weight:600;
-    margin-bottom: 16px; letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .hero h1 {
-    font-size: clamp(1.7rem,4vw,2.7rem); font-weight:700;
-    line-height:1.2; margin-bottom:12px; color:#fff;
-  }
-  .hero h1 .accent { color: var(--orange); }
-  .hero p { font-size:0.96rem; color:rgba(255,255,255,0.72); max-width:480px; margin:0 auto 26px; line-height:1.7; }
-  .hero-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-
-  /* BUTTONS */
-  .btn-primary {
-    background: var(--green); color:#fff; border:none;
-    padding:10px 22px; border-radius:3px; font-size:0.9rem; font-weight:600;
-    cursor:pointer; transition:background 0.15s;
-    display:inline-flex; align-items:center; gap:6px;
-  }
-  .btn-primary:hover { background:var(--leaf); }
-
-  .btn-secondary {
-    background:transparent; color:rgba(255,255,255,0.85);
-    border:1px solid rgba(255,255,255,0.4);
-    padding:10px 22px; border-radius:3px; font-size:0.9rem;
-    cursor:pointer; transition:all 0.15s;
-    display:inline-flex; align-items:center; gap:6px;
-  }
-  .btn-secondary:hover { border-color:#fff; color:#fff; }
-
-  /* STATS */
-  .stats-strip {
-    display:flex;
-    background: var(--blue);
-    border-top: 1px solid rgba(255,255,255,0.07);
-  }
-  .stat-item {
-    flex:1; padding:18px 12px; text-align:center;
-    border-right:1px solid rgba(255,255,255,0.07);
-  }
-  .stat-item:last-child { border-right:none; }
-  .stat-item .num { font-size:1.7rem; font-weight:700; color:var(--orange); }
-  .stat-item .lbl { font-size:0.72rem; color:rgba(255,255,255,0.55); margin-top:2px; }
-
-  /* CONTAINER */
-  .container { max-width:1100px; margin:0 auto; padding:28px 1.5rem; }
-
-  /* SECTION HEADER */
-  .section-header {
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:18px; padding-bottom:10px;
-    border-bottom:2px solid var(--border);
-  }
-  .section-title { font-size:1.15rem; font-weight:700; color:var(--heading); }
-  .section-title span { color:var(--orange); }
-
-  /* FILTERS */
-  .filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
-  .filter-btn {
-    background:var(--offwhite); border:1px solid var(--border);
-    color:var(--text); padding:5px 12px; border-radius:3px;
-    font-size:0.82rem; cursor:pointer; transition:all 0.15s;
-  }
-  .filter-btn:hover { background:var(--steel); border-color:var(--steel); color:#fff; }
-  .filter-btn.active { background:var(--navy); border-color:var(--navy); color:#fff; }
-
-  /* SEARCH */
-  .search-bar { display:flex; gap:8px; margin-bottom:16px; }
-  .search-bar input {
-    flex:1; background:var(--white); border:1px solid var(--border);
-    color:var(--text); padding:9px 12px; border-radius:3px; font-size:0.9rem;
-    transition:border-color 0.15s;
-  }
-  .search-bar input:focus { outline:none; border-color:var(--steel); }
-  .search-bar input::placeholder { color:#bbb; }
-
-  /* TABS */
-  .tab-bar { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; width:100%; }
-  .tab-btn {
-    background:transparent; border:none; border-bottom:2px solid transparent;
-    margin-bottom:-2px; color:var(--muted); padding:9px 18px;
-    font-size:0.88rem; cursor:pointer; transition:all 0.15s;
-    display:flex; align-items:center; gap:6px;
-  }
-  .tab-btn.active { color:var(--navy); border-bottom-color:var(--orange); font-weight:600; }
-  .tab-badge {
-    background:var(--offwhite); color:var(--muted);
-    padding:1px 6px; border-radius:10px; font-size:0.7rem;
-  }
-  .tab-btn.active .tab-badge { background:var(--orange); color:#fff; }
-
-  /* ITEM GRID */
-  .items-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:16px; }
-
-  /* ITEM CARD */
-  .item-card {
-    background:var(--white); border:1px solid var(--border);
-    border-radius:4px; overflow:hidden; cursor:pointer;
-    transition:all 0.15s; box-shadow:0 1px 3px rgba(0,0,0,0.06);
-  }
-  .item-card:hover { box-shadow:0 4px 14px rgba(28,53,87,0.14); border-color:var(--steel); transform:translateY(-2px); }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
-  .item-card { animation:fadeUp 0.3s ease forwards; }
-
-  .item-img {
-    width:100%; height:155px;
-    background:var(--offwhite);
-    display:flex; align-items:center; justify-content:center;
-    font-size:2.4rem; border-bottom:1px solid var(--border); overflow:hidden;
-  }
-  .item-img img { width:100%; height:100%; object-fit:cover; }
-
-  .item-body { padding:12px; }
-  .item-tags { display:flex; gap:4px; margin-bottom:7px; flex-wrap:wrap; }
-  .tag { font-size:0.69rem; padding:2px 7px; border-radius:2px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; }
-  .tag-lost    { background:#fde8e8; color:var(--red); }
-  .tag-found   { background:#e6f5ec; color:var(--green); }
-  .tag-category{ background:var(--offwhite); color:var(--muted); border:1px solid var(--border); }
-  .tag-claimed { background:#e8f3ff; color:var(--steel); }
-
-  .item-title { font-size:0.96rem; font-weight:700; margin-bottom:4px; color:var(--heading); }
-  .item-desc { font-size:0.81rem; color:var(--muted); line-height:1.5; margin-bottom:9px; }
-  .item-meta {
-    display:flex; justify-content:space-between; align-items:center;
-    font-size:0.77rem; color:var(--muted);
-    border-top:1px solid var(--border); padding-top:9px;
-  }
-  .item-action {
-    background:var(--navy); color:#fff; border:none;
-    padding:4px 11px; border-radius:2px; font-size:0.77rem;
-    cursor:pointer; transition:background 0.15s;
-  }
-  .item-action:hover { background:var(--steel); }
-
-  /* EMPTY STATE */
-  .empty-state { text-align:center; padding:52px 20px; color:var(--muted); }
-  .empty-state .icon { font-size:2.6rem; margin-bottom:11px; opacity:0.35; }
-  .empty-state h3 { font-size:1rem; margin-bottom:5px; color:var(--heading); }
-
-  /* MODAL */
-  .modal-overlay {
-    display:none; position:fixed; inset:0;
-    background:rgba(28,53,87,0.55); z-index:2000;
-    align-items:center; justify-content:center; padding:16px;
-  }
-  .modal-overlay.open { display:flex; }
-  .modal {
-    background:var(--white); border:1px solid var(--border);
-    border-top:3px solid var(--navy);
-    border-radius:4px; width:100%; max-width:500px;
-    max-height:90vh; overflow-y:auto;
-    box-shadow:0 8px 28px rgba(28,53,87,0.16);
-  }
-  .modal-header {
-    padding:15px 17px;
-    display:flex; align-items:center; justify-content:space-between;
-    border-bottom:1px solid var(--border); background:var(--offwhite);
-  }
-  .modal-title { font-size:1.08rem; font-weight:700; color:var(--heading); }
-  .modal-close {
-    background:transparent; border:1px solid var(--border); color:var(--muted);
-    width:27px; height:27px; border-radius:3px; cursor:pointer; font-size:0.88rem;
-    display:flex; align-items:center; justify-content:center; transition:all 0.15s;
-  }
-  .modal-close:hover { border-color:var(--red); color:var(--red); }
-  .modal-body { padding:17px; }
-
-  /* FORM */
-  .form-group { margin-bottom:12px; }
-  .form-label {
-    display:block; font-size:0.77rem; font-weight:600;
-    color:var(--heading); margin-bottom:4px;
-    text-transform:uppercase; letter-spacing:0.4px;
-  }
-  .form-input, .form-select, .form-textarea {
-    width:100%; background:var(--white); border:1px solid var(--border);
-    color:var(--text); padding:8px 11px; border-radius:3px; font-size:0.88rem;
-    transition:border-color 0.15s;
-  }
-  .form-input:focus, .form-select:focus, .form-textarea:focus {
-    outline:none; border-color:var(--steel);
-  }
-  .form-input::placeholder, .form-textarea::placeholder { color:#bbb; }
-  .form-textarea { resize:vertical; min-height:76px; }
-  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .upload-area {
-    border:2px dashed var(--border); border-radius:3px; padding:20px;
-    text-align:center; cursor:pointer; background:var(--offwhite); transition:all 0.15s;
-  }
-  .upload-area:hover { border-color:var(--steel); }
-  .upload-area input { display:none; }
-  .upload-area .icon { font-size:1.5rem; margin-bottom:5px; }
-  .upload-area p { font-size:0.79rem; color:var(--muted); }
-  .form-actions { display:flex; gap:8px; margin-top:14px; }
-  .btn-submit {
-    flex:1; background:var(--navy); color:#fff; border:none;
-    padding:10px; border-radius:3px; font-size:0.9rem; font-weight:600;
-    cursor:pointer; transition:background 0.15s;
-  }
-  .btn-submit:hover { background:var(--steel); }
-  .btn-cancel {
-    background:var(--offwhite); color:var(--muted); border:1px solid var(--border);
-    padding:10px 15px; border-radius:3px; cursor:pointer; font-size:0.87rem; transition:all 0.15s;
-  }
-  .btn-cancel:hover { border-color:var(--red); color:var(--red); }
-
-  /* AUTH TABS */
-  .auth-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:17px; }
-  .auth-tab {
-    flex:1; background:transparent; border:none;
-    border-bottom:2px solid transparent; margin-bottom:-2px;
-    color:var(--muted); padding:8px; font-size:0.88rem; cursor:pointer; transition:all 0.15s;
-  }
-  .auth-tab.active { color:var(--navy); border-bottom-color:var(--navy); font-weight:600; }
-
-  /* DETAIL */
-  .detail-img {
-    width:100%; height:185px; background:var(--offwhite);
-    display:flex; align-items:center; justify-content:center;
-    font-size:3.2rem; margin-bottom:13px; overflow:hidden;
-    border:1px solid var(--border); border-radius:3px;
-  }
-  .detail-img img { width:100%; height:100%; object-fit:cover; }
-  .detail-info { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:11px 0; }
-  .detail-field {
-    background:var(--offwhite); border-radius:3px;
-    padding:9px; border:1px solid var(--border);
-  }
-  .detail-field .key { font-size:0.69rem; color:var(--muted); margin-bottom:3px; text-transform:uppercase; letter-spacing:0.3px; font-weight:600; }
-  .detail-field .val { font-size:0.87rem; font-weight:600; color:var(--heading); }
-
-  /* CHAT */
-  .chat-layout { display:grid; grid-template-columns:252px 1fr; height:calc(100vh - 58px); overflow:hidden; }
-  .chat-sidebar { background:var(--white); border-right:1px solid var(--border); overflow-y:auto; }
-  .chat-sidebar-header {
-    padding:13px 15px; border-bottom:2px solid var(--orange);
-    font-weight:700; font-size:0.93rem; color:var(--heading); background:var(--offwhite);
-  }
-  .chat-list-item {
-    padding:11px 14px; border-bottom:1px solid var(--border);
-    cursor:pointer; transition:background 0.1s; display:flex; align-items:center; gap:9px;
-  }
-  .chat-list-item:hover, .chat-list-item.active { background:var(--offwhite); }
-  .chat-avatar {
-    width:34px; height:34px; border-radius:50%; background:var(--navy); color:#fff;
-    display:flex; align-items:center; justify-content:center; font-size:0.84rem; flex-shrink:0;
-  }
-  .chat-preview h4 { font-size:0.85rem; font-weight:600; margin-bottom:2px; color:var(--heading); }
-  .chat-preview p { font-size:0.74rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:143px; }
-  .chat-main { display:flex; flex-direction:column; background:var(--offwhite); }
-  .chat-topbar {
-    padding:10px 17px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; gap:10px; background:var(--white);
-    border-left:4px solid var(--orange);
-  }
-  .chat-messages { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:8px; }
-  .msg { max-width:64%; padding:9px 12px; border-radius:4px; font-size:0.86rem; line-height:1.5; }
-  .msg-in { background:var(--white); align-self:flex-start; border:1px solid var(--border); border-bottom-left-radius:1px; }
-  .msg-out { background:var(--navy); color:#fff; align-self:flex-end; border-bottom-right-radius:1px; }
-  .msg-time { font-size:0.67rem; opacity:0.5; margin-top:3px; }
-  .chat-input-bar { padding:10px 13px; border-top:1px solid var(--border); display:flex; gap:7px; background:var(--white); }
-  .chat-input-bar input {
-    flex:1; background:var(--offwhite); border:1px solid var(--border);
-    color:var(--text); padding:8px 11px; border-radius:3px; font-size:0.86rem;
-  }
-  .chat-input-bar input:focus { outline:none; border-color:var(--steel); }
-  .chat-send { background:var(--orange); border:none; color:#fff; width:36px; height:36px; border-radius:3px; cursor:pointer; font-size:0.92rem; transition:background 0.15s; }
-  .chat-send:hover { background:#d66910; }
-  .chat-empty { flex:1; display:flex; align-items:center; justify-content:center; color:var(--muted); text-align:center; }
-
-  /* PROFILE */
-  .profile-header { background:var(--navy); padding:26px 1.5rem; color:#fff; border-bottom:4px solid var(--orange); }
-  .profile-info { max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:17px; }
-  .profile-avatar {
-    width:62px; height:62px; border-radius:50%;
-    background:rgba(255,255,255,0.1); border:2px solid var(--orange);
-    display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; overflow:hidden;
-  }
-  .profile-avatar img { width:100%; height:100%; object-fit:cover; }
-  .profile-details h2 { font-size:1.15rem; font-weight:700; color:#fff; }
-  .profile-details p { color:rgba(255,255,255,0.6); font-size:0.82rem; margin-top:2px; }
-  .profile-badge { display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:5px; font-size:0.79rem; color:rgba(255,255,255,0.75); }
-
-  /* TOAST */
-  .toast-container { position:fixed; bottom:17px; right:17px; z-index:3000; display:flex; flex-direction:column; gap:5px; }
-  .toast {
-    background:var(--navy); color:#fff; border-left:3px solid var(--steel);
-    padding:10px 14px; border-radius:3px; font-size:0.83rem; max-width:270px;
-    box-shadow:0 4px 12px rgba(28,53,87,0.2); animation:toastIn 0.22s ease;
-  }
-  .toast.success { border-left-color:var(--green); }
-  .toast.error   { border-left-color:var(--red); }
-  @keyframes toastIn { from{opacity:0;transform:translateX(13px);} to{opacity:1;transform:translateX(0);} }
-
-  /* LOADING */
-  .loading { display:flex; align-items:center; justify-content:center; padding:46px; color:var(--muted); flex-direction:column; gap:9px; }
-  .spinner { width:25px; height:25px; border:2px solid var(--border); border-top-color:var(--navy); border-radius:50%; animation:spin 0.75s linear infinite; }
-  @keyframes spin { to{transform:rotate(360deg);} }
-
-  /* SETUP BANNER */
-  .setup-banner { background:#fff8e1; border:1px solid #ffe082; border-radius:3px; padding:13px; margin-bottom:16px; }
-  .setup-banner h3 { font-weight:700; color:#7a5c00; margin-bottom:4px; font-size:0.93rem; }
-  .setup-banner p { font-size:0.81rem; color:#5a4400; }
-  code { background:var(--offwhite); border:1px solid var(--border); padding:1px 5px; border-radius:2px; font-size:0.79rem; color:var(--steel); font-family:monospace; }
-
-  /* RESPONSIVE */
-  @media(max-width:768px){
-    .chat-layout{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 58px);}
-    .chat-sidebar{display:none;}
-    .chat-main{height:calc(100vh - 58px);}
-    .form-row{grid-template-columns:1fr;}
-    .detail-info{grid-template-columns:1fr;}
-    .stats-strip{flex-wrap:wrap;}
-    .stat-item{min-width:50%;}
-    .profile-info{flex-direction:column;text-align:center;}
-    .page{overflow-y:auto;-webkit-overflow-scrolling:touch;}
-    .container{padding:17px 1rem;}
-    .hero{padding:32px 1rem 24px;}
-    .hero h1{font-size:1.6rem;}
-    .nav-links button:not(.btn-auth){display:none;}
-    .items-grid{grid-template-columns:1fr;}
-    .modal{max-height:88vh;overflow-y:auto;}
-    .tab-bar{width:100%;}
-    .tab-btn{flex:1;padding:7px 4px;font-size:0.79rem;}
-  }
+:root{
+  --navy:#1C3557;--blue:#2C3E50;--steel:#5A7FA3;
+  --orange:#F47C20;--green:#28A745;--leaf:#3FAE49;
+  --white:#fff;--off:#F4F6F8;--text:#4A4A4A;
+  --head:#1F3A5F;--border:#D9D9D9;--muted:#888;--red:#DC3545;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--white);color:var(--text);font-size:14.5px;line-height:1.6;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--steel)}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;border-bottom:3px solid var(--orange);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo svg{width:38px;height:38px;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;line-height:1.2;}
+.logo-text .t{font-size:.58rem;font-weight:700;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;}
+.logo-text .b{font-size:.92rem;font-weight:700;color:#fff;}
+.logo-text .b span{color:var(--orange);}
+.nav-links{display:flex;align-items:center;gap:3px;}
+.nav-links button{background:transparent;border:none;color:rgba(255,255,255,.8);padding:6px 13px;border-radius:3px;font-size:.85rem;cursor:pointer;transition:all .15s;}
+.nav-links button:hover,.nav-links button.active{background:rgba(255,255,255,.12);color:#fff;}
+.btn-auth{background:var(--green)!important;color:#fff!important;font-weight:600;padding:6px 16px;border-radius:3px;}
+.page{display:none;min-height:100vh;padding-top:58px;}
+.page.active{display:block;}
+.hero{background:var(--navy);color:#fff;padding:52px 1.5rem 40px;text-align:center;}
+.hero-badge{display:inline-block;background:var(--orange);border-radius:2px;padding:3px 12px;font-size:.76rem;color:#fff;font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;}
+.hero h1{font-size:clamp(1.7rem,4vw,2.7rem);font-weight:700;line-height:1.2;margin-bottom:12px;}
+.hero h1 span{color:var(--orange);}
+.hero p{font-size:.96rem;color:rgba(255,255,255,.7);max-width:480px;margin:0 auto 26px;}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-p{background:var(--green);color:#fff;border:none;padding:10px 22px;border-radius:3px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-p:hover{background:var(--leaf);}
+.btn-s{background:transparent;color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.4);padding:10px 22px;border-radius:3px;font-size:.9rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-s:hover{border-color:#fff;color:#fff;}
+.stats{display:flex;background:var(--blue);border-top:1px solid rgba(255,255,255,.07);}
+.stat{flex:1;padding:18px 12px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
+.stat:last-child{border-right:none;}
+.stat .n{font-size:1.7rem;font-weight:700;color:var(--orange);}
+.stat .l{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:2px;}
+.con{max-width:1100px;margin:0 auto;padding:28px 1.5rem;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);}
+.sec-title{font-size:1.15rem;font-weight:700;color:var(--head);}
+.sec-title span{color:var(--steel);}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.fbtn{background:var(--off);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:3px;font-size:.82rem;cursor:pointer;transition:all .15s;}
+.fbtn:hover,.fbtn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+.search-bar{display:flex;gap:8px;margin-bottom:16px;}
+.search-bar input{flex:1;background:var(--white);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:3px;font-size:.9rem;}
+.search-bar input:focus{outline:none;border-color:var(--steel);}
+.tab-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;}
+.tab-btn{background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);padding:9px 18px;font-size:.88rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--orange);font-weight:600;}
+.badge{background:var(--off);color:var(--muted);padding:1px 6px;border-radius:10px;font-size:.7rem;}
+.tab-btn.active .badge{background:var(--orange);color:#fff;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:16px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.06);animation:fadeUp .3s ease forwards;}
+.card:hover{box-shadow:0 4px 14px rgba(28,53,87,.14);border-color:var(--steel);transform:translateY(-2px);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card-img{width:100%;height:155px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:2.4rem;border-bottom:1px solid var(--border);overflow:hidden;}
+.card-img img{width:100%;height:100%;object-fit:cover;}
+.card-body{padding:12px;}
+.tags{display:flex;gap:4px;margin-bottom:7px;flex-wrap:wrap;}
+.tag{font-size:.69rem;padding:2px 7px;border-radius:2px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+.tag-lost{background:#fde8e8;color:var(--red);}
+.tag-found{background:#e6f5ec;color:var(--green);}
+.tag-cat{background:var(--off);color:var(--muted);border:1px solid var(--border);}
+.tag-done{background:#e8f3ff;color:var(--steel);}
+.card-title{font-size:.96rem;font-weight:700;margin-bottom:4px;color:var(--head);}
+.card-desc{font-size:.81rem;color:var(--muted);line-height:1.5;margin-bottom:9px;}
+.card-meta{display:flex;justify-content:space-between;align-items:center;font-size:.77rem;color:var(--muted);border-top:1px solid var(--border);padding-top:9px;}
+.act-btn{background:var(--navy);color:#fff;border:none;padding:4px 11px;border-radius:2px;font-size:.77rem;cursor:pointer;transition:background .15s;}
+.act-btn:hover{background:var(--steel);}
+.empty{text-align:center;padding:52px 20px;color:var(--muted);}
+.empty .icon{font-size:2.6rem;margin-bottom:11px;opacity:.35;}
+.empty h3{font-size:1rem;margin-bottom:5px;color:var(--head);}
+.overlay{display:none;position:fixed;inset:0;background:rgba(28,53,87,.55);z-index:2000;align-items:center;justify-content:center;padding:16px;}
+.overlay.open{display:flex;}
+.modal{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--navy);border-radius:4px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 28px rgba(28,53,87,.18);}
+.modal-hdr{padding:15px 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--off);}
+.modal-title{font-size:1.08rem;font-weight:700;color:var(--head);}
+.modal-x{background:transparent;border:1px solid var(--border);color:var(--muted);width:27px;height:27px;border-radius:3px;cursor:pointer;font-size:.88rem;display:flex;align-items:center;justify-content:center;}
+.modal-x:hover{border-color:var(--red);color:var(--red);}
+.modal-body{padding:17px;}
+.fg{margin-bottom:12px;}
+.fl{display:block;font-size:.77rem;font-weight:600;color:var(--head);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+.fi,.fs,.ft{width:100%;background:var(--white);border:1px solid var(--border);color:var(--text);padding:9px 11px;border-radius:3px;font-size:.9rem;transition:border-color .15s;}
+.fi:focus,.fs:focus,.ft:focus{outline:none;border-color:var(--steel);}
+.fi::placeholder,.ft::placeholder{color:#bbb;}
+.ft{resize:vertical;min-height:76px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.upload{border:2px dashed var(--border);border-radius:3px;padding:20px;text-align:center;cursor:pointer;background:var(--off);transition:all .15s;}
+.upload:hover{border-color:var(--steel);}
+.upload input{display:none;}
+.form-actions{display:flex;gap:8px;margin-top:14px;}
+.btn-sub{flex:1;background:var(--navy);color:#fff;border:none;padding:10px;border-radius:3px;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-sub:hover{background:var(--steel);}
+.btn-can{background:var(--off);color:var(--muted);border:1px solid var(--border);padding:10px 15px;border-radius:3px;cursor:pointer;font-size:.87rem;}
+.btn-can:hover{border-color:var(--red);color:var(--red);}
+.detail-img{width:100%;height:185px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:3.2rem;margin-bottom:13px;overflow:hidden;border:1px solid var(--border);border-radius:3px;}
+.detail-img img{width:100%;height:100%;object-fit:cover;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0;}
+.df{background:var(--off);border-radius:3px;padding:9px;border:1px solid var(--border);}
+.dk{font-size:.69rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px;font-weight:600;}
+.dv{font-size:.87rem;font-weight:600;color:var(--head);}
+.chat-layout{display:grid;grid-template-columns:255px 1fr;height:calc(100vh - 58px);overflow:hidden;}
+.chat-sb{background:var(--white);border-right:1px solid var(--border);overflow-y:auto;}
+.chat-sb-hdr{padding:13px 15px;border-bottom:2px solid var(--orange);font-weight:700;font-size:.93rem;color:var(--head);background:var(--off);}
+.chat-item{padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:9px;}
+.chat-item:hover,.chat-item.active{background:var(--off);}
+.chat-av{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.84rem;flex-shrink:0;font-weight:600;}
+.chat-main{display:flex;flex-direction:column;background:var(--off);}
+.chat-top{padding:10px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--white);border-left:4px solid var(--orange);}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;}
+.msg{max-width:64%;padding:9px 12px;border-radius:4px;font-size:.86rem;line-height:1.5;}
+.msg-in{background:var(--white);align-self:flex-start;border:1px solid var(--border);}
+.msg-out{background:var(--navy);color:#fff;align-self:flex-end;}
+.msg-time{font-size:.67rem;opacity:.5;margin-top:3px;}
+.chat-inp{padding:10px 13px;border-top:1px solid var(--border);display:flex;gap:7px;background:var(--white);}
+.chat-inp input{flex:1;background:var(--off);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:3px;font-size:.86rem;}
+.chat-inp input:focus{outline:none;border-color:var(--steel);}
+.chat-send{background:var(--orange);border:none;color:#fff;width:36px;height:36px;border-radius:3px;cursor:pointer;font-size:.92rem;}
+.chat-send:hover{background:#d66910;}
+.chat-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;}
+.prof-hdr{background:var(--navy);padding:26px 1.5rem;color:#fff;border-bottom:4px solid var(--orange);}
+.prof-info{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:17px;}
+.prof-av{width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;overflow:hidden;}
+.prof-av img{width:100%;height:100%;object-fit:cover;}
+.toast-con{position:fixed;bottom:17px;right:17px;z-index:3000;display:flex;flex-direction:column;gap:5px;}
+.toast{background:var(--navy);color:#fff;border-left:3px solid var(--steel);padding:10px 14px;border-radius:3px;font-size:.83rem;max-width:270px;box-shadow:0 4px 12px rgba(28,53,87,.2);animation:tIn .22s ease;}
+.toast.success{border-left-color:var(--green);}
+.toast.error{border-left-color:var(--red);}
+@keyframes tIn{from{opacity:0;transform:translateX(13px)}to{opacity:1;transform:translateX(0)}}
+.loading{display:flex;align-items:center;justify-content:center;padding:46px;color:var(--muted);flex-direction:column;gap:9px;}
+.spin{width:25px;height:25px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:sp .75s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(max-width:768px){
+  .chat-layout{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 58px);}
+  .chat-sb{display:none;}
+  .chat-main{height:calc(100vh - 58px);}
+  .frow{grid-template-columns:1fr;}
+  .detail-grid{grid-template-columns:1fr;}
+  .stats{flex-wrap:wrap;}
+  .stat{min-width:50%;}
+  .prof-info{flex-direction:column;text-align:center;}
+  .page{overflow-y:auto;}
+  .con{padding:17px 1rem;}
+  .hero{padding:32px 1rem 24px;}
+  .hero h1{font-size:1.6rem;}
+  .nav-links button:not(.btn-auth){display:none;}
+  .grid{grid-template-columns:1fr;}
+  .modal{max-height:88vh;}
+  .tab-bar{width:100%;}
+  .tab-btn{flex:1;padding:7px 4px;font-size:.79rem;}
+}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo">
-    <svg class="smvdu-logo" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px;flex-shrink:0;">
+  <div class="logo">
+    <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
       <circle cx="22" cy="22" r="22" fill="#ffffff"/>
       <circle cx="22" cy="22" r="20" fill="#1C3557"/>
       <ellipse cx="22" cy="10" rx="4" ry="6" fill="#F47C20"/>
@@ -430,237 +175,184 @@
       <text x="22" y="40" text-anchor="middle" font-size="4.5" font-weight="bold" fill="#F47C20" font-family="Arial">SMVDU</text>
     </svg>
     <div class="logo-text">
-      <span class="top">SMVDU</span>
-      <span class="bottom">Find<span>It</span></span>
+      <span class="t">SMVDU</span>
+      <span class="b">Find<span>It</span></span>
     </div>
   </div>
   <div class="nav-links">
-    <button data-fn="showPage" data-arg1="home" id="nav-home" class="active">Home</button>
-    <button data-fn="showPage" data-arg1="items" id="nav-items">Browse</button>
-    <button data-fn="showPage" data-arg1="chat" id="nav-chat">Messages</button>
-    <button data-fn="showPage" data-arg1="users" id="nav-users">👥 Users</button>
-    <button data-fn="showPage" data-arg1="profile" id="nav-profile">Profile</button>
-    <button class="btn-auth" data-fn="openAuthModal" id="authBtn">Sign In</button>
+    <button id="nav-home" class="active" onclick="showPage('home')">Home</button>
+    <button id="nav-items" onclick="showPage('items')">Browse</button>
+    <button id="nav-chat" onclick="showPage('chat')">Messages</button>
+    <button id="nav-users" onclick="showPage('users')">Users</button>
+    <button id="nav-profile" onclick="showPage('profile')">Profile</button>
+    <button id="authBtn" class="btn-auth" onclick="openAuthModal()">Sign In</button>
   </div>
 </nav>
 
-
-<div class="toast-container" id="toastContainer"></div>
-
+<div class="toast-con" id="toastCon"></div>
 
 <div class="page active" id="page-home">
   <div class="hero">
-    <div class="hero-badge">🎓 SHRI MATA VAISHNO DEVI UNIVERSITY, KATRA</div>
-    <h1>Lost something on<br>campus? <span class="accent">We'll find it.</span></h1>
-    <p>SMVDU's dedicated lost & found platform — whole campus covered. Report lost items, upload found ones, and connect instantly.</p>
-    <div class="hero-actions">
-      <button class="btn-primary" data-fn="openReportModal" data-arg1="lost">📢 Report Lost Item</button>
-      <button class="btn-secondary" data-fn="openReportModal" data-arg1="found">🔍 I Found Something</button>
+    <div class="hero-badge">Shri Mata Vaishno Devi University, Katra</div>
+    <h1>Lost something on campus?<br><span>We'll find it.</span></h1>
+    <p>SMVDU's dedicated lost and found platform. Report lost items, upload found ones, connect with students instantly.</p>
+    <div class="hero-btns">
+      <button class="btn-p" onclick="openReportModal('lost')">Report Lost Item</button>
+      <button class="btn-s" onclick="openReportModal('found')">I Found Something</button>
     </div>
   </div>
-
-  
-  <div class="stats-strip">
-    <div class="stat-item"><div class="num" id="statLost">0</div><div class="lbl">Items Reported Lost</div></div>
-    <div class="stat-item"><div class="num" id="statFound">0</div><div class="lbl">Items Found</div></div>
-    <div class="stat-item"><div class="num" id="statResolved">0</div><div class="lbl">Successfully Reunited</div></div>
-    <div class="stat-item"><div class="num">Whole</div><div class="lbl">Campus</div></div>
+  <div class="stats">
+    <div class="stat"><div class="n" id="statLost">0</div><div class="l">Items Reported Lost</div></div>
+    <div class="stat"><div class="n" id="statFound">0</div><div class="l">Items Found</div></div>
+    <div class="stat"><div class="n" id="statResolved">0</div><div class="l">Successfully Reunited</div></div>
+    <div class="stat"><div class="n">Whole</div><div class="l">Campus</div></div>
   </div>
-
-  <div class="container">
-    
-    <div class="setup-banner" id="setupBanner">
-      <h3>⚡ Firebase Setup Required</h3>
-      <p>Connect your Firebase project to enable real-time features.</p>
-    </div>
-
-    
+  <div class="con">
     <div style="margin-bottom:20px;">
-      <input type="text" id="homeSearch" placeholder="🔍  Quick search — item name, location..."
-        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:0.9rem;color:var(--text);background:var(--white);"
-        oninput="if(this.value.length>2){showPage('items');document.getElementById('searchInput').value=this.value;if(window.filterItems)window.filterItems();}">
+      <input type="text" id="homeSearch" placeholder="Quick search — item name or location..."
+        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:.9rem;color:var(--text);"
+        oninput="quickSearch(this.value)">
     </div>
-
-    <div class="section-header">
-      <div class="section-title">Recent <span>Activity</span></div>
-      <button class="btn-secondary" style="padding:8px 16px;font-size:0.82rem;color:var(--steel);border-color:var(--steel);" data-fn="showPage" data-arg1="items">View All →</button>
+    <div class="sec-hdr">
+      <div class="sec-title">Recent <span>Activity</span></div>
+      <button style="background:transparent;border:1px solid var(--steel);color:var(--steel);padding:6px 14px;border-radius:3px;font-size:.82rem;cursor:pointer;" onclick="showPage('items')">View All</button>
     </div>
-    <div class="items-grid" id="recentItems">
-      <div class="loading"><div class="spinner"></div><span>Loading items...</span></div>
-    </div>
+    <div class="grid" id="recentItems"><div class="loading"><div class="spin"></div><span>Loading...</span></div></div>
   </div>
 </div>
-
 
 <div class="page" id="page-items">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-title">Browse <span>Items</span></div>
+  <div class="con">
+    <div class="sec-hdr">
+      <div class="sec-title">Browse <span>Items</span></div>
       <div style="display:flex;gap:8px;">
-        <button class="btn-primary" style="padding:8px 16px;font-size:0.82rem;" data-fn="openReportModal" data-arg1="lost">+ Report Lost</button>
-        <button class="btn-primary" style="padding:8px 16px;font-size:0.82rem;background:var(--steel);" data-fn="openReportModal" data-arg1="found">+ Found Item</button>
+        <button class="btn-p" style="padding:7px 14px;font-size:.82rem;" onclick="openReportModal('lost')">+ Lost</button>
+        <button class="btn-p" style="padding:7px 14px;font-size:.82rem;background:var(--steel);" onclick="openReportModal('found')">+ Found</button>
       </div>
     </div>
-
-    
     <div class="tab-bar">
-      <button class="tab-btn active" id="tab-all" data-fn="setTab" data-arg1="all">All Items <span class="tab-badge" id="badge-all">0</span></button>
-      <button class="tab-btn" id="tab-lost" data-fn="setTab" data-arg1="lost">🔴 Lost <span class="tab-badge" id="badge-lost">0</span></button>
-      <button class="tab-btn" id="tab-found" data-fn="setTab" data-arg1="found">🟢 Found <span class="tab-badge" id="badge-found">0</span></button>
+      <button class="tab-btn active" id="tab-all" onclick="setTab('all')">All <span class="badge" id="badge-all">0</span></button>
+      <button class="tab-btn" id="tab-lost" onclick="setTab('lost')">Lost <span class="badge" id="badge-lost">0</span></button>
+      <button class="tab-btn" id="tab-found" onclick="setTab('found')">Found <span class="badge" id="badge-found">0</span></button>
     </div>
-
-    
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search by item name, description, location..."
-        oninput="if(window.filterItems)window.filterItems()">
+      <input type="text" id="searchInput" placeholder="Search by name, description, location..." oninput="filterItems()">
     </div>
-
-    
-    <div class="filters" id="categoryFilters">
-      <button class="filter-btn active" onclick="if(window.setCategoryFilter)window.setCategoryFilter('all',this)">All</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Electronics',this)">📱 Electronics</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('ID/Documents',this)">🪪 ID/Docs</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Keys',this)">🔑 Keys</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Wallet/Purse',this)">👛 Wallet</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Bag/Backpack',this)">🎒 Bag</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Clothing',this)">👕 Clothing</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Books/Notes',this)">📚 Books</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Sports',this)">⚽ Sports</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Bottle',this)">🍶 Bottle</button>
-      <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Other',this)">📦 Other</button>
+    <div class="filters">
+      <button class="fbtn active" onclick="setCatFilter('all',this)">All</button>
+      <button class="fbtn" onclick="setCatFilter('Electronics',this)">Electronics</button>
+      <button class="fbtn" onclick="setCatFilter('ID/Documents',this)">ID/Docs</button>
+      <button class="fbtn" onclick="setCatFilter('Keys',this)">Keys</button>
+      <button class="fbtn" onclick="setCatFilter('Wallet/Purse',this)">Wallet</button>
+      <button class="fbtn" onclick="setCatFilter('Bag/Backpack',this)">Bag</button>
+      <button class="fbtn" onclick="setCatFilter('Clothing',this)">Clothing</button>
+      <button class="fbtn" onclick="setCatFilter('Books/Notes',this)">Books</button>
+      <button class="fbtn" onclick="setCatFilter('Sports',this)">Sports</button>
+      <button class="fbtn" onclick="setCatFilter('Bottle',this)">Bottle</button>
+      <button class="fbtn" onclick="setCatFilter('Other',this)">Other</button>
     </div>
-
-    
-    <div class="items-grid" id="itemsGrid">
-      <div class="loading"><div class="spinner"></div><span>Loading...</span></div>
-    </div>
+    <div class="grid" id="itemsGrid"><div class="loading"><div class="spin"></div><span>Loading...</span></div></div>
   </div>
 </div>
-
 
 <div class="page" id="page-chat">
   <div class="chat-layout">
-    <div class="chat-sidebar">
-      <div class="chat-sidebar-header">💬 Messages</div>
-      <div id="chatList">
-        <div style="padding:18px;color:var(--muted);font-size:0.84rem;text-align:center;">Sign in to view conversations</div>
-      </div>
+    <div class="chat-sb">
+      <div class="chat-sb-hdr">Messages</div>
+      <div id="chatList"><div style="padding:18px;color:var(--muted);font-size:.84rem;text-align:center;">Sign in to view conversations</div></div>
     </div>
     <div class="chat-main" id="chatMain">
       <div class="chat-empty">
         <div>
           <div style="font-size:2.8rem;margin-bottom:12px;">💬</div>
-          <h3 style="font-size:1rem;margin-bottom:6px;color:var(--heading);">Select a Conversation</h3>
-          <p style="color:var(--muted);font-size:0.84rem;">Click an item card to chat<br>with the person who found/lost it</p>
+          <h3 style="font-size:1rem;margin-bottom:6px;color:var(--head);">Select a Conversation</h3>
+          <p style="color:var(--muted);font-size:.84rem;">Click an item to chat with finder or reporter</p>
         </div>
       </div>
     </div>
   </div>
 </div>
-
 
 <div class="page" id="page-users">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-title">👥 Find <span>Students</span></div>
-      <span style="font-size:0.82rem;color:var(--muted);">Search and chat with registered SMVDU students</span>
+  <div class="con">
+    <div class="sec-hdr">
+      <div class="sec-title">Find <span>Students</span></div>
     </div>
-
-    
-    <div class="search-bar" style="margin-bottom:24px;">
-      <input type="text" id="userSearchInput"
-        placeholder="Search by name, roll number, department..."
-        oninput="searchUsers(this.value)"
-        style="font-size:0.9rem;">
+    <div class="search-bar">
+      <input type="text" id="userSearch" placeholder="Search by name, roll number, department..." oninput="searchUsers(this.value)">
     </div>
-
-    
-    <div id="usersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
-      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
-        <div style="font-size:2.5rem;margin-bottom:10px;">🔍</div>
-        <p>Search for students by name or roll number</p>
-      </div>
+    <div class="grid" id="usersGrid">
+      <div class="empty"><div class="icon">🔍</div><h3>Search for students</h3><p>Type name or roll number above</p></div>
     </div>
   </div>
 </div>
 
-
 <div class="page" id="page-profile">
-  <div class="profile-header">
-    <div class="profile-info">
-      
+  <div class="prof-hdr">
+    <div class="prof-info">
       <div style="position:relative;flex-shrink:0;">
-        <div class="profile-avatar" id="profileAvatar">👤</div>
-        <label for="profilePhotoInput" title="Change photo"
-          style="position:absolute;bottom:0;right:0;background:var(--orange);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.7rem;border:2px solid var(--navy);">✏️</label>
-        <input type="file" id="profilePhotoInput" accept="image/*" style="display:none;" onchange="updateProfilePhoto(this)">
+        <div class="prof-av" id="profAv">👤</div>
+        <label for="profPhotoInput" style="position:absolute;bottom:0;right:0;background:var(--orange);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;border:2px solid var(--navy);">✏</label>
+        <input type="file" id="profPhotoInput" accept="image/*" style="display:none;" onchange="updatePhoto(this)">
       </div>
-      <div class="profile-details">
-        <h2 id="profileName">Guest User</h2>
-        <p id="profileEmail">Not signed in</p>
-        <div class="profile-badge" id="profileDept">🎓 SMVDU Student</div>
-        <div style="margin-top:6px;">
-          <label for="profilePhotoInput" style="font-size:0.73rem;color:rgba(255,255,255,0.45);cursor:pointer;text-decoration:underline;">📷 Change profile photo</label>
-        </div>
+      <div>
+        <h2 id="profName" style="font-size:1.2rem;font-weight:700;color:#fff;">Guest User</h2>
+        <p id="profEmail" style="color:rgba(255,255,255,.6);font-size:.83rem;margin-top:2px;">Not signed in</p>
+        <div id="profBadge" style="margin-top:6px;font-size:.8rem;color:rgba(255,255,255,.75);">SMVDU Student</div>
+        <label for="profPhotoInput" style="font-size:.72rem;color:rgba(255,255,255,.45);cursor:pointer;text-decoration:underline;display:block;margin-top:4px;">Change profile photo</label>
       </div>
     </div>
   </div>
-
-  <div class="container">
-    
-    <div id="matchInboxSection" style="display:none;margin-bottom:28px;">
-      <div class="section-header">
-        <div class="section-title">🎯 Smart <span>Matches</span></div>
-        <span style="font-size:0.8rem;color:var(--muted);">Potential matches for your lost items</span>
+  <div class="con">
+    <div id="matchInboxSec" style="display:none;margin-bottom:28px;">
+      <div class="sec-hdr">
+        <div class="sec-title">Smart <span>Matches</span></div>
+        <span style="font-size:.8rem;color:var(--muted);">Potential matches for your lost items</span>
       </div>
       <div id="matchInbox"></div>
     </div>
-
-    
-    <div class="section-header">
-      <div class="section-title">My <span>Reports</span></div>
-      <span id="myReportsCount" style="font-size:0.8rem;color:var(--muted);background:var(--offwhite);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
+    <div class="sec-hdr">
+      <div class="sec-title">My <span>Reports</span></div>
+      <span id="repCount" style="font-size:.8rem;color:var(--muted);background:var(--off);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
     </div>
-    <div class="items-grid" id="myItems">
-      <div class="empty-state"><div class="icon">📋</div><h3>No reports yet</h3><p>Sign in and report a lost or found item</p></div>
+    <div class="grid" id="myItems">
+      <div class="empty"><div class="icon">📋</div><h3>No reports yet</h3><p>Sign in and report a lost or found item</p></div>
     </div>
   </div>
 </div>
 
-
-<div class="modal-overlay" id="authModal">
+<div class="overlay" id="authModal">
   <div class="modal" style="max-width:420px;">
-    <div class="modal-header">
-      <div class="modal-title">Welcome to <span style="color:var(--orange)">FindIt</span></div>
-      <button class="modal-close" data-fn="closeModal" data-arg1="authModal">✕</button>
+    <div class="modal-hdr">
+      <div class="modal-title" id="authTitle">Welcome to <span style="color:var(--orange)">FindIt</span></div>
+      <button class="modal-x" onclick="closeModal('authModal')">✕</button>
     </div>
-    <div class="modal-body" id="authModalBody">
-      
-      <div id="googleSignInStep">
-        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;text-align:center;">Sign in with your Google account to continue</p>
-        <button onclick="handleGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;border:1px solid #ddd;border-radius:3px;background:#fff;cursor:pointer;font-family:Georgia,serif;font-size:0.95rem;font-weight:bold;color:#333;transition:all 0.15s;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='#fff'">
-          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    <div class="modal-body">
+      <div id="gSignInStep">
+        <p style="color:var(--muted);font-size:.88rem;margin-bottom:20px;text-align:center;">Sign in with your verified Google account</p>
+        <button id="googleBtn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;border:1px solid #ddd;border-radius:3px;background:#fff;cursor:pointer;font-size:.95rem;font-weight:bold;color:#333;">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
           Continue with Google
         </button>
-        <p style="font-size:0.78rem;color:#aaa;text-align:center;margin-top:14px;">Only verified Google accounts are allowed</p>
+        <p style="font-size:.76rem;color:#aaa;text-align:center;margin-top:12px;">Only verified Google accounts allowed</p>
       </div>
-      
-      <div id="completeProfileStep" style="display:none;">
-        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px;">Almost done! Fill in your SMVDU details:</p>
-
-        
-        <div class="form-group" style="text-align:center;margin-bottom:16px;">
-          <div id="photoPreview" style="width:72px;height:72px;border-radius:50%;background:var(--offwhite);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">🧑‍💻</div>
-          <label style="font-size:0.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
-            📷 Upload photo from gallery
-            <input type="file" id="regPhotoInput" accept="image/*" style="display:none;" onchange="previewRegPhoto(this)">
+      <div id="profileStep" style="display:none;">
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px;">Almost done! Fill in your SMVDU details:</p>
+        <div class="fg" style="text-align:center;margin-bottom:16px;">
+          <div id="avPreview" style="width:70px;height:70px;border-radius:50%;background:var(--off);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">🧑‍💻</div>
+          <label style="font-size:.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
+            Upload photo
+            <input type="file" id="regPhoto" accept="image/*" style="display:none;" onchange="previewRegPhoto(this)">
           </label>
         </div>
-
-        
-        <div class="form-group">
-          <label class="form-label">Or Choose Avatar</label>
-          <div id="avatarPicker" style="display:flex;gap:7px;flex-wrap:wrap;">
+        <div class="fg">
+          <label class="fl">Choose Avatar</label>
+          <div id="avPicker" style="display:flex;gap:7px;flex-wrap:wrap;">
             <span data-av="🧑‍💻" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--orange);border-radius:6px;background:#fff5ee;">🧑‍💻</span>
             <span data-av="👨‍🎓" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">👨‍🎓</span>
             <span data-av="👩‍🎓" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">👩‍🎓</span>
@@ -672,21 +364,19 @@
             <span data-av="⚡" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">⚡</span>
             <span data-av="🏔️" style="font-size:1.7rem;cursor:pointer;padding:5px;border:2px solid var(--border);border-radius:6px;">🏔️</span>
           </div>
-          <input type="hidden" id="selectedAvatar" value="🧑‍💻">
-          <input type="hidden" id="regPhotoURL" value="">
+          <input type="hidden" id="selAvatar" value="🧑‍💻">
         </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Roll Number *</label>
-            <input class="form-input" type="text" id="regRoll" placeholder="e.g. 25BCS080">
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">Roll Number *</label>
+            <input class="fi" type="text" id="regRoll" placeholder="e.g. 25BCS080" oninput="this.value=this.value.toUpperCase()">
           </div>
-          <div class="form-group">
-            <label class="form-label">Department *</label>
-            <select class="form-select" id="regDept">
+          <div class="fg">
+            <label class="fl">Department</label>
+            <select class="fs" id="regDept">
               <option value="">Select</option>
-              <option>Computer Science & Engineering</option>
-              <option>Electronics & Communication</option>
+              <option>Computer Science &amp; Engineering</option>
+              <option>Electronics &amp; Communication</option>
               <option>Mechanical Engineering</option>
               <option>Civil Engineering</option>
               <option>Biotechnology</option>
@@ -698,9 +388,9 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Hostel (optional)</label>
-          <select class="form-select" id="regHostel">
+        <div class="fg">
+          <label class="fl">Hostel (optional)</label>
+          <select class="fs" id="regHostel">
             <option value="">Select Hostel</option>
             <option>Nilgiri Hostel</option>
             <option>Vindhyanchal Hostel</option>
@@ -712,34 +402,29 @@
             <option>Old Basohli Hostel</option>
           </select>
         </div>
-        <div style="margin-top:14px;">
-          <button class="btn-submit" style="width:100%;" onclick="saveUserProfile()">Complete Registration →</button>
-        </div>
-      </div>
+        <button class="btn-sub" style="width:100%;margin-top:14px;" onclick="saveProfile()">Complete Registration</button>
       </div>
     </div>
   </div>
 </div>
 
-
-<div class="modal-overlay" id="reportModal">
+<div class="overlay" id="reportModal">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="reportModalTitle">Report Item</div>
-      <button class="modal-close" data-fn="closeModal" data-arg1="reportModal">✕</button>
+    <div class="modal-hdr">
+      <div class="modal-title" id="repModalTitle">Report Item</div>
+      <button class="modal-x" onclick="closeModal('reportModal')">✕</button>
     </div>
     <div class="modal-body">
-      <input type="hidden" id="reportType" value="lost">
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Item Name *</label>
-          <input class="form-input" type="text" id="itemName" placeholder="e.g. Black Laptop Bag">
+      <input type="hidden" id="repType" value="lost">
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Item Name *</label>
+          <input class="fi" type="text" id="itemName" placeholder="e.g. Black Laptop Bag">
         </div>
-        <div class="form-group">
-          <label class="form-label">Category *</label>
-          <select class="form-select" id="itemCategory">
-            <option value="">Select Category</option>
+        <div class="fg">
+          <label class="fl">Category *</label>
+          <select class="fs" id="itemCat">
+            <option value="">Select</option>
             <option>Electronics</option>
             <option>ID/Documents</option>
             <option>Keys</option>
@@ -753,17 +438,14 @@
           </select>
         </div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Description *</label>
-        <textarea class="form-textarea" id="itemDesc" placeholder="Describe — color, brand, any unique marks..."></textarea>
+      <div class="fg">
+        <label class="fl">Description *</label>
+        <textarea class="ft" id="itemDesc" placeholder="Color, brand, unique marks..."></textarea>
       </div>
-
-      <div class="form-row">
-        
-        <div class="form-group">
-          <label class="form-label">Location on Campus *</label>
-          <select class="form-select" id="itemLocation">
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Location on Campus *</label>
+          <select class="fs" id="itemLoc">
             <option value="">Select Location</option>
             <optgroup label="Academic">
               <option>Main Academic Block</option>
@@ -794,7 +476,7 @@
               <option>Vaishnavi Mess</option>
               <option>Basohli Mess</option>
             </optgroup>
-            <optgroup label="Other Campus Areas">
+            <optgroup label="Other Areas">
               <option>Sports Complex</option>
               <option>Gym</option>
               <option>Matrika Auditorium</option>
@@ -813,1030 +495,588 @@
             <option>Other</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Date *</label>
-          <input class="form-input" type="date" id="itemDate">
+        <div class="fg">
+          <label class="fl">Date *</label>
+          <input class="fi" type="date" id="itemDate">
         </div>
       </div>
-
-      
-      <div class="form-group" id="verifyQuestionGroup" style="display:none;">
-        <label class="form-label">🔐 Verification Question <span style="font-weight:normal;text-transform:none;">(Only you would know this — helps verify the real owner)</span></label>
-        <input class="form-input" type="text" id="verifyQuestion" placeholder="e.g. What sticker is on your laptop?">
-        <input class="form-input" type="text" id="verifyAnswer" placeholder="Your answer (kept private)" style="margin-top:7px;">
+      <div class="fg" id="verifyGrp" style="display:none;">
+        <label class="fl">Verification Question (only owner would know)</label>
+        <input class="fi" type="text" id="verifyQ" placeholder="e.g. What sticker is on your laptop?">
+        <input class="fi" type="text" id="verifyA" placeholder="Your answer (kept private)" style="margin-top:7px;">
       </div>
-
-      
-      <div class="form-group">
-        <label class="form-label">Upload Photo (optional)</label>
-        <div class="upload-area" onclick="document.getElementById('itemPhoto').click()">
+      <div class="fg">
+        <label class="fl">Photo (optional)</label>
+        <div class="upload" onclick="document.getElementById('itemPhoto').click()">
           <input type="file" id="itemPhoto" accept="image/*" onchange="previewPhoto(this)">
-          <div class="icon" id="uploadIcon">📸</div>
-          <p id="uploadText">Click to upload a photo of the item</p>
+          <div id="uploadIcon" style="font-size:1.5rem;margin-bottom:5px;">📸</div>
+          <p id="uploadTxt" style="font-size:.79rem;color:var(--muted);">Click to upload photo</p>
         </div>
       </div>
-
       <div class="form-actions">
-        <button class="btn-cancel" data-fn="closeModal" data-arg1="reportModal">Cancel</button>
-        <button class="btn-submit" data-fn="submitReport">Submit Report</button>
+        <button class="btn-can" onclick="closeModal('reportModal')">Cancel</button>
+        <button class="btn-sub" onclick="submitReport()">Submit Report</button>
       </div>
     </div>
   </div>
 </div>
 
-
-<div class="modal-overlay" id="detailModal">
+<div class="overlay" id="detailModal">
   <div class="modal" style="max-width:560px;">
-    <div class="modal-header">
+    <div class="modal-hdr">
       <div class="modal-title" id="detailTitle">Item Details</div>
-      <button class="modal-close" data-fn="closeModal" data-arg1="detailModal">✕</button>
+      <button class="modal-x" onclick="closeModal('detailModal')">✕</button>
     </div>
     <div class="modal-body" id="detailBody"></div>
   </div>
 </div>
 
-
-<div class="modal-overlay" id="claimModal">
+<div class="overlay" id="claimModal">
   <div class="modal" style="max-width:420px;">
-    <div class="modal-header">
-      <div class="modal-title">🔐 Claim This Item</div>
-      <button class="modal-close" data-fn="closeModal" data-arg1="claimModal">✕</button>
+    <div class="modal-hdr">
+      <div class="modal-title">Claim This Item</div>
+      <button class="modal-x" onclick="closeModal('claimModal')">✕</button>
     </div>
     <div class="modal-body">
-      <p style="color:var(--muted);font-size:0.86rem;margin-bottom:16px;">Answer the secret question to prove ownership:</p>
-      <div class="form-group">
-        <label class="form-label" id="claimQuestion">Verification Question</label>
-        <input class="form-input" type="text" id="claimAnswer" placeholder="Your answer">
+      <p style="color:var(--muted);font-size:.86rem;margin-bottom:16px;">Answer the secret question to prove ownership:</p>
+      <div class="fg">
+        <label class="fl" id="claimQ">Verification Question</label>
+        <input class="fi" type="text" id="claimAns" placeholder="Your answer">
       </div>
-      <input type="hidden" id="claimItemId">
+      <input type="hidden" id="claimId">
       <div class="form-actions">
-        <button class="btn-cancel" data-fn="closeModal" data-arg1="claimModal">Cancel</button>
-        <button class="btn-submit" data-fn="submitClaim">Verify & Claim</button>
+        <button class="btn-can" onclick="closeModal('claimModal')">Cancel</button>
+        <button class="btn-sub" onclick="submitClaim()">Verify &amp; Claim</button>
       </div>
     </div>
   </div>
 </div>
 
-<script type="module">
-// ================================================================
-// SMVDU FindIt — Lost & Found Web App
-// Built with Firebase (Auth + Firestore) + Cloudinary (Images)
-// ================================================================
+<script>
+(async function() {
+const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, query, orderBy, onSnapshot, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
 
-// ── FIREBASE IMPORTS ──
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getAuth,
-  onAuthStateChanged,     // Listen for login/logout changes
-  signOut,                // Logout user
-  GoogleAuthProvider,     // Google sign-in provider
-  signInWithPopup         // Open Google sign-in popup
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-import { 
-  getFirestore, 
-  collection,       // Reference to a collection
-  addDoc,           // Add new document
-  getDocs,          // Get all documents (one time)
-  doc,              // Reference to a specific document
-  setDoc,           // Set/create a document with specific ID
-  updateDoc,        // Update existing document
-  query,            // Build a query
-  orderBy,          // Sort results
-  onSnapshot,       // Real-time listener
-  where,            // Filter condition
-  serverTimestamp   // Firebase server time
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-
-// ── FIREBASE CONFIGURATION ──
-// These keys connect our app to Firebase project "Find IT"
-// Get these from: Firebase Console > Project Settings > Web App
 const firebaseConfig = {
   apiKey: "AIzaSyBrwqF0UimXJonkwp8uV71MaGI2IzoyQfM",
   authDomain: "find-it-b3fa2.firebaseapp.com",
   projectId: "find-it-b3fa2",
   storageBucket: "find-it-b3fa2.firebasestorage.app",
   messagingSenderId: "521549279482",
-  appId: "1:521549279482:web:0bfb3509101dc380305943",
-  measurementId: "G-44LQ104PV6"
+  appId: "1:521549279482:web:0bfb3509101dc380305943"
 };
 
-// ── GLOBAL VARIABLES ──
-let app, auth, db, storage;        // Firebase services
-let currentUser = null;             // Currently logged in user (null if not logged in)
-let allItems = [];                  // All items loaded from Firebase
-let currentTab = 'all';            // Current tab: 'all', 'lost', or 'found'
-let currentCategory = 'all';       // Current category filter
-let activeChatId = null;           // Currently open chat conversation ID
-let unsubscribeChat = null;        // Function to stop listening to chat messages
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-// Check if Firebase is properly configured (not placeholder values)
-const FIREBASE_CONFIGURED = firebaseConfig.apiKey !== "YOUR_API_KEY";
+let currentUser = null, allItems = [], currentTab = 'all', currentCat = 'all';
+let activeChatId = null, unsubChat = null, regPhotoFile = null;
 
-// ── FIREBASE INITIALIZATION ──
-try {
-  app = initializeApp(firebaseConfig);   // Start Firebase app
-  auth = getAuth(app);                   // Get Authentication service
-  db = getFirestore(app);               // Get Firestore database
-  storage = getStorage(app);            // Get Storage service
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  updateNavAuth(user);
+  loadItems();
+  if(user) loadMyItems();
+});
 
-  document.getElementById('setupBanner').style.display = 'none'; // Hide setup banner
+// PAGE NAVIGATION
+window.showPage = function(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links button:not(.btn-auth)').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const nb = document.getElementById('nav-'+page);
+  if(nb) nb.classList.add('active');
+  if(page === 'profile' && currentUser) { loadMyItems(); loadMatchInbox(); }
+};
 
-  if (FIREBASE_CONFIGURED) {
-    // Listen for login/logout changes in real-time
-    // This runs automatically whenever user logs in or out
-    onAuthStateChanged(auth, user => {
-      currentUser = user;
-      updateNavAuth(user);   // Update navbar (show Sign In or Sign Out)
-      loadItems();           // Load all lost/found items
-      if (user) loadMyItems(); // Load user's own items if logged in
-    });
-  } else {
-    loadDemoItems(); // Fallback if Firebase not configured
-  }
-} catch(e) {
-  console.warn("Firebase init failed");
-  loadDemoItems();
-}
+window.openModal  = id => document.getElementById(id).classList.add('open');
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
 
-// ── DEMO DATA ──
-// No demo items — app uses real Firebase data only
-const demoItems = [];
+window.showToast = function(msg, type) {
+  const t = document.createElement('div');
+  t.className = 'toast'+(type?' '+type:'');
+  t.textContent = msg;
+  document.getElementById('toastCon').appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+};
 
-// Called when Firebase is not configured — shows empty state
-function loadDemoItems() {
-  allItems = [];
-  renderItems('recentItems', []);
-  renderItems('itemsGrid', []);
-  updateBadges();
-  updateStats();
-}
+// AUTH
+window.openAuthModal = function() {
+  document.getElementById('gSignInStep').style.display  = 'block';
+  document.getElementById('profileStep').style.display  = 'none';
+  document.getElementById('authTitle').innerHTML = 'Welcome to <span style="color:var(--orange)">FindIt</span>';
+  document.getElementById('authModal').classList.add('open');
+};
 
-// ── LOAD ALL ITEMS FROM FIREBASE ──
-// Uses onSnapshot for real-time updates — page auto-refreshes when new items are added
-async function loadItems() {
-  if(!FIREBASE_CONFIGURED) return loadDemoItems();
+document.getElementById('googleBtn').addEventListener('click', async () => {
   try {
-    // Get all items sorted by newest first
-    const q = query(collection(db,'items'), orderBy('createdAt','desc'));
-    
-    // onSnapshot = real-time listener, runs every time data changes
-    onSnapshot(q, snap => {
-      allItems = snap.docs.map(d => ({id:d.id,...d.data()}));
-      
-      // Only show ACTIVE items on screen
-      // Resolved/claimed items stay in Firebase but are hidden from view
-      const activeItems = allItems.filter(i => i.status !== 'claimed');
-      renderItems('recentItems', activeItems.slice(0,6)); // Show latest 6 on home
-      filterItems();     // Apply current filters to items page
-      updateBadges();    // Update tab counts
-      updateStats();     // Update homepage stats
-    });
-  } catch(e){ loadDemoItems(); }
-}
-
-// ── LOAD CURRENT USER'S OWN ITEMS ──
-async function loadMyItems() {
-  if(!currentUser||!FIREBASE_CONFIGURED) return;
-  const q = query(collection(db,'items'),where('userId','==',currentUser.uid));
-  onSnapshot(q, snap => {
-    const mine = snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderItems('myItems', mine);
-    // Update report count
-    const countEl = document.getElementById('myReportsCount');
-    if(countEl) countEl.textContent = mine.length + ' report' + (mine.length !== 1 ? 's' : '');
-    // Check for smart matches for user's lost items
-    const lostItems = mine.filter(i => i.type === 'lost' && i.status === 'active');
-    lostItems.forEach(item => window.checkSmartMatches(item));
-  });
-}
-
-// ── SMART MATCHING SYSTEM ──
-// Compares lost item details with found items to find potential matches
-window.checkSmartMatches = async function(lostItem) {
-  if(!FIREBASE_CONFIGURED) return;
-  try {
-    // Get all active found items
-    const q = query(collection(db,'items'), where('type','==','found'), where('status','==','active'));
-    const snap = await getDocs(q);
-    const foundItems = snap.docs.map(d => ({id:d.id,...d.data()}));
-    
-    const matches = [];
-    foundItems.forEach(foundItem => {
-      let score = 0;
-      // Category match — strong signal
-      if(lostItem.category && foundItem.category && 
-         lostItem.category.toLowerCase() === foundItem.category.toLowerCase()) score += 40;
-      // Location match
-      if(lostItem.location && foundItem.location && 
-         lostItem.location.toLowerCase() === foundItem.location.toLowerCase()) score += 30;
-      // Date proximity (within 3 days)
-      if(lostItem.date && foundItem.date) {
-        const diff = Math.abs(new Date(lostItem.date) - new Date(foundItem.date));
-        if(diff < 3 * 24 * 60 * 60 * 1000) score += 20;
-      }
-      // Keyword match in description
-      if(lostItem.description && foundItem.description) {
-        const lostWords = lostItem.description.toLowerCase().split(/\s+/);
-        const foundDesc = foundItem.description.toLowerCase();
-        const matchedWords = lostWords.filter(w => w.length > 3 && foundDesc.includes(w));
-        score += matchedWords.length * 5;
-      }
-      // Name similarity
-      if(lostItem.name && foundItem.name) {
-        const lostName = lostItem.name.toLowerCase();
-        const foundName = foundItem.name.toLowerCase();
-        if(lostName.includes(foundName) || foundName.includes(lostName)) score += 25;
-      }
-      if(score >= 40) matches.push({...foundItem, matchScore: score});
-    });
-
-    // Save matches to Firestore notifications if any found
-    if(matches.length > 0) {
-      // Check if notification already exists
-      const existingQ = query(collection(db,'notifications'), 
-        where('lostItemId','==',lostItem.id),
-        where('userId','==',currentUser.uid));
-      const existing = await getDocs(existingQ);
-      
-      if(existing.empty) {
-        await addDoc(collection(db,'notifications'),{
-          userId: currentUser.uid,
-          lostItemId: lostItem.id,
-          lostItemName: lostItem.name,
-          matches: matches.map(m => ({id:m.id, name:m.name, location:m.location, matchScore:m.matchScore})),
-          read: false,
-          createdAt: serverTimestamp()
-        });
-        showMatchNotification(lostItem.name, matches.length);
-      }
-    }
-  } catch(e){ console.warn('Smart match error:', e); }
-}
-
-function showMatchNotification(itemName, count) {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = 'toast success';
-  toast.style.cursor = 'pointer';
-  toast.innerHTML = `🎯 <strong>${count} potential match${count>1?'es':''}</strong> found for your lost "${itemName}"! Check your inbox.`;
-  toast.onclick = () => { showPage('profile'); toast.remove(); };
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 8000);
-}
-
-// ── RENDER ITEMS TO SCREEN ──
-// Takes an array of items and displays them as cards in the given container
-// containerId = HTML element ID where cards should appear
-function renderItems(containerId, items) {
-  const el = document.getElementById(containerId);
-  
-  // Show empty state if no items
-  if(!items||!items.length){
-    el.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No items found</h3><p>Try a different filter or be the first to report!</p></div>`;
-    return;
-  }
-  el.innerHTML = items.map(item => `
-    <div class="item-card" onclick="openDetail('${item.id}')">
-      <div class="item-img">
-        ${item.imageUrl ? `<img src="${item.imageUrl}" style="width:100%;height:100%;object-fit:cover;">` : `<span>${getCategoryEmoji(item.category)}</span>`}
-      </div>
-      <div class="item-body">
-        <div class="item-tags">
-          <span class="tag ${item.type==='lost'?'tag-lost':'tag-found'}">${item.type==='lost'?'🔴 Lost':'🟢 Found'}</span>
-          <span class="tag tag-category">${item.category||'Other'}</span>
-          ${item.status==='claimed'?'<span class="tag tag-claimed">✅ Claimed</span>':''}
-        </div>
-        <div class="item-title">${item.name}</div>
-        <div class="item-desc">${(item.description||'').substring(0,80)}${(item.description||'').length>80?'...':''}</div>
-        <div class="item-meta">
-          <span class="location">📍 ${item.location||'Unknown'}</span>
-          <button class="item-action" onclick="event.stopPropagation();openDetail('${item.id}')">${item.type==='lost'?'I Found This':'Contact'}</button>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function getCategoryEmoji(cat){
-  const map={Electronics:'📱','ID/Documents':'🪪',Keys:'🔑','Wallet/Purse':'👛','Bag/Backpack':'🎒',Clothing:'👕','Books/Notes':'📚',Sports:'⚽',Bottle:'🍶',Other:'📦'};
-  return map[cat]||'📦';
-}
-
-function updateBadges(){
-  const lost=allItems.filter(i=>i.type==='lost').length;
-  const found=allItems.filter(i=>i.type==='found').length;
-  document.getElementById('badge-all').textContent=allItems.length;
-  document.getElementById('badge-lost').textContent=lost;
-  document.getElementById('badge-found').textContent=found;
-}
-
-function updateStats(){
-  document.getElementById('statLost').textContent=allItems.filter(i=>i.type==='lost').length;
-  document.getElementById('statFound').textContent=allItems.filter(i=>i.type==='found').length;
-  document.getElementById('statResolved').textContent=allItems.filter(i=>i.status==='claimed').length;
-}
-
-// ── TAB FILTER (All / Lost / Found) ──
-window.setTab = function(tab) {
-  currentTab=tab;
-  // Toggle active class on tab buttons
-  ['all','lost','found'].forEach(t=>{ document.getElementById('tab-'+t).classList.toggle('active',t===tab); });
-  filterItems(); // Re-apply all filters
-}
-
-// ── CATEGORY FILTER ──
-window.setCategoryFilter = function(cat, btn) {
-  currentCategory=cat;
-  // Remove active from all filter buttons, add to clicked one
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  filterItems(); // Re-apply all filters
-}
-
-// ── MAIN FILTER FUNCTION ──
-// Applies tab filter + category filter + search text together
-window.filterItems = function() {
-  // Start with only ACTIVE items (hide resolved ones)
-  let items = allItems.filter(i => i.status !== 'claimed');
-  
-  // Apply tab filter (lost/found/all)
-  if(currentTab!=='all') items=items.filter(i=>i.type===currentTab);
-  
-  // Apply category filter
-  if(currentCategory!=='all') items=items.filter(i=>i.category===currentCategory);
-  
-  // Apply search text filter (searches name + description + location)
-  const q=(document.getElementById('searchInput').value||'').toLowerCase();
-  if(q) items=items.filter(i=>(i.name+i.description+i.location).toLowerCase().includes(q));
-  
-  renderItems('itemsGrid', items);
-}
-
-window.openDetail = function(id) {
-  const item = allItems.find(i=>i.id===id);
-  if(!item) return;
-  document.getElementById('detailTitle').textContent=item.name;
-  const isOwner = currentUser && currentUser.uid===item.userId;
-  document.getElementById('detailBody').innerHTML=`
-    <div class="detail-img">
-      ${item.imageUrl?`<img src="${item.imageUrl}" style="width:100%;height:100%;object-fit:cover;">`:`<span style="font-size:5rem">${getCategoryEmoji(item.category)}</span>`}
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:16px;">
-      <span class="tag ${item.type==='lost'?'tag-lost':'tag-found'}" style="font-size:0.85rem;padding:5px 14px;">${item.type==='lost'?'🔴 Lost':'🟢 Found'}</span>
-      <span class="tag tag-category" style="font-size:0.85rem;padding:5px 14px;">${item.category}</span>
-      ${item.status==='claimed'?'<span class="tag tag-claimed" style="font-size:0.85rem;padding:5px 14px;">✅ Reunited</span>':''}
-    </div>
-    <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:16px;">${item.description}</p>
-    <div class="detail-info">
-      <div class="detail-field"><div class="key">📍 Location</div><div class="val">${item.location}</div></div>
-      <div class="detail-field"><div class="key">📅 Date</div><div class="val">${item.date}</div></div>
-      <div class="detail-field"><div class="key">👤 Reported by</div><div class="val">${item.userName||'Anonymous'}</div></div>
-      <div class="detail-field"><div class="key">📊 Status</div><div class="val" style="color:${item.status==='claimed'?'var(--green)':'var(--saffron)'}">${item.status==='claimed'?'Reunited ✅':'Active 🟡'}</div></div>
-    </div>
-    ${!isOwner && item.status!=='claimed' ? `
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      ${item.verifyQuestion && item.type==='found' ? `<button class="btn-primary" style="flex:1;" onclick="openClaimModal('${id}','${(item.verifyQuestion||'').replace(/'/g,"\\'")}')">🔐 This is Mine — Claim</button>` : ''}
-      <button class="btn-secondary" style="flex:1;" onclick="startChat('${id}','${(item.userName||'User').replace(/'/g,"\\'")}','${item.userId||''}')">💬 Contact ${item.type==='lost'?'Reporter':'Finder'}</button>
-    </div>` : ''}
-    ${isOwner && item.status!=='claimed' ? `<button class="btn-primary" style="width:100%;margin-top:16px;background:var(--green);" onclick="markResolved('${id}')">✅ Mark as Resolved</button>` : ''}
-    ${isOwner && item.status==='claimed' ? `<p style="text-align:center;color:var(--green);margin-top:16px;font-weight:600;">✅ This item has been resolved!</p>` : ''}
-  `;
-  openModal('detailModal');
-}
-
-window.openClaimModal = function(id, question) {
-  document.getElementById('claimItemId').value=id;
-  document.getElementById('claimQuestion').textContent='🔐 '+question;
-  document.getElementById('claimAnswer').value='';
-  closeModal('detailModal');
-  openModal('claimModal');
-}
-
-window.submitClaim = async function() {
-  if(!currentUser){ showToast('Please sign in first','error'); return; }
-  const id=document.getElementById('claimItemId').value;
-  const answer=document.getElementById('claimAnswer').value.trim();
-  if(!answer){ showToast('Please enter an answer','error'); return; }
-  const item=allItems.find(i=>i.id===id);
-  if(!item){ showToast('Item not found','error'); return; }
-  if(answer.toLowerCase()===(item.verifyAnswer||'').toLowerCase()){
-    try{ await updateDoc(doc(db,'items',id),{status:'claimed'}); }catch(e){}
-    showToast('Item claimed! Please contact the finder to collect your item.','success');
-    closeModal('claimModal');
-  } else { showToast('Incorrect answer. Please try again.','error'); }
-}
-
-// ── MARK ITEM AS RESOLVED ──
-// Called by item owner when their item has been found/returned
-// Item disappears from browse but data stays in Firebase
-window.markResolved = async function(id) {
-  if(!currentUser){ showToast('Please sign in first','error'); return; }
-  try {
-    // Update status to 'claimed' in Firestore
-    await updateDoc(doc(db,'items',id),{status:'claimed'});
-    showToast('Marked as resolved! Great job helping a fellow student 🎉','success');
-    closeModal('detailModal');
-  } catch(e){ showToast('Error: '+e.message,'error'); }
-}
-
-// ── GOOGLE LOGIN ──
-window.handleGoogleLogin = async function() {
-  try {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
-    const result = await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, new GoogleAuthProvider());
     const user = result.user;
-
-    // Check if already registered
-    const userQuery = query(collection(db,'users'), where('uid','==',user.uid));
-    const userSnap = await getDocs(userQuery);
-
-    if(userSnap.empty){
-      // New user — show profile step
-      document.getElementById('googleSignInStep').style.display = 'none';
-      document.getElementById('completeProfileStep').style.display = 'block';
-      document.querySelector('#authModal .modal-title').innerHTML = 'Complete Your <span style="color:var(--orange)">Profile</span>';
-      // Reset form
-      window._regPhotoFile = null;
-      const rollEl = document.getElementById('regRoll');
-      const deptEl = document.getElementById('regDept');
-      const hostelEl = document.getElementById('regHostel');
-      if(rollEl) rollEl.value = '';
-      if(deptEl) deptEl.value = '';
-      if(hostelEl) hostelEl.value = '';
-      // Reset avatar
-      document.querySelectorAll('#avatarPicker span[data-av]').forEach((a,i) => {
-        a.style.borderColor = i===0 ? 'var(--orange)' : 'var(--border)';
-        a.style.background  = i===0 ? '#fff5ee' : '';
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
+    if(snap.empty) {
+      document.getElementById('gSignInStep').style.display = 'none';
+      document.getElementById('profileStep').style.display = 'block';
+      document.getElementById('authTitle').innerHTML = 'Complete Your <span style="color:var(--orange)">Profile</span>';
+      regPhotoFile = null;
+      document.getElementById('regRoll').value = '';
+      document.getElementById('regDept').value = '';
+      document.getElementById('regHostel').value = '';
+      document.getElementById('selAvatar').value = '🧑‍💻';
+      document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">🧑‍💻</span>';
+      document.querySelectorAll('#avPicker span[data-av]').forEach((a,i) => {
+        a.style.borderColor = i===0?'var(--orange)':'var(--border)';
+        a.style.background  = i===0?'#fff5ee':'';
       });
-      const avEl = document.getElementById('selectedAvatar');
-      if(avEl) avEl.value = '🧑‍💻';
-      const preview = document.getElementById('photoPreview');
-      if(preview) preview.innerHTML = '🧑‍💻';
     } else {
-      // Existing user — direct login, no profile needed
-      showToast('Welcome back, ' + (user.displayName||'Student') + '! 👋','success');
+      showToast('Welcome back, '+(user.displayName||'Student')+'!','success');
       closeModal('authModal');
-      updateNavAuth(user);
     }
-  } catch(e){
-    if(e.code !== 'auth/popup-closed-by-user'){
-      showToast('Login failed: ' + e.message,'error');
-    }
+  } catch(e) {
+    if(e.code !== 'auth/popup-closed-by-user') showToast('Login failed: '+e.message,'error');
   }
-}
+});
 
-// ── SAVE PROFILE AFTER GOOGLE LOGIN ──
+// AVATAR PICKER
+document.addEventListener('click', e => {
+  const av = e.target.closest('#avPicker span[data-av]');
+  if(!av) return;
+  document.querySelectorAll('#avPicker span[data-av]').forEach(a => { a.style.borderColor='var(--border)'; a.style.background=''; });
+  av.style.borderColor = 'var(--orange)';
+  av.style.background  = '#fff5ee';
+  const emoji = av.getAttribute('data-av');
+  document.getElementById('selAvatar').value = emoji;
+  document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">'+emoji+'</span>';
+  regPhotoFile = null;
+});
+
 window.previewRegPhoto = function(input) {
-  if(!input.files || !input.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const preview = document.getElementById('photoPreview');
-    if(preview) preview.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-    // Store file for later upload
-    window._regPhotoFile = input.files[0];
-    // Clear avatar selection when photo chosen
-    document.querySelectorAll('#avatarPicker span[data-av]').forEach(a => {
-      a.style.borderColor = 'var(--border)'; a.style.background = '';
-    });
-    document.getElementById('selectedAvatar').value = '';
+  if(!input.files||!input.files[0]) return;
+  regPhotoFile = input.files[0];
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('avPreview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    document.querySelectorAll('#avPicker span[data-av]').forEach(a => { a.style.borderColor='var(--border)'; a.style.background=''; });
+    document.getElementById('selAvatar').value = '';
   };
-  reader.readAsDataURL(input.files[0]);
-}
+  r.readAsDataURL(regPhotoFile);
+};
 
-window.saveUserProfile = async function() {
+window.saveProfile = async function() {
   const user = auth.currentUser;
-  if(!user){ showToast('Not signed in','error'); return; }
-
-  const rollEl   = document.getElementById('regRoll');
-  const deptEl   = document.getElementById('regDept');
-  const hostelEl = document.getElementById('regHostel');
-  const avatarEl = document.getElementById('selectedAvatar');
-
-  const roll   = rollEl   ? rollEl.value.trim().toUpperCase()   : '';
-  const dept   = deptEl   ? deptEl.value.trim()                 : '';
-  const hostel = hostelEl ? hostelEl.value.trim()               : '';
-  const avatar = avatarEl ? (avatarEl.value || '🧑‍💻')            : '🧑‍💻';
-
+  if(!user) { showToast('Not signed in','error'); return; }
+  const roll = document.getElementById('regRoll').value.trim().toUpperCase();
   if(!roll) { showToast('Please enter Roll Number','error'); return; }
-  // dept is optional — save whatever is selected
-
-  // Upload photo if selected
+  const dept   = document.getElementById('regDept').value;
+  const hostel = document.getElementById('regHostel').value;
+  const avatar = document.getElementById('selAvatar').value || '🧑‍💻';
   let customPhoto = '';
-  if(window._regPhotoFile) {
+  if(regPhotoFile) {
     try {
       const fd = new FormData();
-      fd.append('file', window._regPhotoFile);
+      fd.append('file', regPhotoFile);
       fd.append('upload_preset','smvdu-findit');
       const res = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd});
-      const d = await res.json();
-      customPhoto = d.secure_url || '';
-    } catch(e){ console.warn('Photo upload failed'); }
+      customPhoto = (await res.json()).secure_url||'';
+    } catch(ex) {}
   }
+  await addDoc(collection(db,'users'),{ uid:user.uid, name:user.displayName||'', email:user.email||'', avatar, customPhoto, roll, dept, hostel, createdAt:serverTimestamp() });
+  showToast('Welcome, '+(user.displayName||'Student')+'!','success');
+  closeModal('authModal');
+  updateNavAuth(user);
+};
 
-  try {
-    await addDoc(collection(db,'users'),{
-      uid: user.uid,
-      name: user.displayName || '',
-      email: user.email || '',
-      avatar: avatar,
-      customPhoto: customPhoto,
-      roll: roll,
-      dept: dept,
-      hostel: hostel,
-      createdAt: serverTimestamp()
-    });
-    window._regPhotoFile = null;
-    showToast('Welcome, ' + (user.displayName||'Student') + '! 🎉','success');
-    closeModal('authModal');
-    updateNavAuth(user);
-  } catch(e){ showToast('Error: '+e.message,'error'); }
-}
-
-
-window.openAuthModal = function(){ 
-  // Reset modal to Google sign in step
-  const googleStep = document.getElementById('googleSignInStep');
-  const profileStep = document.getElementById('completeProfileStep');
-  if(googleStep) googleStep.style.display = 'block';
-  if(profileStep) profileStep.style.display = 'none';
-  const title = document.querySelector('#authModal .modal-title');
-  if(title) title.innerHTML = 'Welcome to <span style="color:var(--orange)">FindIt</span>';
-  openModal('authModal'); 
-}
-
-// switchAuthTab removed — Google login only
-
-// Email/password login removed — Google only
-
-// Forgot password removed — Google login handles this
-
-// Old email/password signup removed — Google login only
-
-// ── UPDATE NAV + PROFILE WHEN USER LOGS IN/OUT ──
-async function updateNavAuth(user){
-  const btn=document.getElementById('authBtn');
-  if(user){
-    btn.textContent='Sign Out';
-    btn.onclick=async()=>{ 
+async function updateNavAuth(user) {
+  const btn = document.getElementById('authBtn');
+  if(user) {
+    btn.textContent = 'Sign Out';
+    btn.onclick = async () => {
       await signOut(auth);
-      document.getElementById('profileName').textContent='Guest User';
-      document.getElementById('profileEmail').textContent='Not signed in';
-      document.getElementById('regDept').innerHTML='🎓 SMVDU Student';
-      document.getElementById('profileAvatar').innerHTML='👤';
+      document.getElementById('profAv').innerHTML = '👤';
+      document.getElementById('profName').textContent = 'Guest User';
+      document.getElementById('profEmail').textContent = 'Not signed in';
+      document.getElementById('profBadge').innerHTML = 'SMVDU Student';
       showToast('Signed out','');
     };
-
-    // Set basic info first
-    document.getElementById('profileName').textContent = user.displayName || 'Student';
-    document.getElementById('profileEmail').textContent = user.email;
-
-    // Fetch full profile from Firestore
+    document.getElementById('profName').textContent  = user.displayName||'Student';
+    document.getElementById('profEmail').textContent = user.email;
     try {
-      const userQuery = query(collection(db,'users'), where('uid','==',user.uid));
-      const userSnap = await getDocs(userQuery);
-      if(!userSnap.empty){
-        const u = userSnap.docs[0].data();
-
-        // Set avatar — priority: customPhoto > emoji avatar > Google photo
-        const avatarEl = document.getElementById('profileAvatar');
-        if(u.customPhoto){
-          avatarEl.innerHTML = `<img src="${u.customPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-        } else if(u.avatar){
-          avatarEl.innerHTML = `<span style="font-size:1.8rem">${u.avatar}</span>`;
-        } else if(user.photoURL){
-          avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-        } else {
-          avatarEl.innerHTML = '👤';
-        }
-
-        // Show all details
-        document.getElementById('profileName').textContent = u.name || user.displayName;
-        const deptEl = document.getElementById('regDept');
-        deptEl.innerHTML = [
-          u.roll   ? `<span>🎓 ${u.roll}</span>` : '',
-          u.dept   ? `<span style="margin-left:10px;">📚 ${u.dept}</span>` : '',
-          u.hostel ? `<span style="margin-left:10px;">🏠 ${u.hostel}</span>` : '',
-          u.email  ? `<span style="margin-left:10px;">✉️ ${u.email}</span>` : '',
-        ].filter(Boolean).join('') || '🎓 SMVDU Student';
-      } else {
-        // Google photo as fallback
-        if(user.photoURL){
-          document.getElementById('profileAvatar').innerHTML = 
-            `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-        }
+      const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
+      if(!snap.empty) {
+        const u = snap.docs[0].data();
+        const avEl = document.getElementById('profAv');
+        if(u.customPhoto) avEl.innerHTML = '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+        else if(u.avatar)  avEl.innerHTML = '<span style="font-size:1.8rem">'+u.avatar+'</span>';
+        else if(user.photoURL) avEl.innerHTML = '<img src="'+user.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+        document.getElementById('profName').textContent = u.name||user.displayName||'Student';
+        document.getElementById('profBadge').innerHTML =
+          (u.roll?'🎓 '+u.roll:'') + (u.dept?' | 📚 '+u.dept:'') + (u.hostel?' | 🏠 '+u.hostel:'') || 'SMVDU Student';
+      } else if(user.photoURL) {
+        document.getElementById('profAv').innerHTML = '<img src="'+user.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
       }
-    } catch(e){ console.warn('Profile load error:', e); }
-
+    } catch(ex) {}
     loadChatList();
   } else {
-    btn.textContent='Sign In';
-    btn.onclick=openAuthModal;
+    btn.textContent = 'Sign In';
+    btn.onclick = openAuthModal;
   }
 }
 
-window.openReportModal = function(type) {
-  document.getElementById('reportType').value=type;
-  document.getElementById('reportModalTitle').textContent=type==='lost'?'📢 Report Lost Item':'🔍 Report Found Item';
-  document.getElementById('verifyQuestionGroup').style.display=type==='lost'?'block':'none';
-  document.getElementById('itemDate').value=new Date().toISOString().split('T')[0];
-  ['itemName','itemDesc','itemCategory','itemLocation'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('uploadIcon').textContent='📸';
-  document.getElementById('uploadText').textContent='Click to upload image of the item';
-  openModal('reportModal');
+window.updatePhoto = async function(input) {
+  if(!currentUser||!input.files||!input.files[0]) return;
+  if(input.files[0].size>5*1024*1024) { showToast('Max 5MB','error'); return; }
+  showToast('Uploading...','');
+  try {
+    const fd = new FormData();
+    fd.append('file',input.files[0]);
+    fd.append('upload_preset','smvdu-findit');
+    const url = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url;
+    if(!url) { showToast('Upload failed','error'); return; }
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
+    if(!snap.empty) await updateDoc(doc(db,'users',snap.docs[0].id),{customPhoto:url});
+    document.getElementById('profAv').innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    showToast('Photo updated!','success');
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+};
+
+// ITEMS
+async function loadItems() {
+  onSnapshot(query(collection(db,'items'), orderBy('createdAt','desc')), snap => {
+    allItems = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderItems('recentItems', allItems.filter(i=>i.status!=='claimed').slice(0,6));
+    filterItems();
+    updateBadges();
+    updateStats();
+  });
 }
+
+async function loadMyItems() {
+  if(!currentUser) return;
+  onSnapshot(query(collection(db,'items'), where('userId','==',currentUser.uid)), snap => {
+    const mine = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderItems('myItems', mine);
+    const el = document.getElementById('repCount');
+    if(el) el.textContent = mine.length+' report'+(mine.length!==1?'s':'');
+    mine.filter(i=>i.type==='lost'&&i.status==='active').forEach(checkSmartMatches);
+  });
+}
+
+function renderItems(cid, items) {
+  const el = document.getElementById(cid);
+  if(!items||!items.length) { el.innerHTML='<div class="empty"><div class="icon">🔍</div><h3>No items found</h3><p>Be the first to report!</p></div>'; return; }
+  el.innerHTML = items.map(item => {
+    const img = item.imageUrl ? '<img src="'+item.imageUrl+'">' : emojiFor(item.category);
+    return '<div class="card" onclick="openDetail(\''+item.id+'\')">' +
+      '<div class="card-img">'+img+'</div>' +
+      '<div class="card-body">' +
+        '<div class="tags">' +
+          '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+          '<span class="tag tag-cat">'+(item.category||'Other')+'</span>' +
+          (item.status==='claimed'?'<span class="tag tag-done">Claimed</span>':'') +
+        '</div>' +
+        '<div class="card-title">'+item.name+'</div>' +
+        '<div class="card-desc">'+(item.description||'').substring(0,80)+((item.description||'').length>80?'...':'')+'</div>' +
+        '<div class="card-meta">' +
+          '<span>📍 '+(item.location||'Unknown')+'</span>' +
+          '<button class="act-btn" onclick="event.stopPropagation();openDetail(\''+item.id+'\')">'+(item.type==='lost'?'I Found This':'Contact')+'</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function emojiFor(cat) {
+  return {'Electronics':'📱','ID/Documents':'🪪','Keys':'🔑','Wallet/Purse':'👛','Bag/Backpack':'🎒','Clothing':'👕','Books/Notes':'📚','Sports':'⚽','Bottle':'🍶'}[cat]||'📦';
+}
+
+function updateBadges() {
+  document.getElementById('badge-all').textContent   = allItems.filter(i=>i.status!=='claimed').length;
+  document.getElementById('badge-lost').textContent  = allItems.filter(i=>i.type==='lost'&&i.status!=='claimed').length;
+  document.getElementById('badge-found').textContent = allItems.filter(i=>i.type==='found'&&i.status!=='claimed').length;
+}
+
+function updateStats() {
+  document.getElementById('statLost').textContent     = allItems.filter(i=>i.type==='lost').length;
+  document.getElementById('statFound').textContent    = allItems.filter(i=>i.type==='found').length;
+  document.getElementById('statResolved').textContent = allItems.filter(i=>i.status==='claimed').length;
+}
+
+window.setTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  filterItems();
+};
+
+window.setCatFilter = function(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterItems();
+};
+
+window.filterItems = function() {
+  let items = allItems.filter(i => i.status !== 'claimed');
+  if(currentTab !== 'all') items = items.filter(i => i.type === currentTab);
+  if(currentCat !== 'all') items = items.filter(i => i.category === currentCat);
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  if(q) items = items.filter(i => (i.name+' '+i.description+' '+i.location).toLowerCase().includes(q));
+  renderItems('itemsGrid', items);
+};
+
+window.quickSearch = function(val) {
+  if(val.length > 1) {
+    showPage('items');
+    document.getElementById('searchInput').value = val;
+    filterItems();
+  }
+};
+
+// DETAIL
+window.openDetail = function(id) {
+  const item = allItems.find(i => i.id === id);
+  if(!item) return;
+  document.getElementById('detailTitle').textContent = item.name;
+  const isOwner = currentUser && currentUser.uid === item.userId;
+  const img = item.imageUrl ? '<img src="'+item.imageUrl+'">' : emojiFor(item.category);
+  let btns = '';
+  if(!isOwner && item.status!=='claimed') {
+    if(item.verifyQuestion && item.type==='found')
+      btns += '<button class="btn-sub" style="flex:1;" onclick="openClaimModal(\''+id+'\',\''+item.verifyQuestion.replace(/'/g,"\\'")+'\')"">This is Mine</button>';
+    btns += '<button class="btn-sub" style="flex:1;background:var(--steel);" onclick="startChat(\''+id+'\',\''+((item.userName||'User').replace(/'/g,"\\'")+'\',\''+item.userId+'\')">Contact '+(item.type==='lost'?'Reporter':'Finder'))+'</button>';
+  }
+  if(isOwner && item.status!=='claimed')
+    btns += '<button class="btn-sub" style="width:100%;background:var(--green);" onclick="markResolved(\''+id+'\')">Mark as Resolved</button>';
+  document.getElementById('detailBody').innerHTML =
+    '<div class="detail-img">'+img+'</div>' +
+    '<div style="display:flex;gap:7px;margin-bottom:14px;">' +
+      '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'" style="font-size:.83rem;padding:4px 12px;">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+      '<span class="tag tag-cat" style="font-size:.83rem;padding:4px 12px;">'+item.category+'</span>' +
+      (item.status==='claimed'?'<span class="tag tag-done" style="font-size:.83rem;padding:4px 12px;">Reunited</span>':'') +
+    '</div>' +
+    '<p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:14px;">'+item.description+'</p>' +
+    '<div class="detail-grid">' +
+      '<div class="df"><div class="dk">Location</div><div class="dv">'+item.location+'</div></div>' +
+      '<div class="df"><div class="dk">Date</div><div class="dv">'+item.date+'</div></div>' +
+      '<div class="df"><div class="dk">Reported by</div><div class="dv">'+(item.userName||'Anonymous')+'</div></div>' +
+      '<div class="df"><div class="dk">Status</div><div class="dv" style="color:'+(item.status==='claimed'?'var(--green)':'var(--orange)')+'">'+( item.status==='claimed'?'Reunited':'Active')+'</div></div>' +
+    '</div>' +
+    (btns ? '<div style="display:flex;gap:8px;margin-top:14px;">'+btns+'</div>' : '');
+  document.getElementById('detailModal').classList.add('open');
+};
+
+window.openClaimModal = function(id, question) {
+  document.getElementById('claimId').value = id;
+  document.getElementById('claimQ').textContent = question;
+  document.getElementById('claimAns').value = '';
+  closeModal('detailModal');
+  document.getElementById('claimModal').classList.add('open');
+};
+
+window.submitClaim = async function() {
+  if(!currentUser) { showToast('Please sign in','error'); return; }
+  const id  = document.getElementById('claimId').value;
+  const ans = document.getElementById('claimAns').value.trim();
+  if(!ans) { showToast('Please enter answer','error'); return; }
+  const item = allItems.find(i => i.id === id);
+  if(!item) return;
+  if(ans.toLowerCase() === (item.verifyAnswer||'').toLowerCase()) {
+    await updateDoc(doc(db,'items',id),{status:'claimed'});
+    showToast('Claimed! Contact finder to collect.','success');
+    closeModal('claimModal');
+  } else showToast('Wrong answer. Try again.','error');
+};
+
+window.markResolved = async function(id) {
+  if(!currentUser) return;
+  await updateDoc(doc(db,'items',id),{status:'claimed'});
+  showToast('Marked as resolved!','success');
+  closeModal('detailModal');
+};
+
+// REPORT
+window.openReportModal = function(type) {
+  if(!currentUser) { showToast('Please sign in first','error'); openAuthModal(); return; }
+  document.getElementById('repType').value = type;
+  document.getElementById('repModalTitle').textContent = type==='lost'?'Report Lost Item':'Report Found Item';
+  document.getElementById('verifyGrp').style.display = type==='lost'?'block':'none';
+  document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
+  ['itemName','itemDesc','itemCat','itemLoc'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('uploadIcon').textContent = '📸';
+  document.getElementById('uploadTxt').textContent  = 'Click to upload photo';
+  document.getElementById('reportModal').classList.add('open');
+};
 
 window.previewPhoto = function(input) {
-  if(input.files&&input.files[0]){
-    const reader=new FileReader();
-    reader.onload=e=>{
-      document.getElementById('uploadIcon').innerHTML=`<img src="${e.target.result}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;">`;
-      document.getElementById('uploadText').textContent=input.files[0].name;
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
+  if(!input.files||!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('uploadIcon').innerHTML = '<img src="'+e.target.result+'" style="width:80px;height:60px;object-fit:cover;border-radius:6px;">';
+    document.getElementById('uploadTxt').textContent = input.files[0].name;
+  };
+  r.readAsDataURL(input.files[0]);
+};
 
-// ── SUBMIT LOST/FOUND REPORT ──
-// Called when user clicks "Submit Report" button
 window.submitReport = async function() {
-  // Get all form values
-  const type=document.getElementById('reportType').value;       // 'lost' or 'found'
-  const name=document.getElementById('itemName').value.trim();
-  const category=document.getElementById('itemCategory').value;
-  const desc=document.getElementById('itemDesc').value.trim();
-  const location=document.getElementById('itemLocation').value;
-  const date=document.getElementById('itemDate').value;
-  
-  // Validate required fields
-  if(!name||!category||!desc||!location||!date){ showToast('Please fill all required fields','error'); return; }
-  if(!currentUser){ showToast('Please sign in first','error'); return; }
-  
-  try {
-    let imageUrl=''; // Will store Cloudinary image URL if photo uploaded
-    
-    const photoFile=document.getElementById('itemPhoto').files[0];
-    if(photoFile){
-      try {
-        // Upload photo to Cloudinary (free image hosting)
-        // Cloud name: duxehxynt, Preset: smvdu-findit (unsigned)
-        const formData = new FormData();
-        formData.append('file', photoFile);
-        formData.append('upload_preset', 'smvdu-findit');
-        formData.append('cloud_name', 'duxehxynt');
-        const cloudRes = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload', {method:'POST',body:formData});
-        const cloudData = await cloudRes.json();
-        imageUrl = cloudData.secure_url || ''; // Get the uploaded image URL
-      } catch(uploadErr){ 
-        console.warn('Photo upload skipped:', uploadErr.message); 
-        // Continue without image if upload fails
-      }
-    }
-    
-    // Build the item data object to save in Firestore
-    const data={
-      type,                    // 'lost' or 'found'
-      name,                    // Item name
-      category,                // Item category
-      description: desc,       // Item description
-      location,                // Where it was lost/found
-      date,                    // Date of loss/finding
-      userId: currentUser.uid, // Who reported it
-      userName: currentUser.displayName||currentUser.email, // Reporter name
-      status: 'active',        // 'active' or 'claimed'
-      imageUrl,                // Cloudinary image URL (empty if no photo)
-      createdAt: serverTimestamp() // Firebase server timestamp
-    };
-    
-    // For lost items — save verification question/answer for claim verification
-    if(type==='lost'){
-      data.verifyQuestion=document.getElementById('verifyQuestion').value;
-      data.verifyAnswer=document.getElementById('verifyAnswer').value;
-    }
-    
-    // Save to Firestore database
-    await addDoc(collection(db,'items'),data);
-    showToast(`${type==='lost'?'Lost':'Found'} item reported! We hope it gets reunited soon 🤞`,'success');
-    closeModal('reportModal');
-  } catch(e){ showToast('Error: '+e.message,'error'); }
-}
+  if(!currentUser) { showToast('Please sign in','error'); return; }
+  const type = document.getElementById('repType').value;
+  const name = document.getElementById('itemName').value.trim();
+  const cat  = document.getElementById('itemCat').value;
+  const desc = document.getElementById('itemDesc').value.trim();
+  const loc  = document.getElementById('itemLoc').value;
+  const date = document.getElementById('itemDate').value;
+  if(!name||!cat||!desc||!loc||!date) { showToast('Please fill all required fields','error'); return; }
+  let imageUrl = '';
+  const pf = document.getElementById('itemPhoto').files[0];
+  if(pf) {
+    try {
+      const fd = new FormData();
+      fd.append('file',pf); fd.append('upload_preset','smvdu-findit');
+      imageUrl = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
+    } catch(ex) {}
+  }
+  const data = { type, name, category:cat, description:desc, location:loc, date, userId:currentUser.uid, userName:currentUser.displayName||currentUser.email, status:'active', imageUrl, createdAt:serverTimestamp() };
+  if(type==='lost') { data.verifyQuestion=document.getElementById('verifyQ').value; data.verifyAnswer=document.getElementById('verifyA').value; }
+  await addDoc(collection(db,'items'),data);
+  showToast((type==='lost'?'Lost':'Found')+' item reported!','success');
+  closeModal('reportModal');
+};
 
+// CHAT
 window.startChat = function(itemId, otherName, otherUserId) {
-  if(!currentUser){ showToast('Please sign in to chat','error'); return; }
-  if(otherUserId === currentUser.uid){ showToast('This is your own item!','error'); return; }
+  if(!currentUser) { showToast('Please sign in','error'); return; }
+  if(otherUserId===currentUser.uid) { showToast('This is your own item!','error'); return; }
   closeModal('detailModal');
   showPage('chat');
-  // Chat ID = sorted UIDs + item ID (ensures same chat for both users)
-  const chatId = [currentUser.uid, otherUserId].sort().join('_') + '_' + itemId;
-  openChat(chatId, otherName, otherUserId);
-}
+  openChat([currentUser.uid,otherUserId].sort().join('_')+'_'+itemId, otherName, otherUserId);
+};
 
-async function loadChatList() {
-  if(!currentUser||!FIREBASE_CONFIGURED) return;
-  const q=query(collection(db,'chats'),where('participants','array-contains',currentUser.uid));
-  onSnapshot(q, snap=>{
-    const list=document.getElementById('chatList');
-    if(snap.empty){ list.innerHTML='<div style="padding:20px;color:var(--muted);font-size:0.85rem;text-align:center;">No conversations yet</div>'; return; }
-    list.innerHTML=snap.docs.map(d=>{
-      const data=d.data();
-      const other=data.participantNames?.find(n=>n!==currentUser.displayName)||'Student';
-      return `<div class="chat-list-item ${activeChatId===d.id?'active':''}" onclick="openChat('${d.id}','${other}','')">
-        <div class="chat-avatar">💬</div>
-        <div class="chat-preview"><h4>${other}</h4><p>${data.lastMessage||'No messages yet'}</p></div>
-      </div>`;
-    }).join('');
-  });
-}
+window.startDirectChat = function(uid, name) {
+  if(!currentUser) { showToast('Please sign in','error'); return; }
+  if(uid===currentUser.uid) { showToast('Cannot chat with yourself','error'); return; }
+  showPage('chat');
+  openChat([currentUser.uid,uid].sort().join('_'), name, uid);
+};
 
-window.openChat = async function(chatId, otherName, otherUserId) {
-  if(!currentUser){ showToast('Please sign in to chat','error'); return; }
+window.openChat = async function(chatId, otherName, otherUid) {
+  if(!currentUser) return;
   activeChatId = chatId;
-  if(unsubscribeChat) unsubscribeChat();
-
-  // Show chat UI
-  const main = document.getElementById('chatMain');
-  main.innerHTML = `
-    <div class="chat-topbar">
-      <div class="chat-avatar" style="background:var(--orange);font-size:1rem;">${otherName.charAt(0).toUpperCase()}</div>
-      <div>
-        <div style="font-weight:600;color:var(--heading);">${otherName}</div>
-        <div style="font-size:0.74rem;color:var(--green);">● Online</div>
-      </div>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input-bar">
-      <input type="text" id="chatInput" placeholder="Type a message..."
-        onkeydown="if(event.key==='Enter'){event.preventDefault();sendMessage()}" autocomplete="off">
-      <button onclick="sendMessage()" class="chat-send">➤</button>
-    </div>`;
-
-  // Ensure chat doc exists in Firestore
-  const chatRef = doc(db, 'chats', chatId);
+  if(unsubChat) unsubChat();
+  document.getElementById('chatMain').innerHTML =
+    '<div class="chat-top">' +
+      '<div class="chat-av" style="background:var(--orange)">'+otherName.charAt(0).toUpperCase()+'</div>' +
+      '<div><div style="font-weight:600;color:var(--head)">'+otherName+'</div><div style="font-size:.74rem;color:var(--green)">Online</div></div>' +
+    '</div>' +
+    '<div class="chat-msgs" id="chatMsgs"></div>' +
+    '<div class="chat-inp">' +
+      '<input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendMsg()}" autocomplete="off">' +
+      '<button class="chat-send" onclick="sendMsg()">&#10148;</button>' +
+    '</div>';
   try {
-    await updateDoc(chatRef, {
-      participants: [currentUser.uid, otherUserId].filter(Boolean),
-      participantNames: [currentUser.displayName || 'User', otherName],
-      lastUpdated: serverTimestamp()
-    });
-  } catch(e) {
-    // Doc doesn't exist yet — create it
-    try {
-      await setDoc(chatRef, {
-        participants: [currentUser.uid, otherUserId].filter(Boolean),
-        participantNames: [currentUser.displayName || 'User', otherName],
-        lastMessage: '',
-        lastUpdated: serverTimestamp()
-      });
-    } catch(e2){ console.warn('Chat init error:', e2); }
-  }
-
-  // ⚡ REAL-TIME listener — messages appear instantly
-  const msgsRef = collection(db, 'chats', chatId, 'messages');
-  unsubscribeChat = onSnapshot(query(msgsRef, orderBy('time')), snap => {
-    const box = document.getElementById('chatMessages');
+    await setDoc(doc(db,'chats',chatId), { participants:[currentUser.uid,otherUid].filter(Boolean), participantNames:[currentUser.displayName||'User',otherName], lastMessage:'', lastUpdated:serverTimestamp() }, {merge:true});
+  } catch(e) {}
+  unsubChat = onSnapshot(query(collection(db,'chats',chatId,'messages'), orderBy('time')), snap => {
+    const box = document.getElementById('chatMsgs');
     if(!box) return;
-    const atBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 60;
+    const atBot = box.scrollHeight-box.clientHeight <= box.scrollTop+60;
     box.innerHTML = snap.docs.map(d => {
-      const m = d.data();
-      const mine = m.senderId === currentUser.uid;
-      const t = m.time?.toDate ? m.time.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
-      return `<div class="msg ${mine ? 'msg-out' : 'msg-in'}">${m.text}<div class="msg-time">${t}</div></div>`;
+      const m=d.data(), mine=m.senderId===currentUser.uid;
+      const t=m.time?.toDate?m.time.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
+      return '<div class="msg '+(mine?'msg-out':'msg-in')+'">'+m.text+'<div class="msg-time">'+t+'</div></div>';
     }).join('');
-    if(atBottom) box.scrollTop = box.scrollHeight;
+    if(atBot) box.scrollTop = box.scrollHeight;
   });
+};
 
-  // Highlight active in sidebar
-  document.querySelectorAll('.chat-list-item').forEach(el => el.classList.remove('active'));
-}
-
-// ── UPDATE PROFILE PHOTO ──
-// User selects photo from gallery → uploads to Cloudinary → saves URL to Firestore
-window.updateProfilePhoto = async function(input) {
-  if(!currentUser){ showToast('Please sign in first','error'); return; }
-  if(!input.files || !input.files[0]) return;
-
-  const file = input.files[0];
-  // Check file size (max 5MB)
-  if(file.size > 5 * 1024 * 1024){ showToast('Photo too large! Max 5MB','error'); return; }
-
-  showToast('Uploading photo...','');
-
-  try {
-    // Upload to Cloudinary
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'smvdu-findit');
-    formData.append('cloud_name', 'duxehxynt');
-    const res = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload', {
-      method: 'POST', body: formData
-    });
-    const data = await res.json();
-    const photoURL = data.secure_url;
-
-    if(!photoURL){ showToast('Upload failed, try again','error'); return; }
-
-    // Update in Firestore users collection
-    const userQuery = query(collection(db,'users'), where('uid','==',currentUser.uid));
-    const userSnap = await getDocs(userQuery);
-    if(!userSnap.empty){
-      await updateDoc(doc(db,'users', userSnap.docs[0].id), { customPhoto: photoURL });
-    }
-
-    // Update profile avatar on screen immediately
-    const avatarEl = document.getElementById('profileAvatar');
-    avatarEl.innerHTML = `<img src="${photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-
-    showToast('✅ Profile photo updated!','success');
-  } catch(e){ showToast('Error: ' + e.message,'error'); }
-}
-
-// ── SEND CHAT MESSAGE ──
-window.sendMessage = async function() {
-  if(!currentUser || !activeChatId){ showToast('Sign in to send messages','error'); return; }
+window.sendMsg = async function() {
+  if(!currentUser||!activeChatId) return;
   const input = document.getElementById('chatInput');
-  const text = input.value.trim();
+  const text  = input.value.trim();
   if(!text) return;
   input.value = '';
   input.focus();
-  try {
-    // Add message instantly (Firestore handles real-time delivery)
-    await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
-      text,
-      senderId: currentUser.uid,
-      senderName: currentUser.displayName || 'User',
-      time: serverTimestamp()
-    });
-    // Update chat preview
-    await updateDoc(doc(db, 'chats', activeChatId), {
-      lastMessage: text,
-      lastUpdated: serverTimestamp()
-    });
-  } catch(e){ showToast('Message failed: ' + e.message, 'error'); }
-}
+  await addDoc(collection(db,'chats',activeChatId,'messages'), { text, senderId:currentUser.uid, senderName:currentUser.displayName||'User', time:serverTimestamp() });
+  await updateDoc(doc(db,'chats',activeChatId), { lastMessage:text, lastUpdated:serverTimestamp() });
+};
 
-window.showPage = function(page) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-links button:not(.btn-auth)').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('nav-'+page)?.classList.add('active');
-  if(page==='profile' && currentUser && FIREBASE_CONFIGURED) {
-    loadMyItems();
-    loadMatchInbox();
-  }
-  if(page==='users') {
-    loadAllUsers();
-  }
-}
-
-// ── LOAD ALL REGISTERED USERS ──
-async function loadAllUsers(filterText) {
-  if(!FIREBASE_CONFIGURED) return;
-  const grid = document.getElementById('usersGrid');
-  if(!grid) return;
-  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></div>';
-  try {
-    const snap = await getDocs(collection(db, 'users'));
-    let users = snap.docs.map(d => d.data());
-    // Filter if search text provided
-    if(filterText && filterText.length > 1) {
-      const q = filterText.toLowerCase();
-      users = users.filter(u =>
-        (u.name||''). toLowerCase().includes(q) ||
-        (u.roll||''). toLowerCase().includes(q) ||
-        (u.dept||''). toLowerCase().includes(q) ||
-        (u.hostel||''). toLowerCase().includes(q)
-      );
-    }
-    if(!users.length) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">No students found</div>';
-      return;
-    }
-    grid.innerHTML = users.map(u => {
-      const isMe = currentUser && u.uid === currentUser.uid;
-      const avatar = u.customPhoto
-        ? `<img src="${u.customPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-        : `<span style="font-size:1.6rem">${u.avatar || '👤'}</span>`;
-      return `
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:4px;padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-          <div style="width:48px;height:48px;border-radius:50%;background:var(--offwhite);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">${avatar}</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-weight:700;color:var(--heading);font-size:0.95rem;">${u.name || 'Student'}</div>
-            <div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${u.roll ? '🎓 '+u.roll : ''} ${u.dept ? '| '+u.dept : ''}</div>
-            <div style="font-size:0.75rem;color:var(--muted);">${u.hostel ? '🏠 '+u.hostel : ''}</div>
-          </div>
-          ${!isMe && currentUser ? `<button onclick="startDirectChat('${u.uid}','${(u.name||'Student').replace(/'/g,'\\'')}' )" style="background:var(--steel);color:#fff;border:none;padding:6px 12px;border-radius:3px;font-size:0.78rem;cursor:pointer;flex-shrink:0;">💬 Chat</button>` : isMe ? '<span style="font-size:0.75rem;color:var(--muted);">You</span>' : ''}
-        </div>`;
+async function loadChatList() {
+  if(!currentUser) return;
+  onSnapshot(query(collection(db,'chats'), where('participants','array-contains',currentUser.uid)), snap => {
+    const list = document.getElementById('chatList');
+    if(snap.empty) { list.innerHTML='<div style="padding:18px;color:var(--muted);font-size:.84rem;text-align:center;">No conversations yet</div>'; return; }
+    list.innerHTML = snap.docs.map(d => {
+      const dt=d.data(), other=(dt.participantNames||[]).find(n=>n!==currentUser.displayName)||'Student';
+      return '<div class="chat-item'+(activeChatId===d.id?' active':'')+'" onclick="openChat(\''+d.id+'\',\''+other+'\',\'\')">' +
+        '<div class="chat-av">'+other.charAt(0).toUpperCase()+'</div>' +
+        '<div style="min-width:0"><div style="font-size:.86rem;font-weight:600;color:var(--head)">'+other+'</div><div style="font-size:.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:145px">'+(dt.lastMessage||'No messages yet')+'</div></div>' +
+      '</div>';
     }).join('');
-  } catch(e){ grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--red);">Error loading users</div>'; }
+  });
 }
 
-// ── SEARCH USERS (called on input) ──
-window.searchUsers = function(val) {
-  loadAllUsers(val);
-}
-
-// ── START DIRECT CHAT (from Users page) ──
-window.startDirectChat = function(otherUserId, otherName) {
-  if(!currentUser){ showToast('Please sign in to chat','error'); return; }
-  showPage('chat');
-  // Direct chat ID — no item ID needed
-  const chatId = [currentUser.uid, otherUserId].sort().join('_');
-  openChat(chatId, otherName, otherUserId);
-}
-
-// ── LOAD MATCH INBOX ──
-async function loadMatchInbox() {
-  if(!currentUser||!FIREBASE_CONFIGURED) return;
+// USER SEARCH
+window.searchUsers = async function(val) {
+  const grid = document.getElementById('usersGrid');
+  if(!val||val.length<2) { grid.innerHTML='<div class="empty"><div class="icon">🔍</div><h3>Search for students</h3></div>'; return; }
+  grid.innerHTML='<div class="loading"><div class="spin"></div><span>Searching...</span></div>';
   try {
-    const q = query(collection(db,'notifications'), where('userId','==',currentUser.uid), orderBy('createdAt','desc'));
-    onSnapshot(q, snap => {
-      if(snap.empty) { document.getElementById('matchInboxSection').style.display='none'; return; }
-      document.getElementById('matchInboxSection').style.display='block';
-      const inbox = document.getElementById('matchInbox');
-      inbox.innerHTML = snap.docs.map(d => {
-        const n = d.data();
-        return `<div style="background:var(--white);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:4px;padding:16px;margin-bottom:12px;">
-          <div style="font-weight:bold;color:var(--navy);margin-bottom:8px;">🔍 Your lost item "<strong>${n.lostItemName}</strong>" may have been found!</div>
-          <div style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;">${n.matches?.length || 0} matching found item(s):</div>
-          ${(n.matches||[]).map(m => `
-            <div style="background:var(--light-bg);border-radius:3px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-              <div>
-                <div style="font-weight:bold;font-size:0.9rem;">${m.name}</div>
-                <div style="font-size:0.8rem;color:var(--muted);">📍 ${m.location} &nbsp;|&nbsp; Match: ${m.matchScore}%</div>
-              </div>
-              <button class="item-action" onclick="openDetail('${m.id}')">View & Chat</button>
-            </div>
-          `).join('')}
-        </div>`;
+    const snap = await getDocs(collection(db,'users'));
+    const q = val.toLowerCase();
+    const users = snap.docs.map(d=>d.data()).filter(u => (u.name||'').toLowerCase().includes(q)||(u.roll||'').toLowerCase().includes(q)||(u.dept||'').toLowerCase().includes(q));
+    if(!users.length) { grid.innerHTML='<div class="empty"><div class="icon">😕</div><h3>No students found</h3></div>'; return; }
+    grid.innerHTML = users.map(u => {
+      const isMe = currentUser && u.uid===currentUser.uid;
+      const av = u.customPhoto ? '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : '<span style="font-size:1.6rem">'+(u.avatar||'👤')+'</span>';
+      return '<div style="background:var(--white);border:1px solid var(--border);border-radius:4px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);">' +
+        '<div style="width:46px;height:46px;border-radius:50%;background:var(--off);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'+av+'</div>' +
+        '<div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--head);font-size:.93rem">'+(u.name||'Student')+'</div><div style="font-size:.76rem;color:var(--muted)">'+(u.roll?'Roll: '+u.roll:'')+(u.dept?' | '+u.dept:'')+'</div><div style="font-size:.74rem;color:var(--muted)">'+(u.hostel||'')+'</div></div>' +
+        (!isMe&&currentUser ? '<button class="act-btn" onclick="startDirectChat(\''+u.uid+'\',\''+((u.name||'Student').replace(/'/g,"\\'")+'\')">Chat</button>') : (isMe?'<span style="font-size:.74rem;color:var(--muted)">You</span>':'')) +
+      '</div>';
+    }).join('');
+  } catch(e) { grid.innerHTML='<div class="empty"><div class="icon">❌</div><h3>Error loading</h3></div>'; }
+};
+
+// SMART MATCHING
+async function checkSmartMatches(lostItem) {
+  if(!currentUser) return;
+  try {
+    const snap = await getDocs(query(collection(db,'items'), where('type','==','found'), where('status','==','active')));
+    const matches = snap.docs.map(d=>({id:d.id,...d.data()})).filter(f => {
+      let s=0;
+      if(lostItem.category&&f.category&&lostItem.category===f.category) s+=40;
+      if(lostItem.location&&f.location&&lostItem.location===f.location) s+=30;
+      if(lostItem.name&&f.name&&(lostItem.name.toLowerCase().includes(f.name.toLowerCase())||f.name.toLowerCase().includes(lostItem.name.toLowerCase()))) s+=25;
+      return s>=40;
+    });
+    if(matches.length>0) {
+      const ex = await getDocs(query(collection(db,'notifications'), where('lostItemId','==',lostItem.id), where('userId','==',currentUser.uid)));
+      if(ex.empty) {
+        await addDoc(collection(db,'notifications'),{ userId:currentUser.uid, lostItemId:lostItem.id, lostItemName:lostItem.name, matches:matches.map(m=>({id:m.id,name:m.name,location:m.location})), read:false, createdAt:serverTimestamp() });
+        showToast('Match found for "'+lostItem.name+'"! Check Profile.','success');
+      }
+    }
+  } catch(e) {}
+}
+
+async function loadMatchInbox() {
+  if(!currentUser) return;
+  try {
+    onSnapshot(query(collection(db,'notifications'), where('userId','==',currentUser.uid), orderBy('createdAt','desc')), snap => {
+      if(snap.empty) { document.getElementById('matchInboxSec').style.display='none'; return; }
+      document.getElementById('matchInboxSec').style.display='block';
+      document.getElementById('matchInbox').innerHTML = snap.docs.map(d => {
+        const n=d.data();
+        return '<div style="background:var(--white);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:4px;padding:14px;margin-bottom:10px;">' +
+          '<div style="font-weight:700;color:var(--head);margin-bottom:8px;">Your lost "'+n.lostItemName+'" may have been found!</div>' +
+          (n.matches||[]).map(m => '<div style="background:var(--off);border-radius:3px;padding:9px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-weight:600;font-size:.88rem">'+m.name+'</div><div style="font-size:.78rem;color:var(--muted)">'+m.location+'</div></div><button class="act-btn" onclick="openDetail(\''+m.id+'\')">View</button></div>').join('') +
+        '</div>';
       }).join('');
     });
-  } catch(e){ console.warn('Inbox error:', e); }
+  } catch(e) {}
 }
-
-window.openModal = function(id){ document.getElementById(id).classList.add('open'); }
-window.closeModal = function(id){ document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.modal-overlay').forEach(overlay=>{
-  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
-});
-
-window.showToast = function(msg, type='') {
-  const container=document.getElementById('toastContainer');
-  const toast=document.createElement('div');
-  toast.className=`toast ${type}`;
-  toast.textContent=msg;
-  container.appendChild(toast);
-  setTimeout(()=>toast.remove(),4000);
-}
-</script>
-
-<script>
-// ── MAIN CLICK DELEGATION ──
-document.addEventListener('click', function(e) {
-
-  // 1. Handle data-fn buttons
-  var btn = e.target.closest('[data-fn]');
-  if (btn) {
-    var fn = btn.getAttribute('data-fn');
-    var arg1 = btn.getAttribute('data-arg1');
-    var arg2 = btn.getAttribute('data-arg2');
-    if (window[fn]) {
-      e.preventDefault();
-      if (arg1 && arg2) window[fn](arg1, arg2);
-      else if (arg1) window[fn](arg1);
-      else window[fn]();
-    }
-  }
-
-  // 2. Handle avatar selection (data-av attribute)
-  var avOpt = e.target.closest('[data-av]');
-  if (avOpt) {
-    var emoji = avOpt.getAttribute('data-av');
-    // Reset all avatars in same picker
-    var picker = avOpt.closest('#avatarPicker');
-    if (picker) {
-      picker.querySelectorAll('[data-av]').forEach(function(a) {
-        a.style.borderColor = 'var(--border)';
-        a.style.background = '';
-      });
-    }
-    // Highlight selected
-    avOpt.style.borderColor = 'var(--orange)';
-    avOpt.style.background = '#fff5ee';
-    // Save value
-    var hiddenInput = document.getElementById('selectedAvatar');
-    if (hiddenInput) hiddenInput.value = emoji;
-    // Update photo preview
-    var preview = document.getElementById('photoPreview');
-    if (preview) preview.innerHTML = '<span style="font-size:2rem">'+emoji+'</span>';
-    // Clear uploaded photo file
-    window._regPhotoFile = null;
-  }
-
-});
+})();
 </script>
 </body>
 </html>
