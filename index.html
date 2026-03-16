@@ -468,6 +468,12 @@
       <div class="section-title">Recent <span>Activity</span></div>
       <button class="btn-secondary" style="padding:9px 18px;font-size:0.85rem;" data-fn="showPage" data-arg1="items">View All →</button>
     </div>
+    <!-- Quick search on homepage -->
+    <div style="margin-bottom:20px;">
+      <input type="text" id="homeSearch" placeholder="🔍  Quick search — type item name, location..." 
+        style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:0.9rem;color:var(--text);"
+        oninput="if(this.value.length>2){showPage('items');document.getElementById('searchInput').value=this.value;if(window.filterItems)window.filterItems();}">
+    </div>
     <div class="items-grid" id="recentItems">
       <div class="loading"><div class="spinner"></div><span>Loading items...</span></div>
     </div>
@@ -559,7 +565,10 @@
       <div id="matchInbox"></div>
     </div>
 
-    <div class="section-header"><div class="section-title">My <span>Reports</span></div></div>
+    <div class="section-header">
+      <div class="section-title">My <span>Reports</span></div>
+      <span id="myReportsCount" style="font-size:0.82rem;color:var(--muted);background:var(--offwhite);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
+    </div>
     <div class="items-grid" id="myItems">
       <div class="empty-state"><div class="icon">📋</div><h3>No reports yet</h3><p>Sign in and report a lost or found item</p></div>
     </div>
@@ -590,16 +599,16 @@
         <div class="form-group">
           <label class="form-label">Choose Your Avatar</label>
           <div id="avatarPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
-            <span class="avatar-opt" onclick="selectAvatar(this,'🧑‍💻')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Student">🧑‍💻</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'👨‍🎓')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Graduate">👨‍🎓</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'👩‍🎓')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Graduate">👩‍🎓</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'🧑‍🔬')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Scientist">🧑‍🔬</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'🧑‍🏫')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Teacher">🧑‍🏫</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'🦁')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Lion">🦁</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'🐯')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Tiger">🐯</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'🦅')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Eagle">🦅</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'⚡')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Lightning">⚡</span>
-            <span class="avatar-opt" onclick="selectAvatar(this,'🏔️')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Mountain">🏔️</span>
+            <span class="avatar-opt" data-emoji="🧑‍💻" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--orange);border-radius:6px;background:#fff5ee;">🧑‍💻</span>
+            <span class="avatar-opt" data-emoji="👨‍🎓" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">👨‍🎓</span>
+            <span class="avatar-opt" data-emoji="👩‍🎓" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">👩‍🎓</span>
+            <span class="avatar-opt" data-emoji="🧑‍🔬" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🧑‍🔬</span>
+            <span class="avatar-opt" data-emoji="🧑‍🏫" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🧑‍🏫</span>
+            <span class="avatar-opt" data-emoji="🦁" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🦁</span>
+            <span class="avatar-opt" data-emoji="🐯" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🐯</span>
+            <span class="avatar-opt" data-emoji="🦅" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🦅</span>
+            <span class="avatar-opt" data-emoji="⚡" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">⚡</span>
+            <span class="avatar-opt" data-emoji="🏔️" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;">🏔️</span>
           </div>
           <input type="hidden" id="selectedAvatar" value="🧑‍💻">
         </div>
@@ -908,9 +917,12 @@ async function loadMyItems() {
   onSnapshot(q, snap => {
     const mine = snap.docs.map(d=>({id:d.id,...d.data()}));
     renderItems('myItems', mine);
+    // Update report count
+    const countEl = document.getElementById('myReportsCount');
+    if(countEl) countEl.textContent = mine.length + ' report' + (mine.length !== 1 ? 's' : '');
     // Check for smart matches for user's lost items
     const lostItems = mine.filter(i => i.type === 'lost' && i.status === 'active');
-    lostItems.forEach(item => checkSmartMatches(item));
+    lostItems.forEach(item => window.checkSmartMatches(item));
   });
 }
 
