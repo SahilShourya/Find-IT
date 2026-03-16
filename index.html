@@ -418,7 +418,21 @@
 
 <nav>
   <div class="nav-logo">
-    <img class="smvdu-logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b3/Shri_Mata_Vaishno_Devi_University_logo.png/220px-Shri_Mata_Vaishno_Devi_University_logo.png" alt="SMVDU Logo">
+    <svg class="smvdu-logo" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px;flex-shrink:0;">
+      <circle cx="22" cy="22" r="22" fill="#ffffff"/>
+      <circle cx="22" cy="22" r="20" fill="#1C3557"/>
+      <!-- Flame / Torch top -->
+      <ellipse cx="22" cy="10" rx="4" ry="6" fill="#F47C20"/>
+      <ellipse cx="22" cy="12" rx="2.5" ry="4" fill="#FFB347"/>
+      <!-- Book base -->
+      <rect x="12" y="22" width="20" height="12" rx="2" fill="#ffffff" opacity="0.9"/>
+      <line x1="22" y1="22" x2="22" y2="34" stroke="#1C3557" stroke-width="1.2"/>
+      <!-- Leaves -->
+      <ellipse cx="14" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(-30 14 20)"/>
+      <ellipse cx="30" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(30 30 20)"/>
+      <!-- Text SMVDU -->
+      <text x="22" y="40" text-anchor="middle" font-size="4.5" font-weight="bold" fill="#F47C20" font-family="Arial">SMVDU</text>
+    </svg>
     <div class="logo-text">
       <span class="top">SMVDU</span>
       <span class="bottom">Find<span>It</span></span>
@@ -428,6 +442,7 @@
     <button data-fn="showPage" data-arg1="home" id="nav-home" class="active">Home</button>
     <button data-fn="showPage" data-arg1="items" id="nav-items">Browse</button>
     <button data-fn="showPage" data-arg1="chat" id="nav-chat">Messages</button>
+    <button data-fn="showPage" data-arg1="users" id="nav-users">👥 Users</button>
     <button data-fn="showPage" data-arg1="profile" id="nav-profile">Profile</button>
     <button class="btn-auth" data-fn="openAuthModal" id="authBtn">Sign In</button>
   </div>
@@ -550,6 +565,34 @@
           <h3 style="font-size:1rem;margin-bottom:6px;color:var(--heading);">Select a Conversation</h3>
           <p style="color:var(--muted);font-size:0.84rem;">Click an item card to chat<br>with the person who found/lost it</p>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     USERS SEARCH PAGE
+================================================================ -->
+<div class="page" id="page-users">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title">👥 Find <span>Students</span></div>
+      <span style="font-size:0.82rem;color:var(--muted);">Search and chat with registered SMVDU students</span>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar" style="margin-bottom:24px;">
+      <input type="text" id="userSearchInput"
+        placeholder="Search by name, roll number, department..."
+        oninput="searchUsers(this.value)"
+        style="font-size:0.9rem;">
+    </div>
+
+    <!-- Users Grid -->
+    <div id="usersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
+        <div style="font-size:2.5rem;margin-bottom:10px;">🔍</div>
+        <p>Search for students by name or roll number</p>
       </div>
     </div>
   </div>
@@ -880,6 +923,7 @@ import {
   addDoc,           // Add new document
   getDocs,          // Get all documents (one time)
   doc,              // Reference to a specific document
+  setDoc,           // Set/create a document with specific ID
   updateDoc,        // Update existing document
   query,            // Build a query
   orderBy,          // Sort results
@@ -1506,9 +1550,11 @@ window.submitReport = async function() {
 
 window.startChat = function(itemId, otherName, otherUserId) {
   if(!currentUser){ showToast('Please sign in to chat','error'); return; }
+  if(otherUserId === currentUser.uid){ showToast('This is your own item!','error'); return; }
   closeModal('detailModal');
   showPage('chat');
-  const chatId=[currentUser.uid,otherUserId].sort().join('_')+'_'+itemId;
+  // Chat ID = sorted UIDs + item ID (ensures same chat for both users)
+  const chatId = [currentUser.uid, otherUserId].sort().join('_') + '_' + itemId;
   openChat(chatId, otherName, otherUserId);
 }
 
@@ -1530,68 +1576,64 @@ async function loadChatList() {
 }
 
 window.openChat = async function(chatId, otherName, otherUserId) {
-  activeChatId=chatId;
-  if(unsubscribeChat) unsubscribeChat(); // Stop previous listener
-  
-  const main=document.getElementById('chatMain');
-  main.innerHTML=`
+  if(!currentUser){ showToast('Please sign in to chat','error'); return; }
+  activeChatId = chatId;
+  if(unsubscribeChat) unsubscribeChat();
+
+  // Show chat UI
+  const main = document.getElementById('chatMain');
+  main.innerHTML = `
     <div class="chat-topbar">
-      <div class="chat-avatar">👤</div>
+      <div class="chat-avatar" style="background:var(--orange);font-size:1rem;">${otherName.charAt(0).toUpperCase()}</div>
       <div>
-        <div style="font-weight:bold;color:var(--navy);">${otherName}</div>
-        <div style="font-size:0.76rem;color:var(--green);">● Active now</div>
+        <div style="font-weight:600;color:var(--heading);">${otherName}</div>
+        <div style="font-size:0.74rem;color:var(--green);">● Online</div>
       </div>
     </div>
-    <div class="chat-messages" id="chatMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-bar">
-      <input type="text" id="chatInput" placeholder="Type a message..." 
-        onkeydown="if(event.key==='Enter'){event.preventDefault();sendMessage()}"
-        style="flex:1;border:1px solid var(--border);border-radius:3px;padding:9px 12px;font-family:Georgia,serif;font-size:0.88rem;">
-      <button onclick="sendMessage()" style="background:var(--navy);color:#fff;border:none;padding:9px 16px;border-radius:3px;cursor:pointer;font-size:1rem;">➤</button>
+      <input type="text" id="chatInput" placeholder="Type a message..."
+        onkeydown="if(event.key==='Enter'){event.preventDefault();sendMessage()}" autocomplete="off">
+      <button onclick="sendMessage()" class="chat-send">➤</button>
     </div>`;
 
-  if(!currentUser) return;
-
-  // Create or update chat document
-  const chatRef = doc(db,'chats',chatId);
+  // Ensure chat doc exists in Firestore
+  const chatRef = doc(db, 'chats', chatId);
   try {
-    await updateDoc(chatRef,{
-      participants:[currentUser.uid,otherUserId].filter(Boolean),
-      participantNames:[currentUser.displayName,otherName],
-      lastUpdated:serverTimestamp()
+    await updateDoc(chatRef, {
+      participants: [currentUser.uid, otherUserId].filter(Boolean),
+      participantNames: [currentUser.displayName || 'User', otherName],
+      lastUpdated: serverTimestamp()
     });
   } catch(e) {
-    try { 
-      await addDoc(collection(db,'chats'),{
-        id:chatId,
-        participants:[currentUser.uid,otherUserId].filter(Boolean),
-        participantNames:[currentUser.displayName,otherName],
-        lastUpdated:serverTimestamp()
-      }); 
-    } catch(e2){}
+    // Doc doesn't exist yet — create it
+    try {
+      await setDoc(chatRef, {
+        participants: [currentUser.uid, otherUserId].filter(Boolean),
+        participantNames: [currentUser.displayName || 'User', otherName],
+        lastMessage: '',
+        lastUpdated: serverTimestamp()
+      });
+    } catch(e2){ console.warn('Chat init error:', e2); }
   }
 
-  // ⚡ Real-time message listener — updates instantly when new message arrives
-  const msgsRef = collection(db,'chats',chatId,'messages');
-  unsubscribeChat = onSnapshot(
-    query(msgsRef, orderBy('time')),
-    { includeMetadataChanges: false }, // Only real server changes, not local writes
-    snap => {
-      const container = document.getElementById('chatMessages');
-      if(!container) return;
-      const wasAtBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
-      container.innerHTML = snap.docs.map(d => {
-        const m = d.data();
-        const mine = m.senderId === currentUser.uid;
-        const time = m.time?.toDate ? m.time.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
-        return `<div class="msg ${mine?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${time}</div></div>`;
-      }).join('');
-      // Auto scroll to bottom if user was already at bottom
-      if(wasAtBottom || snap.docChanges().some(c=>c.type==='added')) {
-        container.scrollTop = container.scrollHeight;
-      }
-    }
-  );
+  // ⚡ REAL-TIME listener — messages appear instantly
+  const msgsRef = collection(db, 'chats', chatId, 'messages');
+  unsubscribeChat = onSnapshot(query(msgsRef, orderBy('time')), snap => {
+    const box = document.getElementById('chatMessages');
+    if(!box) return;
+    const atBottom = box.scrollHeight - box.clientHeight <= box.scrollTop + 60;
+    box.innerHTML = snap.docs.map(d => {
+      const m = d.data();
+      const mine = m.senderId === currentUser.uid;
+      const t = m.time?.toDate ? m.time.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+      return `<div class="msg ${mine ? 'msg-out' : 'msg-in'}">${m.text}<div class="msg-time">${t}</div></div>`;
+    }).join('');
+    if(atBottom) box.scrollTop = box.scrollHeight;
+  });
+
+  // Highlight active in sidebar
+  document.querySelectorAll('.chat-list-item').forEach(el => el.classList.remove('active'));
 }
 
 // ── UPDATE PROFILE PHOTO ──
@@ -1636,25 +1678,27 @@ window.updateProfilePhoto = async function(input) {
 }
 
 // ── SEND CHAT MESSAGE ──
-// Saves message to Firestore under chats/{chatId}/messages
-// Both users see it instantly via onSnapshot real-time listener
 window.sendMessage = async function() {
-  if(!currentUser||!activeChatId) return;
-  const input=document.getElementById('chatInput');
-  const text=input.value.trim();
+  if(!currentUser || !activeChatId){ showToast('Sign in to send messages','error'); return; }
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
   if(!text) return;
-  input.value=''; // Clear input field
+  input.value = '';
+  input.focus();
   try {
-    // Add message to messages subcollection
-    await addDoc(collection(db,'chats',activeChatId,'messages'),{
+    // Add message instantly (Firestore handles real-time delivery)
+    await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
       text,
       senderId: currentUser.uid,
-      senderName: currentUser.displayName,
+      senderName: currentUser.displayName || 'User',
       time: serverTimestamp()
     });
-    // Update last message preview in chat list
-    await updateDoc(doc(db,'chats',activeChatId),{lastMessage:text,lastUpdated:serverTimestamp()});
-  } catch(e){ console.error(e); }
+    // Update chat preview
+    await updateDoc(doc(db, 'chats', activeChatId), {
+      lastMessage: text,
+      lastUpdated: serverTimestamp()
+    });
+  } catch(e){ showToast('Message failed: ' + e.message, 'error'); }
 }
 
 window.showPage = function(page) {
@@ -1666,6 +1710,65 @@ window.showPage = function(page) {
     loadMyItems();
     loadMatchInbox();
   }
+  if(page==='users') {
+    loadAllUsers();
+  }
+}
+
+// ── LOAD ALL REGISTERED USERS ──
+async function loadAllUsers(filterText) {
+  if(!FIREBASE_CONFIGURED) return;
+  const grid = document.getElementById('usersGrid');
+  if(!grid) return;
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto;"></div></div>';
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    let users = snap.docs.map(d => d.data());
+    // Filter if search text provided
+    if(filterText && filterText.length > 1) {
+      const q = filterText.toLowerCase();
+      users = users.filter(u =>
+        (u.name||''). toLowerCase().includes(q) ||
+        (u.roll||''). toLowerCase().includes(q) ||
+        (u.dept||''). toLowerCase().includes(q) ||
+        (u.hostel||''). toLowerCase().includes(q)
+      );
+    }
+    if(!users.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">No students found</div>';
+      return;
+    }
+    grid.innerHTML = users.map(u => {
+      const isMe = currentUser && u.uid === currentUser.uid;
+      const avatar = u.customPhoto
+        ? `<img src="${u.customPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+        : `<span style="font-size:1.6rem">${u.avatar || '👤'}</span>`;
+      return `
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:4px;padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--offwhite);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">${avatar}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;color:var(--heading);font-size:0.95rem;">${u.name || 'Student'}</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${u.roll ? '🎓 '+u.roll : ''} ${u.dept ? '| '+u.dept : ''}</div>
+            <div style="font-size:0.75rem;color:var(--muted);">${u.hostel ? '🏠 '+u.hostel : ''}</div>
+          </div>
+          ${!isMe && currentUser ? `<button onclick="startDirectChat('${u.uid}','${(u.name||'Student').replace(/'/g,'\\'')}' )" style="background:var(--steel);color:#fff;border:none;padding:6px 12px;border-radius:3px;font-size:0.78rem;cursor:pointer;flex-shrink:0;">💬 Chat</button>` : isMe ? '<span style="font-size:0.75rem;color:var(--muted);">You</span>' : ''}
+        </div>`;
+    }).join('');
+  } catch(e){ grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--red);">Error loading users</div>'; }
+}
+
+// ── SEARCH USERS (called on input) ──
+window.searchUsers = function(val) {
+  loadAllUsers(val);
+}
+
+// ── START DIRECT CHAT (from Users page) ──
+window.startDirectChat = function(otherUserId, otherName) {
+  if(!currentUser){ showToast('Please sign in to chat','error'); return; }
+  showPage('chat');
+  // Direct chat ID — no item ID needed
+  const chatId = [currentUser.uid, otherUserId].sort().join('_');
+  openChat(chatId, otherName, otherUserId);
 }
 
 // ── LOAD MATCH INBOX ──
