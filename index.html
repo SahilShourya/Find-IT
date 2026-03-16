@@ -421,16 +421,12 @@
     <svg class="smvdu-logo" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px;flex-shrink:0;">
       <circle cx="22" cy="22" r="22" fill="#ffffff"/>
       <circle cx="22" cy="22" r="20" fill="#1C3557"/>
-      <!-- Flame / Torch top -->
       <ellipse cx="22" cy="10" rx="4" ry="6" fill="#F47C20"/>
       <ellipse cx="22" cy="12" rx="2.5" ry="4" fill="#FFB347"/>
-      <!-- Book base -->
       <rect x="12" y="22" width="20" height="12" rx="2" fill="#ffffff" opacity="0.9"/>
       <line x1="22" y1="22" x2="22" y2="34" stroke="#1C3557" stroke-width="1.2"/>
-      <!-- Leaves -->
       <ellipse cx="14" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(-30 14 20)"/>
       <ellipse cx="30" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(30 30 20)"/>
-      <!-- Text SMVDU -->
       <text x="22" y="40" text-anchor="middle" font-size="4.5" font-weight="bold" fill="#F47C20" font-family="Arial">SMVDU</text>
     </svg>
     <div class="logo-text">
@@ -448,14 +444,10 @@
   </div>
 </nav>
 
-<!-- ================================================================
-     TOAST NOTIFICATIONS CONTAINER
-================================================================ -->
+
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ================================================================
-     HOME PAGE
-================================================================ -->
+
 <div class="page active" id="page-home">
   <div class="hero">
     <div class="hero-badge">🎓 SHRI MATA VAISHNO DEVI UNIVERSITY, KATRA</div>
@@ -467,7 +459,7 @@
     </div>
   </div>
 
-  <!-- Stats Bar -->
+  
   <div class="stats-strip">
     <div class="stat-item"><div class="num" id="statLost">0</div><div class="lbl">Items Reported Lost</div></div>
     <div class="stat-item"><div class="num" id="statFound">0</div><div class="lbl">Items Found</div></div>
@@ -476,13 +468,13 @@
   </div>
 
   <div class="container">
-    <!-- Setup Banner (hidden when Firebase is configured) -->
+    
     <div class="setup-banner" id="setupBanner">
       <h3>⚡ Firebase Setup Required</h3>
       <p>Connect your Firebase project to enable real-time features.</p>
     </div>
 
-    <!-- Quick Search -->
+    
     <div style="margin-bottom:20px;">
       <input type="text" id="homeSearch" placeholder="🔍  Quick search — item name, location..."
         style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:3px;font-size:0.9rem;color:var(--text);background:var(--white);"
@@ -499,9 +491,7 @@
   </div>
 </div>
 
-<!-- ================================================================
-     BROWSE PAGE
-================================================================ -->
+
 <div class="page" id="page-items">
   <div class="container">
     <div class="section-header">
@@ -512,20 +502,20 @@
       </div>
     </div>
 
-    <!-- Lost / Found / All Tabs -->
+    
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-all" data-fn="setTab" data-arg1="all">All Items <span class="tab-badge" id="badge-all">0</span></button>
       <button class="tab-btn" id="tab-lost" data-fn="setTab" data-arg1="lost">🔴 Lost <span class="tab-badge" id="badge-lost">0</span></button>
       <button class="tab-btn" id="tab-found" data-fn="setTab" data-arg1="found">🟢 Found <span class="tab-badge" id="badge-found">0</span></button>
     </div>
 
-    <!-- Search Bar -->
+    
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search by item name, description, location..."
         oninput="if(window.filterItems)window.filterItems()">
     </div>
 
-    <!-- Category Filters -->
+    
     <div class="filters" id="categoryFilters">
       <button class="filter-btn active" onclick="if(window.setCategoryFilter)window.setCategoryFilter('all',this)">All</button>
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Electronics',this)">📱 Electronics</button>
@@ -540,16 +530,14 @@
       <button class="filter-btn" onclick="if(window.setCategoryFilter)window.setCategoryFilter('Other',this)">📦 Other</button>
     </div>
 
-    <!-- Items Grid -->
+    
     <div class="items-grid" id="itemsGrid">
       <div class="loading"><div class="spinner"></div><span>Loading...</span></div>
     </div>
   </div>
 </div>
 
-<!-- ================================================================
-     MESSAGES / CHAT PAGE
-================================================================ -->
+
 <div class="page" id="page-chat">
   <div class="chat-layout">
     <div class="chat-sidebar">
@@ -570,9 +558,7 @@
   </div>
 </div>
 
-<!-- ================================================================
-     USERS SEARCH PAGE
-================================================================ -->
+
 <div class="page" id="page-users">
   <div class="container">
     <div class="section-header">
@@ -580,7 +566,7 @@
       <span style="font-size:0.82rem;color:var(--muted);">Search and chat with registered SMVDU students</span>
     </div>
 
-    <!-- Search Bar -->
+    
     <div class="search-bar" style="margin-bottom:24px;">
       <input type="text" id="userSearchInput"
         placeholder="Search by name, roll number, department..."
@@ -588,7 +574,7 @@
         style="font-size:0.9rem;">
     </div>
 
-    <!-- Users Grid -->
+    
     <div id="usersGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
       <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
         <div style="font-size:2.5rem;margin-bottom:10px;">🔍</div>
@@ -598,13 +584,11 @@
   </div>
 </div>
 
-<!-- ================================================================
-     PROFILE PAGE
-================================================================ -->
+
 <div class="page" id="page-profile">
   <div class="profile-header">
     <div class="profile-info">
-      <!-- Avatar with edit button -->
+      
       <div style="position:relative;flex-shrink:0;">
         <div class="profile-avatar" id="profileAvatar">👤</div>
         <label for="profilePhotoInput" title="Change photo"
@@ -623,7 +607,7 @@
   </div>
 
   <div class="container">
-    <!-- Smart Match Inbox -->
+    
     <div id="matchInboxSection" style="display:none;margin-bottom:28px;">
       <div class="section-header">
         <div class="section-title">🎯 Smart <span>Matches</span></div>
@@ -632,7 +616,7 @@
       <div id="matchInbox"></div>
     </div>
 
-    <!-- My Reports -->
+    
     <div class="section-header">
       <div class="section-title">My <span>Reports</span></div>
       <span id="myReportsCount" style="font-size:0.8rem;color:var(--muted);background:var(--offwhite);padding:3px 10px;border-radius:10px;border:1px solid var(--border);">0 reports</span>
@@ -643,9 +627,7 @@
   </div>
 </div>
 
-<!-- ================================================================
-     AUTH MODAL — Google Sign In + Profile Setup
-================================================================ -->
+
 <div class="modal-overlay" id="authModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
@@ -653,7 +635,7 @@
       <button class="modal-close" data-fn="closeModal" data-arg1="authModal">✕</button>
     </div>
     <div class="modal-body" id="authModalBody">
-      <!-- Step 1: Google Sign In -->
+      
       <div id="googleSignInStep">
         <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;text-align:center;">Sign in with your Google account to continue</p>
         <button onclick="handleGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;border:1px solid #ddd;border-radius:3px;background:#fff;cursor:pointer;font-family:Georgia,serif;font-size:0.95rem;font-weight:bold;color:#333;transition:all 0.15s;" onmouseover="this.style.background='#f8f8f8'" onmouseout="this.style.background='#fff'">
@@ -662,11 +644,11 @@
         </button>
         <p style="font-size:0.78rem;color:#aaa;text-align:center;margin-top:14px;">Only verified Google accounts are allowed</p>
       </div>
-      <!-- Step 2: Complete Profile (shown after Google login for new users) -->
+      
       <div id="completeProfileStep" style="display:none;">
         <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px;">Almost done! Fill in your SMVDU details:</p>
 
-        <!-- Profile Photo -->
+        
         <div class="form-group" style="text-align:center;margin-bottom:16px;">
           <div id="photoPreview" style="width:72px;height:72px;border-radius:50%;background:var(--offwhite);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">🧑‍💻</div>
           <label style="font-size:0.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
@@ -675,7 +657,7 @@
           </label>
         </div>
 
-        <!-- Avatar Selection -->
+        
         <div class="form-group">
           <label class="form-label">Or Choose Avatar</label>
           <div id="avatarPicker" style="display:flex;gap:7px;flex-wrap:wrap;">
@@ -739,9 +721,7 @@
   </div>
 </div>
 
-<!-- ================================================================
-     REPORT LOST/FOUND ITEM MODAL
-================================================================ -->
+
 <div class="modal-overlay" id="reportModal">
   <div class="modal">
     <div class="modal-header">
@@ -780,7 +760,7 @@
       </div>
 
       <div class="form-row">
-        <!-- Location Dropdown — All SMVDU Campus Locations -->
+        
         <div class="form-group">
           <label class="form-label">Location on Campus *</label>
           <select class="form-select" id="itemLocation">
@@ -839,14 +819,14 @@
         </div>
       </div>
 
-      <!-- Verification Question (only for Lost items) -->
+      
       <div class="form-group" id="verifyQuestionGroup" style="display:none;">
         <label class="form-label">🔐 Verification Question <span style="font-weight:normal;text-transform:none;">(Only you would know this — helps verify the real owner)</span></label>
         <input class="form-input" type="text" id="verifyQuestion" placeholder="e.g. What sticker is on your laptop?">
         <input class="form-input" type="text" id="verifyAnswer" placeholder="Your answer (kept private)" style="margin-top:7px;">
       </div>
 
-      <!-- Photo Upload -->
+      
       <div class="form-group">
         <label class="form-label">Upload Photo (optional)</label>
         <div class="upload-area" onclick="document.getElementById('itemPhoto').click()">
@@ -864,9 +844,7 @@
   </div>
 </div>
 
-<!-- ================================================================
-     ITEM DETAIL MODAL — Shows full info + Chat + Claim buttons
-================================================================ -->
+
 <div class="modal-overlay" id="detailModal">
   <div class="modal" style="max-width:560px;">
     <div class="modal-header">
@@ -877,9 +855,7 @@
   </div>
 </div>
 
-<!-- ================================================================
-     CLAIM ITEM MODAL — Owner answers verification question
-================================================================ -->
+
 <div class="modal-overlay" id="claimModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
