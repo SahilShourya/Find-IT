@@ -533,11 +533,19 @@
 <div class="page" id="page-profile">
   <div class="profile-header">
     <div class="profile-info">
-      <div class="profile-avatar" id="profileAvatar">👤</div>
+      <!-- Avatar with edit button -->
+      <div style="position:relative;flex-shrink:0;">
+        <div class="profile-avatar" id="profileAvatar">👤</div>
+        <label for="profilePhotoInput" title="Change photo" style="position:absolute;bottom:0;right:0;background:var(--orange);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;border:2px solid var(--navy);">✏️</label>
+        <input type="file" id="profilePhotoInput" accept="image/*" style="display:none;" onchange="updateProfilePhoto(this)">
+      </div>
       <div class="profile-details">
         <h2 id="profileName">Guest User</h2>
         <p id="profileEmail">Not signed in</p>
         <div class="profile-badge" id="profileDept">🎓 SMVDU Student</div>
+        <div style="margin-top:8px;">
+          <label for="profilePhotoInput" style="font-size:0.75rem;color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:underline;">📷 Change profile photo</label>
+        </div>
       </div>
     </div>
   </div>
@@ -576,11 +584,30 @@
       </div>
       <!-- Step 2: Complete Profile (shown after Google login for new users) -->
       <div id="completeProfileStep" style="display:none;">
-        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:16px;">Almost done! Fill in your SMVDU details:</p>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px;">Almost done! Fill in your SMVDU details:</p>
+        
+        <!-- Avatar Selection -->
+        <div class="form-group">
+          <label class="form-label">Choose Your Avatar</label>
+          <div id="avatarPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+            <span class="avatar-opt" onclick="selectAvatar(this,'🧑‍💻')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Student">🧑‍💻</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'👨‍🎓')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Graduate">👨‍🎓</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'👩‍🎓')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Graduate">👩‍🎓</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'🧑‍🔬')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Scientist">🧑‍🔬</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'🧑‍🏫')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Teacher">🧑‍🏫</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'🦁')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Lion">🦁</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'🐯')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Tiger">🐯</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'🦅')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Eagle">🦅</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'⚡')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Lightning">⚡</span>
+            <span class="avatar-opt" onclick="selectAvatar(this,'🏔️')" style="font-size:1.8rem;cursor:pointer;padding:6px;border:2px solid var(--border);border-radius:6px;transition:all 0.15s;" title="Mountain">🏔️</span>
+          </div>
+          <input type="hidden" id="selectedAvatar" value="🧑‍💻">
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Roll Number *</label>
-            <input class="form-input" type="text" id="profileRoll" placeholder="e.g. 25BCS080">
+            <input class="form-input" type="text" id="profileRoll" placeholder="e.g. 25BCS080" oninput="this.value=this.value.toUpperCase()">
           </div>
           <div class="form-group">
             <label class="form-label">Department *</label>
@@ -1152,7 +1179,8 @@ window.saveUserProfile = async function() {
   const dept = document.getElementById('profileDept').value;
   if(!roll || !dept){ showToast('Please fill Roll Number and Department','error'); return; }
 
-  const rollPattern = /^[0-9]{2}[A-Z]{2,4}[0-9]{3,4}$/;
+  // Accept formats like 25BCS080, 24ECE012, 23MBA01 etc
+  const rollPattern = /^[0-9]{2}[A-Za-z]{2,5}[0-9]{2,4}$/;
   if(!rollPattern.test(roll)){ showToast('Invalid roll number! Format: 25BCS080','error'); return; }
 
   try {
@@ -1225,39 +1253,55 @@ async function updateNavAuth(user){
   if(user){
     btn.textContent='Sign Out';
     btn.onclick=async()=>{ 
-      await signOut(auth); 
-      // Reset profile to default on logout
+      await signOut(auth);
       document.getElementById('profileName').textContent='Guest User';
       document.getElementById('profileEmail').textContent='Not signed in';
-      document.getElementById('profileDept').textContent='🎓 SMVDU Student';
-      document.getElementById('profileAvatar').textContent='👤';
-      showToast('Signed out',''); 
+      document.getElementById('profileDept').innerHTML='🎓 SMVDU Student';
+      document.getElementById('profileAvatar').innerHTML='👤';
+      showToast('Signed out','');
     };
-    
-    // Set basic info from Firebase Auth
-    document.getElementById('profileName').textContent=user.displayName||'Student';
-    document.getElementById('profileEmail').textContent=user.email;
-    document.getElementById('profileAvatar').textContent='👤';
-    
-    // Fetch detailed info from Firestore users collection
+
+    // Set basic info first
+    document.getElementById('profileName').textContent = user.displayName || 'Student';
+    document.getElementById('profileEmail').textContent = user.email;
+
+    // Fetch full profile from Firestore
     try {
       const userQuery = query(collection(db,'users'), where('uid','==',user.uid));
       const userSnap = await getDocs(userQuery);
       if(!userSnap.empty){
-        const userData = userSnap.docs[0].data();
-        // Update profile with real user data
-        document.getElementById('profileName').textContent = userData.name || user.displayName || 'Student';
-        document.getElementById('profileEmail').textContent = user.email;
-        // Show roll number + department + hostel
+        const u = userSnap.docs[0].data();
+
+        // Set avatar — priority: customPhoto > emoji avatar > Google photo
+        const avatarEl = document.getElementById('profileAvatar');
+        if(u.customPhoto){
+          avatarEl.innerHTML = `<img src="${u.customPhoto}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else if(u.avatar){
+          avatarEl.innerHTML = `<span style="font-size:1.8rem">${u.avatar}</span>`;
+        } else if(user.photoURL){
+          avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else {
+          avatarEl.innerHTML = '👤';
+        }
+
+        // Show all details
+        document.getElementById('profileName').textContent = u.name || user.displayName;
         const deptEl = document.getElementById('profileDept');
-        deptEl.innerHTML = '';
-        if(userData.roll) deptEl.innerHTML += `<span style="margin-right:8px;">🎓 ${userData.roll}</span>`;
-        if(userData.dept) deptEl.innerHTML += `<span style="margin-right:8px;">📚 ${userData.dept}</span>`;
-        if(userData.hostel) deptEl.innerHTML += `<span>🏠 ${userData.hostel}</span>`;
-        if(!userData.roll && !userData.dept) deptEl.textContent = '🎓 SMVDU Student';
+        deptEl.innerHTML = [
+          u.roll   ? `<span>🎓 ${u.roll}</span>` : '',
+          u.dept   ? `<span style="margin-left:10px;">📚 ${u.dept}</span>` : '',
+          u.hostel ? `<span style="margin-left:10px;">🏠 ${u.hostel}</span>` : '',
+          u.email  ? `<span style="margin-left:10px;">✉️ ${u.email}</span>` : '',
+        ].filter(Boolean).join('') || '🎓 SMVDU Student';
+      } else {
+        // Google photo as fallback
+        if(user.photoURL){
+          document.getElementById('profileAvatar').innerHTML = 
+            `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        }
       }
-    } catch(e){ console.warn('Could not load user profile:', e); }
-    
+    } catch(e){ console.warn('Profile load error:', e); }
+
     loadChatList();
   } else {
     btn.textContent='Sign In';
@@ -1439,6 +1483,47 @@ window.openChat = async function(chatId, otherName, otherUserId) {
       }
     }
   );
+}
+
+// ── UPDATE PROFILE PHOTO ──
+// User selects photo from gallery → uploads to Cloudinary → saves URL to Firestore
+window.updateProfilePhoto = async function(input) {
+  if(!currentUser){ showToast('Please sign in first','error'); return; }
+  if(!input.files || !input.files[0]) return;
+
+  const file = input.files[0];
+  // Check file size (max 5MB)
+  if(file.size > 5 * 1024 * 1024){ showToast('Photo too large! Max 5MB','error'); return; }
+
+  showToast('Uploading photo...','');
+
+  try {
+    // Upload to Cloudinary
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'smvdu-findit');
+    formData.append('cloud_name', 'duxehxynt');
+    const res = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload', {
+      method: 'POST', body: formData
+    });
+    const data = await res.json();
+    const photoURL = data.secure_url;
+
+    if(!photoURL){ showToast('Upload failed, try again','error'); return; }
+
+    // Update in Firestore users collection
+    const userQuery = query(collection(db,'users'), where('uid','==',currentUser.uid));
+    const userSnap = await getDocs(userQuery);
+    if(!userSnap.empty){
+      await updateDoc(doc(db,'users', userSnap.docs[0].id), { customPhoto: photoURL });
+    }
+
+    // Update profile avatar on screen immediately
+    const avatarEl = document.getElementById('profileAvatar');
+    avatarEl.innerHTML = `<img src="${photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+
+    showToast('✅ Profile photo updated!','success');
+  } catch(e){ showToast('Error: ' + e.message,'error'); }
 }
 
 // ── SEND CHAT MESSAGE ──
