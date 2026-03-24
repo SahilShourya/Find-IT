@@ -1393,8 +1393,11 @@ window.previewPhoto = function(input) {
   r.readAsDataURL(input.files[0]);
 };
 
+let _submitting = false; // Prevent double submit
 window.submitReport = async function() {
   if(!currentUser) return;
+  if(_submitting) return; // Already submitting, ignore extra clicks
+
   const type=document.getElementById('repType').value;
   const name=document.getElementById('itemName').value.trim();
   const cat =document.getElementById('itemCat').value;
@@ -1402,14 +1405,41 @@ window.submitReport = async function() {
   const loc =document.getElementById('itemLoc').value;
   const date=document.getElementById('itemDate').value;
   if(!name||!cat||!desc||!loc||!date){showToast('Fill all required fields','error');return;}
-  let imageUrl='';
-  const pf=document.getElementById('itemPhoto').files[0];
-  if(pf){try{const fd=new FormData();fd.append('file',pf);fd.append('upload_preset','smvdu-findit');imageUrl=(await(await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';}catch(ex){}}
-  const data={type,name,category:cat,description:desc,location:loc,date,userId:currentUser.uid,userName:currentUser.displayName||currentUser.email,status:'active',imageUrl,createdAt:serverTimestamp()};
-  if(type==='lost'){data.verifyQuestion=document.getElementById('verifyQ').value;data.verifyAnswer=document.getElementById('verifyA').value;}
-  await addDoc(collection(db,'items'),data);
-  showToast((type==='lost'?'Lost':'Found')+' item reported!','success');
-  closeModal('reportModal');
+
+  // Disable button and show loading
+  _submitting = true;
+  const submitBtn = document.querySelector('#reportModal .btn-full.green');
+  const origText = submitBtn ? submitBtn.textContent : '';
+  if(submitBtn){ submitBtn.textContent = 'Submitting...'; submitBtn.disabled = true; submitBtn.style.opacity = '0.7'; }
+
+  try {
+    let imageUrl='';
+    const pf=document.getElementById('itemPhoto').files[0];
+    if(pf){
+      try{
+        const fd=new FormData();
+        fd.append('file',pf);
+        fd.append('upload_preset','smvdu-findit');
+        imageUrl=(await(await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
+      }catch(ex){ console.warn('Photo upload failed, continuing without image'); }
+    }
+    const data={type,name,category:cat,description:desc,location:loc,date,
+      userId:currentUser.uid,userName:currentUser.displayName||currentUser.email,
+      status:'active',imageUrl,createdAt:serverTimestamp()};
+    if(type==='lost'){
+      data.verifyQuestion=document.getElementById('verifyQ').value;
+      data.verifyAnswer=document.getElementById('verifyA').value;
+    }
+    await addDoc(collection(db,'items'),data);
+    showToast((type==='lost'?'Lost':'Found')+' item reported!','success');
+    closeModal('reportModal');
+  } catch(e) {
+    showToast('Error: '+e.message,'error');
+  } finally {
+    // Re-enable button
+    _submitting = false;
+    if(submitBtn){ submitBtn.textContent = origText; submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+  }
 };
 
 // ── CHAT ──
@@ -1429,6 +1459,13 @@ window.startDirectChat = function(uid, name) {
 };
 
 window.openChatWindow = async function(chatId, otherName, otherUid) {
+  // Handle both direct call and event from data attributes
+  if(chatId && typeof chatId === 'object') {
+    const el = chatId.closest ? chatId : chatId.currentTarget;
+    otherUid  = el.getAttribute('data-cuid');
+    otherName = el.getAttribute('data-cname');
+    chatId    = el.getAttribute('data-cid');
+  }
   if(!currentUser) return;
   activeChatId = chatId;
   if(unsubChat) unsubChat();
@@ -1436,7 +1473,10 @@ window.openChatWindow = async function(chatId, otherName, otherUid) {
   document.getElementById('cwName').textContent = otherName;
   document.getElementById('cwAv').textContent = otherName.charAt(0).toUpperCase();
   document.getElementById('cwStatus').textContent = 'Online';
-  document.getElementById('cwMsgs').innerHTML = '<div class="loading"><div class="spin"></div></div>';
+  // Only show loading if opening a different chat
+  if(activeChatId !== chatId) {
+    document.getElementById('cwMsgs').innerHTML = '<div class="loading"><div class="spin"></div></div>';
+  }
   document.getElementById('cwInp').value = '';
   document.getElementById('chatWindow').classList.add('open');
 
@@ -1449,9 +1489,14 @@ window.openChatWindow = async function(chatId, otherName, otherUid) {
     },{merge:true});
   } catch(e){}
 
-  // Mark incoming as seen
+  // Mark chat as read (clear unread indicator) and mark messages as seen
   setTimeout(async()=>{
     try{
+      // Clear unread dot by updating lastSeen
+      await updateDoc(doc(db,'chats',chatId),{
+        ['lastSeen_'+currentUser.uid]: serverTimestamp()
+      });
+      // Mark all incoming messages as seen
       const q=query(collection(db,'chats',chatId,'messages'),where('senderId','!=',currentUser.uid),where('seen','==',false));
       const s=await getDocs(q);
       s.forEach(async d=>await updateDoc(doc(db,'chats',chatId,'messages',d.id),{seen:true}));
@@ -1519,7 +1564,12 @@ window.sendMsg = async function() {
     text, senderId:currentUser.uid, senderName:currentUser.displayName||'User',
     time:serverTimestamp(), delivered:true, seen:false
   });
-  await updateDoc(doc(db,'chats',activeChatId),{lastMessage:text,lastUpdated:serverTimestamp()});
+  // Save lastSenderId so receiver knows there's an unread message
+  await updateDoc(doc(db,'chats',activeChatId),{
+    lastMessage:text,
+    lastUpdated:serverTimestamp(),
+    lastSenderId:currentUser.uid
+  });
 };
 
 // Enter to send
@@ -1534,31 +1584,44 @@ window.autoResize = function(el) {
 
 async function loadChatList() {
   if(!currentUser) return;
-  onSnapshot(query(collection(db,'chats'),where('participants','array-contains',currentUser.uid),orderBy('lastUpdated','desc')), snap=>{
-    const list=document.getElementById('chatList');
-    if(snap.empty){
-      list.innerHTML='<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet.<br>Contact someone about a lost item!</p></div>';
-      return;
-    }
-    list.innerHTML=snap.docs.map(d=>{
-      const dt=d.data();
-      const other=(dt.participantNames||[]).find(n=>n!==currentUser.displayName)||'Student';
-      const otherUid=(dt.participants||[]).find(u=>u!==currentUser.uid)||'';
-      let timeStr='';
-      if(dt.lastUpdated&&dt.lastUpdated.toDate){
-        const t=dt.lastUpdated.toDate(),now=new Date();
-        timeStr=t.toDateString()===now.toDateString()?t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):t.toLocaleDateString([],{day:'numeric',month:'short'});
+  onSnapshot(
+    query(collection(db,'chats'), where('participants','array-contains',currentUser.uid), orderBy('lastUpdated','desc')),
+    snap => {
+      const list = document.getElementById('chatList');
+      if(!list) return;
+      if(snap.empty){
+        list.innerHTML='<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet.<br>Contact someone about a lost item!</p></div>';
+        return;
       }
-      return '<div class="chat-list-item" onclick="openChatWindow(\''+d.id+'\',\''+other+'\',\''+otherUid+'\')">'+
-        '<div class="cl-av">'+other.charAt(0).toUpperCase()+'</div>'+
-        '<div class="cl-info">'+
-          '<div class="cl-name">'+other+'</div>'+
-          '<div class="cl-msg">'+(dt.lastMessage||'No messages yet')+'</div>'+
-        '</div>'+
-        (timeStr?'<div class="cl-time">'+timeStr+'</div>':'')+
-      '</div>';
-    }).join('');
-  });
+      list.innerHTML = snap.docs.map(d => {
+        const dt = d.data();
+        const other = (dt.participantNames||[]).find(n=>n!==currentUser.displayName) || 'Student';
+        const otherUid = (dt.participants||[]).find(u=>u!==currentUser.uid) || '';
+        let timeStr = '';
+        if(dt.lastUpdated && dt.lastUpdated.toDate) {
+          const t=dt.lastUpdated.toDate(), now=new Date();
+          timeStr = t.toDateString()===now.toDateString()
+            ? t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+            : t.toLocaleDateString([],{day:'numeric',month:'short'});
+        }
+        // Unread: last message not sent by me and this chat is not currently open
+        const hasUnread = dt.lastSenderId && dt.lastSenderId !== currentUser.uid && activeChatId !== d.id;
+        const isActive = activeChatId === d.id;
+        const cid=d.id, cname=other, cuid=otherUid;
+        return '<div class="chat-list-item'+(isActive?' active':'')+'" onclick="openChatWindow(this)" data-cid="'+cid+'" data-cname="'+cname+'" data-cuid="'+cuid+'">' +
+          '<div class="cl-av">'+other.charAt(0).toUpperCase()+'</div>' +
+          '<div class="cl-info">' +
+            '<div class="cl-name" style="'+(hasUnread?'font-weight:700;color:var(--head)':'')+'">'+ other+'</div>'+
+            '<div class="cl-msg" style="'+(hasUnread?'font-weight:700;color:var(--text)':'')+'">'+(dt.lastMessage||'No messages yet')+'</div>'+
+          '</div>'+
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">'+
+            (timeStr?'<span class="cl-time">'+timeStr+'</span>':'')+
+            (hasUnread?'<span style="width:10px;height:10px;background:var(--orange);border-radius:50%;display:inline-block;"></span>':'') +
+          '</div>'+
+        '</div>';
+      }).join('');
+    }
+  );
 }
 
 // ── USERS ──
@@ -1657,6 +1720,13 @@ function applyLayout() {
 // Override openChatWindow for desktop - show in slot instead of fullscreen overlay
 const _origOpenChat = window.openChatWindow;
 window.openChatWindow = async function(chatId, otherName, otherUid) {
+  // Handle both direct call and event from data attributes
+  if(chatId && typeof chatId === 'object') {
+    const el = chatId.closest ? chatId : chatId.currentTarget;
+    otherUid  = el.getAttribute('data-cuid');
+    otherName = el.getAttribute('data-cname');
+    chatId    = el.getAttribute('data-cid');
+  }
   if(isDesktop()) {
     const win = document.getElementById('chatWindow');
     // Make sure chat page is active
