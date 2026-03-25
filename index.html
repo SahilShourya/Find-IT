@@ -914,7 +914,7 @@ onAuthStateChanged(auth, async user => {
   loadItems();
   if(user) {
     loadMyItems();
-    loadChatList();
+    loadChatList(); // Start listening immediately
     document.getElementById('guestCard').style.display = 'none';
     renderProfilePage(user);
   } else {
@@ -1444,29 +1444,31 @@ window.submitReport = async function() {
 
 // ── CHAT ──
 window.startChat = function(itemId, otherName, otherUid) {
-  if(!currentUser){openAuthModal();return;}
-  if(otherUid===currentUser.uid){showToast('This is your own item!','error');return;}
+  if(!currentUser){ openAuthModal(); return; }
+  if(otherUid === currentUser.uid){ showToast('This is your own item!','error'); return; }
   closeModal('detailModal');
-  const chatId=[currentUser.uid,otherUid].sort().join('_')+'_'+itemId;
-  openChatWindow(chatId, otherName, otherUid);
+  const chatId = [currentUser.uid, otherUid].sort().join('_') + '_' + itemId;
+  window._chatMap = window._chatMap || {};
+  window._chatMap[chatId] = {name: otherName, uid: otherUid};
+  showPage('chat');
+  setTimeout(() => openChatWindow(chatId, otherName, otherUid), 50);
 };
 
 window.startDirectChat = function(uid, name) {
-  if(!currentUser){openAuthModal();return;}
-  if(uid===currentUser.uid){showToast('Cannot chat with yourself','error');return;}
+  if(!currentUser){ openAuthModal(); return; }
+  if(uid === currentUser.uid){ showToast('Cannot chat with yourself','error'); return; }
+  const chatId = [currentUser.uid, uid].sort().join('_');
+  // Store in map so _openChat works too
+  window._chatMap = window._chatMap || {};
+  window._chatMap[chatId] = {name, uid};
   showPage('chat');
-  openChatWindow([currentUser.uid,uid].sort().join('_'), name, uid);
+  // Small delay to let chat page render
+  setTimeout(() => openChatWindow(chatId, name, uid), 50);
 };
 
 window.openChatWindow = async function(chatId, otherName, otherUid) {
-  // Handle both direct call and event from data attributes
-  if(chatId && typeof chatId === 'object') {
-    const el = chatId.closest ? chatId : chatId.currentTarget;
-    otherUid  = el.getAttribute('data-cuid');
-    otherName = el.getAttribute('data-cname');
-    chatId    = el.getAttribute('data-cid');
-  }
-  if(!currentUser) return;
+  if(!currentUser) { openAuthModal(); return; }
+  if(!chatId) return;
   activeChatId = chatId;
   if(unsubChat) unsubChat();
 
@@ -1584,39 +1586,44 @@ window.autoResize = function(el) {
 
 async function loadChatList() {
   if(!currentUser) return;
+  // Real-time — fires instantly when any chat updates
   onSnapshot(
     query(collection(db,'chats'), where('participants','array-contains',currentUser.uid), orderBy('lastUpdated','desc')),
     snap => {
       const list = document.getElementById('chatList');
       if(!list) return;
       if(snap.empty){
-        list.innerHTML='<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet.<br>Contact someone about a lost item!</p></div>';
+        list.innerHTML = '<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet</p><p style="font-size:.8rem;margin-top:4px;">Find an item and tap Contact!</p></div>';
         return;
       }
       list.innerHTML = snap.docs.map(d => {
         const dt = d.data();
-        const other = (dt.participantNames||[]).find(n=>n!==currentUser.displayName) || 'Student';
-        const otherUid = (dt.participants||[]).find(u=>u!==currentUser.uid) || '';
+        const other    = (dt.participantNames||[]).find(n => n !== currentUser.displayName) || 'Student';
+        const otherUid = (dt.participants||[]).find(u => u !== currentUser.uid) || '';
+        const chatId   = d.id;
         let timeStr = '';
         if(dt.lastUpdated && dt.lastUpdated.toDate) {
-          const t=dt.lastUpdated.toDate(), now=new Date();
-          timeStr = t.toDateString()===now.toDateString()
+          const t = dt.lastUpdated.toDate(), now = new Date();
+          timeStr = t.toDateString() === now.toDateString()
             ? t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
             : t.toLocaleDateString([],{day:'numeric',month:'short'});
         }
-        // Unread: last message not sent by me and this chat is not currently open
-        const hasUnread = dt.lastSenderId && dt.lastSenderId !== currentUser.uid && activeChatId !== d.id;
-        const isActive = activeChatId === d.id;
-        const cid=d.id, cname=other, cuid=otherUid;
-        return '<div class="chat-list-item'+(isActive?' active':'')+'" onclick="openChatWindow(this)" data-cid="'+cid+'" data-cname="'+cname+'" data-cuid="'+cuid+'">' +
+        const hasUnread = dt.lastSenderId && dt.lastSenderId !== currentUser.uid && activeChatId !== chatId;
+        const isActive  = activeChatId === chatId;
+        // Store data in window map so onclick can access it safely
+        window._chatMap = window._chatMap || {};
+        window._chatMap[chatId] = {name: other, uid: otherUid};
+        return '<div class="chat-list-item'+(isActive?' active':'')+'" onclick="window._openChat(\''+chatId+'\')">'+
           '<div class="cl-av">'+other.charAt(0).toUpperCase()+'</div>' +
           '<div class="cl-info">' +
-            '<div class="cl-name" style="'+(hasUnread?'font-weight:700;color:var(--head)':'')+'">'+ other+'</div>'+
-            '<div class="cl-msg" style="'+(hasUnread?'font-weight:700;color:var(--text)':'')+'">'+(dt.lastMessage||'No messages yet')+'</div>'+
+            '<div class="cl-name" style="'+(hasUnread?'font-weight:700':'')+'">'+other+'</div>'+
+            '<div class="cl-msg" style="'+(hasUnread?'font-weight:600;color:#333':'')+'">'+
+              (dt.lastMessage ? (dt.lastMessage.length>40 ? dt.lastMessage.substring(0,40)+'...' : dt.lastMessage) : 'No messages yet')+
+            '</div>'+
           '</div>'+
-          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">'+
-            (timeStr?'<span class="cl-time">'+timeStr+'</span>':'')+
-            (hasUnread?'<span style="width:10px;height:10px;background:var(--orange);border-radius:50%;display:inline-block;"></span>':'') +
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">'+
+            (timeStr ? '<span class="cl-time">'+timeStr+'</span>' : '')+
+            (hasUnread ? '<span style="width:10px;height:10px;background:var(--orange);border-radius:50%;display:block;"></span>' : '')+
           '</div>'+
         '</div>';
       }).join('');
@@ -1624,36 +1631,13 @@ async function loadChatList() {
   );
 }
 
-// ── USERS ──
-window.searchUsers = async function(val) {
-  const list=document.getElementById('usersList');
-  if(!val||val.length<2){
-    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:2.5rem;margin-bottom:10px;">👥</div><p>Search for SMVDU students</p></div>';
-    return;
-  }
-  list.innerHTML='<div class="loading"><div class="spin"></div></div>';
-  try{
-    const snap=await getDocs(collection(db,'users'));
-    const q=val.toLowerCase();
-    const users=snap.docs.map(d=>d.data()).filter(u=>(u.name||'').toLowerCase().includes(q)||(u.roll||'').toLowerCase().includes(q)||(u.dept||'').toLowerCase().includes(q));
-    if(!users.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);">No students found</div>';return;}
-    list.innerHTML=users.map(u=>{
-      const isMe=currentUser&&u.uid===currentUser.uid;
-      const av=u.customPhoto?'<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':'<span style="font-size:1.4rem">'+(u.avatar||'👤')+'</span>';
-      return '<div class="user-card">'+
-        '<div class="user-av">'+av+'</div>'+
-        '<div class="user-info">'+
-          '<div class="user-name">'+(u.name||'Student')+'</div>'+
-          '<div class="user-detail">'+(u.roll?'🎓 '+u.roll:'')+( u.dept?' · '+u.dept:'')+'</div>'+
-          '<div class="user-detail">'+(u.hostel?'🏠 '+u.hostel:'')+'</div>'+
-        '</div>'+
-        (!isMe&&currentUser?'<button class="user-chat-btn" onclick="startDirectChat(\''+u.uid+'\',\''+((u.name||'Student').replace(/'/g,"\\'")+'\')">Chat</button>'):(isMe?'<span style="font-size:.75rem;color:var(--muted)">You</span>':''))+
-      '</div>';
-    }).join('');
-  }catch(e){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--red);">Error loading</div>';}
+// Safe chat opener via map
+window._openChat = function(chatId) {
+  const info = (window._chatMap||{})[chatId];
+  if(!info) return;
+  openChatWindow(chatId, info.name, info.uid);
 };
 
-// ── SMART MATCHING ──
 async function checkSmartMatches(lostItem) {
   if(!currentUser) return;
   try{
