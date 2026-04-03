@@ -558,20 +558,20 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
       <div style="height:1px;background:rgba(255,255,255,.1);margin:8px 0;"></div>
     </div>
     <button class="bn-item active" id="bn-home" onclick="showPage('home')">
-      <span class="ico">🏠</span><span>Home</span>
+      <span class="ico">&#8962;</span><span>Home</span>
     </button>
     <button class="bn-item" id="bn-items" onclick="showPage('items')">
-      <span class="ico">🔍</span><span>Browse</span>
+      <span class="ico">&#9740;</span><span>Browse</span>
       <span class="bn-badge" id="bn-badge"></span>
     </button>
     <button class="bn-item" id="bn-chat" onclick="showPage('chat')">
-      <span class="ico">💬</span><span>Messages</span>
+      <span class="ico">&#9993;</span><span>Messages</span>
     </button>
     <button class="bn-item" id="bn-users" onclick="showPage('users')">
-      <span class="ico">👥</span><span>Students</span>
+      <span class="ico">&#128101;</span><span>Students</span>
     </button>
     <button class="bn-item" id="bn-profile" onclick="showPage('profile')">
-      <span class="ico">👤</span><span>Profile</span>
+      <span class="ico">&#9888;</span><span>Profile</span>
     </button>
     <!-- Desktop only: sign out at bottom -->
     <div class="desktop-only" style="display:none;margin-top:auto;padding:12px;">
@@ -1838,6 +1838,69 @@ onAuthStateChanged(auth, user => {
   updateSideNav(user);
   if(isDesktop()) applyLayout();
 });
+
+// ── SEARCH USERS ──
+window._openUserChat = function(btn) {
+  const uid  = btn.getAttribute('data-uid');
+  const name = decodeURIComponent(btn.getAttribute('data-name'));
+  startDirectChat(uid, name);
+};
+
+window.searchUsers = async function(val) {
+  const list = document.getElementById('usersList');
+  if(!list) return;
+  if(!currentUser) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><p>Sign in to search students</p><button style="margin-top:12px;background:var(--orange);color:#fff;border:none;padding:10px 20px;border-radius:20px;font-size:.85rem;cursor:pointer" onclick="openAuthModal()">Sign In</button></div>';
+    return;
+  }
+  if(!val || val.trim().length < 2) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><p style="font-size:.9rem">Type at least 2 characters</p></div>';
+    return;
+  }
+  list.innerHTML = '<div class="loading"><div class="spin"></div></div>';
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    const q = val.trim().toLowerCase();
+    const results = snap.docs.map(d => d.data()).filter(u =>
+      (u.name||'').toLowerCase().includes(q) ||
+      (u.roll||'').toLowerCase().includes(q) ||
+      (u.dept||'').toLowerCase().includes(q) ||
+      (u.hostel||'').toLowerCase().includes(q)
+    );
+    if(!results.length) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">No students found</div>';
+      return;
+    }
+    list.innerHTML = results.map(u => {
+      const isMe = u.uid === currentUser.uid;
+      const initials = (u.name||'S').charAt(0).toUpperCase();
+      const avStyle = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+      const av = u.customPhoto
+        ? '<img src="'+u.customPhoto+'" style="'+avStyle+'">'
+        : '<span style="font-size:1.4rem">'+(u.avatar||initials)+'</span>';
+      if(!isMe) {
+        const cid = [currentUser.uid, u.uid].sort().join('_');
+        window._chatMap = window._chatMap || {};
+        window._chatMap[cid] = { name: u.name||'Student', uid: u.uid };
+      }
+      const nameEsc = (u.name||'Student').replace(/'/g, "\'");
+      return '<div class="user-card">' +
+        '<div class="user-av">' + av + '</div>' +
+        '<div class="user-info">' +
+          '<div class="user-name">' + (u.name||'Student') + '</div>' +
+          '<div class="user-detail">' + (u.roll||'') + (u.dept ? ' · '+u.dept : '') + '</div>' +
+          '<div class="user-detail">' + (u.hostel||'') + '</div>' +
+        '</div>' +
+        (!isMe
+          ? '<button class="user-chat-btn" data-uid="'+u.uid+'" data-name="'+encodeURIComponent(u.name||'Student')+'" onclick="window._openUserChat(this)">Chat</button>'
+          : '<span style="font-size:.74rem;color:var(--muted);padding:6px">You</span>'
+        ) +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red)">Error loading users</div>';
+  }
+};
 
 })();
 </script>
