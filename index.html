@@ -1491,30 +1491,16 @@ window.openChatWindow = async function(chatId, otherName, otherUid) {
   document.getElementById('cwInp').value = '';
   document.getElementById('chatWindow').classList.add('open');
 
-  // Create/update chat doc - try setDoc with merge, fallback to addDoc
+  // Create chat doc - setDoc with merge is safe, creates if not exists
   try {
     await setDoc(doc(db,'chats',chatId), {
-      participants: [currentUser.uid, otherUid].filter(Boolean),
+      participants: [currentUser.uid, otherUid].filter(x=>x),
       participantNames: [currentUser.displayName||'User', otherName],
       lastMessage: '',
-      lastUpdated: serverTimestamp()
+      lastUpdated: serverTimestamp(),
+      lastSenderId: ''
     }, {merge: true});
-  } catch(e) {
-    // Fallback: try addDoc if setDoc fails
-    try {
-      const existing = await getDocs(query(collection(db,'chats'), where('participants','array-contains',currentUser.uid)));
-      const alreadyExists = existing.docs.some(d => d.id === chatId);
-      if(!alreadyExists) {
-        await addDoc(collection(db,'chats'), {
-          id: chatId,
-          participants: [currentUser.uid, otherUid].filter(Boolean),
-          participantNames: [currentUser.displayName||'User', otherName],
-          lastMessage: '',
-          lastUpdated: serverTimestamp()
-        });
-      }
-    } catch(e2) { console.warn('Chat doc error:', e2); }
-  }
+  } catch(e) { console.warn('Chat create error:', e); }
 
   // Mark chat as read (clear unread indicator) and mark messages as seen
   setTimeout(async()=>{
@@ -1613,24 +1599,14 @@ window.sendMsg = async function() {
       });
     } catch(e) {}
   }
-  // Update chat doc with last message info (receiver sees it instantly)
+  // Update chat doc - receiver's listener fires instantly
   try {
-    await updateDoc(doc(db,'chats',activeChatId),{
+    await setDoc(doc(db,'chats',activeChatId), {
       lastMessage: text,
       lastUpdated: serverTimestamp(),
       lastSenderId: currentUser.uid
-    });
-  } catch(e) {
-    // If updateDoc fails, doc might not exist yet - create it
-    try {
-      await setDoc(doc(db,'chats',activeChatId), {
-        lastMessage: text,
-        lastUpdated: serverTimestamp(),
-        lastSenderId: currentUser.uid,
-        participants: [currentUser.uid]
-      }, {merge: true});
-    } catch(e2) { console.warn('Chat update error:', e2); }
-  }
+    }, {merge: true});
+  } catch(e) { console.warn('Chat update err:', e); }
 };
 
 // Enter to send
@@ -1646,8 +1622,10 @@ window.autoResize = function(el) {
 async function loadChatList() {
   if(!currentUser) return;
   // Real-time — fires instantly when any chat updates
+  // No orderBy here - would need Firestore composite index
+  // Sort in JS instead
   onSnapshot(
-    query(collection(db,'chats'), where('participants','array-contains',currentUser.uid), orderBy('lastUpdated','desc')),
+    query(collection(db,'chats'), where('participants','array-contains',currentUser.uid)),
     snap => {
       const list = document.getElementById('chatList');
       if(!list) return;
@@ -1655,7 +1633,13 @@ async function loadChatList() {
         list.innerHTML = '<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet</p><p style="font-size:.8rem;margin-top:4px;">Find an item and tap Contact!</p></div>';
         return;
       }
-      list.innerHTML = snap.docs.map(d => {
+      // Sort by lastUpdated descending in JS (no index needed)
+      const sorted = [...snap.docs].sort((a,b) => {
+        const at = a.data().lastUpdated?.toMillis?.() || 0;
+        const bt = b.data().lastUpdated?.toMillis?.() || 0;
+        return bt - at;
+      });
+      list.innerHTML = sorted.map(d => {
         const dt = d.data();
         const other    = (dt.participantNames||[]).find(n => n !== currentUser.displayName) || 'Student';
         const otherUid = (dt.participants||[]).find(u => u !== currentUser.uid) || '';
@@ -1722,12 +1706,11 @@ async function checkSmartMatches(lostItem) {
 // Listens for new message notifications and shows toast + updates chat list
 function listenForMessageNotifications() {
   if(!currentUser) return;
+  // Simple query without orderBy to avoid needing composite index
   const q = query(
     collection(db,'notifications'),
     where('toUid','==',currentUser.uid),
-    where('type','==','message'),
-    where('read','==',false),
-    orderBy('createdAt','desc')
+    where('read','==',false)
   );
   onSnapshot(q, snap => {
     snap.docChanges().forEach(async change => {
@@ -1749,7 +1732,7 @@ function listenForMessageNotifications() {
 async function loadMatchInbox() {
   if(!currentUser) return;
   try{
-    onSnapshot(query(collection(db,'notifications'),where('userId','==',currentUser.uid),orderBy('createdAt','desc')),snap=>{
+    onSnapshot(query(collection(db,'notifications'),where('userId','==',currentUser.uid)),snap=>{
       const sec=document.getElementById('matchInboxSec');
       const inbox=document.getElementById('matchInbox');
       if(!sec||!inbox) return;
