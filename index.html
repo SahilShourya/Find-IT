@@ -446,8 +446,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
         <h1>Lost something<br>on campus? <span>We'll find it.</span></h1>
         <p>Report lost items, find what others found, chat instantly.</p>
         <div class="hero-btns">
-          <button class="btn-hero-p" onclick="openReportModal('lost')">📢 Report Lost</button>
-          <button class="btn-hero-s" onclick="openReportModal('found')">🔍 Found Something</button>
+          <button class="btn-hero-p" onclick="openReportModal('lost')"> Report Lost</button>
+          <button class="btn-hero-s" onclick="openReportModal('found')"> Found Something</button>
         </div>
       </div>
       <div class="stats-row">
@@ -483,16 +483,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
       </div>
       <div class="filter-scroll">
         <div class="f-chip active" onclick="setCatFilter('all',this)">All</div>
-        <div class="f-chip" onclick="setCatFilter('Electronics',this)">📱 Electronics</div>
-        <div class="f-chip" onclick="setCatFilter('ID/Documents',this)">🪪 ID/Docs</div>
-        <div class="f-chip" onclick="setCatFilter('Keys',this)">🔑 Keys</div>
-        <div class="f-chip" onclick="setCatFilter('Wallet/Purse',this)">👛 Wallet</div>
-        <div class="f-chip" onclick="setCatFilter('Bag/Backpack',this)">🎒 Bag</div>
-        <div class="f-chip" onclick="setCatFilter('Clothing',this)">👕 Clothing</div>
-        <div class="f-chip" onclick="setCatFilter('Books/Notes',this)">📚 Books</div>
-        <div class="f-chip" onclick="setCatFilter('Sports',this)">⚽ Sports</div>
-        <div class="f-chip" onclick="setCatFilter('Bottle',this)">🍶 Bottle</div>
-        <div class="f-chip" onclick="setCatFilter('Other',this)">📦 Other</div>
+        <div class="f-chip" onclick="setCatFilter('Electronics',this)"> Electronics</div>
+        <div class="f-chip" onclick="setCatFilter('ID/Documents',this)"> ID/Docs</div>
+        <div class="f-chip" onclick="setCatFilter('Keys',this)"> Keys</div>
+        <div class="f-chip" onclick="setCatFilter('Wallet/Purse',this)"> Wallet</div>
+        <div class="f-chip" onclick="setCatFilter('Bag/Backpack',this)"> Bag</div>
+        <div class="f-chip" onclick="setCatFilter('Clothing',this)"> Clothing</div>
+        <div class="f-chip" onclick="setCatFilter('Books/Notes',this)"> Books</div>
+        <div class="f-chip" onclick="setCatFilter('Sports',this)"> Sports</div>
+        <div class="f-chip" onclick="setCatFilter('Bottle',this)"> Bottle</div>
+        <div class="f-chip" onclick="setCatFilter('Other',this)"> Other</div>
       </div>
       <div class="browse-list" id="itemsList"><div class="loading"><div class="spin"></div></div></div>
     </div>
@@ -539,7 +539,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
     <div class="page" id="page-profile">
       <div id="profContent">
         <div class="lock-screen">
-          <div class="ico">🔒</div>
+          <div class="ico"></div>
           <h3>Sign in to view profile</h3>
           <p>Your reports, matches and profile details will appear here.</p>
           <button onclick="openAuthModal()">Sign In</button>
@@ -553,8 +553,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
   <div class="bottom-nav" id="sideNav">
     <!-- Desktop only: Report buttons at top -->
     <div class="desktop-only" style="display:none;">
-      <button class="desktop-fab" onclick="openReportModal('lost')">📢 Report Lost Item</button>
-      <button class="desktop-fab" style="background:var(--steel);margin-top:0;" onclick="openReportModal('found')">🔍 Found Something</button>
+      <button class="desktop-fab" onclick="openReportModal('lost')"> Report Lost Item</button>
+      <button class="desktop-fab" style="background:var(--steel);margin-top:0;" onclick="openReportModal('found')"> Found Something</button>
       <div style="height:1px;background:rgba(255,255,255,.1);margin:8px 0;"></div>
     </div>
     <button class="bn-item active" id="bn-home" onclick="showPage('home')">
@@ -1088,9 +1088,9 @@ async function renderProfilePage(user) {
         <div class="prof-name">${u.name||user.displayName||'Student'}</div>
         <div class="prof-sub">${user.email}</div>
         <div class="prof-badges">
-          ${u.roll?'<span class="prof-badge-pill">🎓 '+u.roll+'</span>':''}
-          ${u.dept?'<span class="prof-badge-pill">📚 '+u.dept+'</span>':''}
-          ${u.hostel?'<span class="prof-badge-pill">🏠 '+u.hostel+'</span>':''}
+          ${u.roll?'<span class="prof-badge-pill"> '+u.roll+'</span>':''}
+          ${u.dept?'<span class="prof-badge-pill"> '+u.dept+'</span>':''}
+          ${u.hostel?'<span class="prof-badge-pill"> '+u.hostel+'</span>':''}
         </div>
         <button class="prof-edit-btn" onclick="openProfileEdit()">✏ Edit Profile</button>
       </div>
@@ -1223,7 +1223,7 @@ async function loadMyItems() {
     const rc = document.getElementById('repCount');
     if(rc) rc.textContent = mine.length;
     if(!mine.length) {
-      el.innerHTML = '<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px">📋</div><p style="font-size:.84rem">No reports yet</p></div>';
+      el.innerHTML = '<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px"></div><p style="font-size:.84rem">No reports yet</p></div>';
       return;
     }
     el.innerHTML = mine.map(item => {
@@ -1236,7 +1236,7 @@ async function loadMyItems() {
             (item.status==='claimed'?'<span class="tag" style="background:#e8f3ff;color:var(--steel)">Resolved</span>':'') +
           '</div>' +
           '<div style="font-weight:700;font-size:.9rem;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+item.name+'</div>' +
-          '<div style="font-size:.76rem;color:var(--muted);margin-top:2px;">📍 '+item.location+'</div>' +
+          '<div style="font-size:.76rem;color:var(--muted);margin-top:2px;"> '+item.location+'</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1262,7 +1262,7 @@ function renderCards(cid, items) {
             '<span class="tag tag-cat">'+(item.category||'Other')+'</span>' +
           '</div>' +
           '<div class="item-name">'+item.name+'</div>' +
-          '<div class="item-loc">📍 '+(item.location||'Unknown')+'</div>' +
+          '<div class="item-loc"> '+(item.location||'Unknown')+'</div>' +
           '<div class="item-date">'+(item.date||'')+'</div>' +
         '</div>' +
       '</div>' +
