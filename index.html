@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#2C3E50">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SMVDU FindIt</title>
 <style>
 :root{
@@ -62,9 +65,15 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
 .stat-box .l{font-size:.65rem;color:rgba(255,255,255,.55);margin-top:1px;}
 
 .home-body{padding:14px;}
+.guest-card{background:var(--navy);border-radius:12px;padding:20px;text-align:center;margin-bottom:16px;}
+.guest-card h3{color:#fff;font-size:1rem;margin-bottom:6px;}
+.guest-card p{color:rgba(255,255,255,.65);font-size:.83rem;margin-bottom:14px;line-height:1.5;}
+.guest-card button{background:var(--orange);color:#fff;border:none;padding:11px 28px;border-radius:20px;font-size:.88rem;font-weight:600;cursor:pointer;}
+
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .sec-title{font-size:1rem;font-weight:700;color:var(--head);}
 .sec-title span{color:var(--orange);}
+.sec-link{font-size:.8rem;color:var(--steel);cursor:pointer;}
 
 /* ── ITEM CARDS ── */
 .cards-list{display:flex;flex-direction:column;gap:10px;}
@@ -87,78 +96,334 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
 .search-inp{width:100%;background:var(--off);border:none;padding:10px 14px 10px 36px;border-radius:20px;font-size:.9rem;color:var(--text);outline:none;}
 .search-wrap{position:relative;}
 .search-wrap::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;}
+.tab-strip{display:flex;border-bottom:2px solid var(--border);background:var(--white);}
+.ts-btn{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;padding:10px;font-size:.82rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.ts-btn.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:600;}
+.ts-badge{background:var(--off);color:var(--muted);padding:1px 6px;border-radius:10px;font-size:.66rem;}
+.ts-btn.active .ts-badge{background:var(--orange);color:#fff;}
+.filter-scroll{display:flex;gap:7px;padding:10px 14px;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--border);}
+.filter-scroll::-webkit-scrollbar{display:none;}
+.f-chip{background:var(--off);border:1px solid var(--border);color:var(--text);padding:5px 13px;border-radius:20px;font-size:.78rem;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.f-chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+.browse-list{padding:12px;}
 
-/* ── CHAT LIST ── */
+/* ── CHAT PAGE ── */
 .chat-list-page{height:100%;display:flex;flex-direction:column;}
-.chat-list-hdr{background:var(--white);padding:14px 16px;border-bottom:1px solid var(--border);font-weight:700;font-size:1rem;color:var(--head);}
+.chat-list-hdr{background:var(--white);padding:14px 16px;border-bottom:1px solid var(--border);font-weight:700;font-size:1rem;color:var(--head);display:flex;align-items:center;justify-content:space-between;}
 .chat-list-scroll{flex:1;overflow-y:auto;}
 .chat-list-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--white);}
+.chat-list-item:active{background:var(--off);}
 .cl-av{width:46px;height:46px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0;overflow:hidden;}
 .cl-av img{width:100%;height:100%;object-fit:cover;}
 .cl-info{flex:1;min-width:0;}
 .cl-name{font-size:.92rem;font-weight:600;color:var(--head);}
 .cl-msg{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.cl-time{font-size:.7rem;color:var(--muted);flex-shrink:0;}
+.cl-unread{width:9px;height:9px;background:var(--green);border-radius:50%;flex-shrink:0;}
+.chat-empty-state{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:30px;text-align:center;color:var(--muted);}
+.chat-empty-state .ico{font-size:3rem;opacity:.3;}
 
-/* CHAT WINDOW */
+/* CHAT WINDOW (slides over) */
 .chat-window{position:fixed;inset:0;background:var(--off);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;}
 .chat-window.open{transform:translateX(0);}
 .cw-top{background:var(--blue);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 14px;padding-top:calc(10px + var(--safe-top));flex-shrink:0;}
-.cw-back{background:transparent;border:none;color:#fff;font-size:1.3rem;cursor:pointer;padding:4px;}
-.cw-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px;}
+.cw-back{background:transparent;border:none;color:#fff;font-size:1.3rem;cursor:pointer;padding:4px;line-height:1;}
+.cw-av{width:38px;height:38px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0;}
+.cw-info{flex:1;}
+.cw-name{font-size:.95rem;font-weight:600;}
+.cw-status{font-size:.72rem;color:rgba(255,255,255,.7);}
+.cw-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8edf2' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.date-div{text-align:center;margin:6px 0;}
+.date-div span{background:rgba(255,255,255,.85);color:#667781;font-size:.72rem;padding:4px 12px;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
 .bubble{max-width:78%;padding:8px 11px 5px;border-radius:12px;font-size:.88rem;line-height:1.45;word-break:break-word;position:relative;}
 .bubble-in{background:var(--white);align-self:flex-start;border-radius:0 12px 12px 12px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
 .bubble-out{background:#dcf8c6;align-self:flex-end;border-radius:12px 0 12px 12px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
+.bubble-meta{display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:3px;}
+.b-time{font-size:.66rem;color:#667781;}
+.b-tick{font-size:.75rem;color:#aaa;line-height:1;}
+.b-tick.blue{color:#53bdeb;}
 .cw-inp-wrap{background:var(--off);padding:8px 10px;padding-bottom:calc(8px + var(--safe-bottom));display:flex;align-items:flex-end;gap:8px;border-top:1px solid var(--border);}
-.cw-inp{flex:1;background:var(--white);border:none;border-radius:20px;padding:10px 16px;font-size:.9rem;outline:none;resize:none;}
-.cw-send{width:44px;height:44px;border-radius:50%;background:var(--orange);border:none;color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.cw-inp{flex:1;background:var(--white);border:none;border-radius:20px;padding:10px 16px;font-size:.9rem;color:var(--text);outline:none;max-height:100px;resize:none;font-family:inherit;line-height:1.4;}
+.cw-send{width:44px;height:44px;border-radius:50%;background:var(--orange);border:none;color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
 /* ── USERS PAGE ── */
-.users-hdr{background:var(--white);padding:12px 14px;border-bottom:1px solid var(--border);}
+.users-hdr{background:var(--white);padding:12px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
 .users-list{padding:12px;display:flex;flex-direction:column;gap:8px;}
 .user-card{background:var(--white);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
-.user-av{width:46px;height:46px;border-radius:50%;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden;}
+.user-av{width:46px;height:46px;border-radius:50%;background:var(--off);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden;}
 .user-av img{width:100%;height:100%;object-fit:cover;}
 .user-info{flex:1;min-width:0;}
 .user-name{font-size:.92rem;font-weight:700;color:var(--head);}
 .user-detail{font-size:.76rem;color:var(--muted);margin-top:2px;}
-.user-chat-btn{background:var(--steel);color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;}
+.user-chat-btn{background:var(--steel);color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;flex-shrink:0;}
+
+/* ── PROFILE PAGE ── */
+.prof-top{background:var(--navy);padding:28px 16px 20px;text-align:center;border-bottom:4px solid var(--orange);}
+.prof-av-wrap{position:relative;display:inline-block;margin-bottom:12px;}
+.prof-av-big{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;}
+.prof-av-big img{width:100%;height:100%;object-fit:cover;}
+.prof-av-edit{position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--orange);border-radius:50%;border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;}
+.prof-name{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px;}
+.prof-sub{font-size:.8rem;color:rgba(255,255,255,.65);}
+.prof-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.prof-badge-pill{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:4px 12px;border-radius:20px;font-size:.75rem;}
+.prof-edit-btn{margin-top:14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:9px 22px;border-radius:20px;font-size:.82rem;cursor:pointer;}
+.prof-body{padding:14px;}
+.prof-stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.prof-stat{background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.prof-stat .n{font-size:1.3rem;font-weight:700;color:var(--orange);}
+.prof-stat .l{font-size:.68rem;color:var(--muted);margin-top:2px;}
+.match-card{background:var(--white);border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--orange);box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.my-item-card{background:var(--white);border-radius:12px;padding:12px;display:flex;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.my-item-thumb{width:56px;height:56px;background:var(--off);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;overflow:hidden;}
+.my-item-thumb img{width:100%;height:100%;object-fit:cover;}
 
 /* ── MODALS ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end;justify-content:center;}
 .overlay.open{display:flex;}
 .sheet{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:var(--safe-bottom);animation:slideUp .25s ease;}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;}
 .sheet-hdr{padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
 .sheet-title{font-size:1rem;font-weight:700;color:var(--head);}
+.sheet-x{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .sheet-body{padding:16px 18px;}
 
 /* FORM */
 .fg{margin-bottom:12px;}
 .fl{display:block;font-size:.76rem;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
-.fi,.fs,.ft{width:100%;background:var(--off);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:10px;font-size:.92rem;outline:none;}
+.fi,.fs,.ft{width:100%;background:var(--off);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:10px;font-size:.92rem;outline:none;-webkit-appearance:none;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--steel);}
+.fi::placeholder,.ft::placeholder{color:#bbb;}
+.ft{resize:vertical;min-height:80px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn-full{width:100%;background:var(--navy);color:#fff;border:none;padding:14px;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;}
+.btn-full{width:100%;background:var(--navy);color:#fff;border:none;padding:14px;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:6px;}
 .btn-full.green{background:var(--green);}
+.btn-full.orange{background:var(--orange);}
+.btn-can-full{width:100%;background:var(--off);color:var(--muted);border:1px solid var(--border);padding:13px;border-radius:12px;font-size:.92rem;cursor:pointer;margin-top:8px;}
+
+/* UPLOAD */
+.upload-box{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--off);}
+.upload-box input{display:none;}
+
+/* AUTH SHEET */
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--white);cursor:pointer;font-size:.95rem;font-weight:600;color:#333;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+
+/* AVATAR PICKER */
+.av-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+.av-opt{font-size:1.8rem;cursor:pointer;padding:8px;border:2px solid var(--border);border-radius:10px;text-align:center;transition:all .15s;}
+.av-opt.sel{border-color:var(--orange);background:#fff5ee;}
+
+/* DETAIL SHEET */
+.detail-img-big{width:100%;height:200px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:4rem;border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.detail-img-big img{width:100%;height:100%;object-fit:cover;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.df{background:var(--off);border-radius:10px;padding:10px;}
+.dk{font-size:.69rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px;font-weight:600;}
+.dv{font-size:.86rem;font-weight:600;color:var(--head);}
+.detail-btns{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.detail-btns button{padding:13px;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;border:none;}
 
 /* TOAST */
 .toast-wrap{position:fixed;top:calc(56px + 8px + var(--safe-top));left:12px;right:12px;z-index:500;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
 .toast{background:rgba(28,53,87,.95);color:#fff;padding:12px 16px;border-radius:12px;font-size:.85rem;border-left:3px solid var(--steel);box-shadow:0 4px 16px rgba(0,0,0,.2);animation:toastIn .25s ease;}
+.toast.success{border-left-color:var(--green);}
+.toast.error{border-left-color:var(--red);}
 @keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 
+/* LOCK STATE */
+.lock-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;min-height:60vh;gap:12px;}
+.lock-screen .ico{font-size:3.5rem;opacity:.3;}
+.lock-screen h3{font-size:1rem;font-weight:700;color:var(--head);}
+.lock-screen p{font-size:.85rem;color:var(--muted);line-height:1.6;}
+.lock-screen button{background:var(--orange);color:#fff;border:none;padding:12px 28px;border-radius:20px;font-size:.9rem;font-weight:600;cursor:pointer;margin-top:6px;}
+
 /* LOADING */
-.spin{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:sp .7s linear infinite;display:inline-block;}
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;flex-direction:column;gap:10px;color:var(--muted);}
+.spin{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg)}}
+
+/* DESKTOP */
+/* ═══════════════════════════════════
+   DESKTOP LAYOUT (768px+)
+   Full sidebar navigation like a web app
+═══════════════════════════════════ */
+@media(min-width:768px){
+  html,body{overflow:auto;}
+
+  /* App becomes a full desktop layout */
+  #app{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    grid-template-rows:56px 1fr;
+    grid-template-areas:
+      "topbar topbar"
+      "sidebar main";
+    height:100vh;
+    max-width:1200px;
+    margin:0 auto;
+    box-shadow:0 0 60px rgba(0,0,0,.12);
+  }
+
+  /* Topbar spans full width */
+  .topbar{grid-area:topbar;}
+
+  /* Sidebar replaces bottom nav */
+  .bottom-nav{
+    grid-area:sidebar;
+    flex-direction:column;
+    align-items:stretch;
+    background:var(--blue);
+    border-top:none;
+    border-right:1px solid rgba(255,255,255,.1);
+    padding:12px 0;
+    padding-bottom:0;
+    width:240px;
+    height:100%;
+    overflow-y:auto;
+  }
+  .bn-item{
+    flex-direction:row;
+    justify-content:flex-start;
+    padding:12px 20px;
+    gap:12px;
+    font-size:.88rem;
+    color:rgba(255,255,255,.75);
+    border-radius:0;
+    width:100%;
+  }
+  .bn-item .ico{font-size:1.1rem;}
+  .bn-item:hover{background:rgba(255,255,255,.08);}
+  .bn-item.active{background:rgba(255,255,255,.12);color:#fff;}
+  .bn-item.active .ico{transform:none;}
+
+  /* FAB button for reporting */
+  .desktop-fab{
+    margin:16px;
+    background:var(--orange);
+    color:#fff;
+    border:none;
+    padding:12px 16px;
+    border-radius:8px;
+    font-size:.88rem;
+    font-weight:600;
+    cursor:pointer;
+    width:calc(100% - 32px);
+    text-align:left;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .desktop-fab:hover{background:#d66910;}
+
+  /* Main content area */
+  .pages{
+    grid-area:main;
+    overflow:hidden;
+    background:var(--off);
+  }
+  .page{
+    overflow-y:auto;
+    height:100%;
+  }
+
+  /* Chat window becomes a panel, not fullscreen */
+  .chat-window{
+    position:static;
+    transform:none!important;
+    display:none;
+    flex-direction:column;
+    height:100%;
+    border-left:1px solid var(--border);
+    background:var(--off);
+  }
+  .chat-window.open{display:flex;}
+  .cw-back{display:none;}
+
+  /* Chat page = sidebar + window side by side */
+  #page-chat{
+    display:none;
+    grid-template-columns:300px 1fr;
+    height:100%;
+  }
+  #page-chat.active{display:grid!important;}
+  .chat-list-page{border-right:1px solid var(--border);}
+
+  /* Chat window inside chat page on desktop */
+  #page-chat .chat-window-slot{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    background:#f0f2f5;
+  }
+
+  /* Modals centered, not bottom sheets */
+  .overlay{align-items:center;}
+  .sheet{
+    border-radius:12px;
+    max-width:520px;
+    margin-bottom:0;
+    max-height:88vh;
+  }
+  @keyframes slideUp{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+
+  /* Hero adjustments */
+  .hero{padding:48px 32px;}
+  .hero h1{font-size:2.2rem;}
+  .hero-btns{flex-direction:row;max-width:none;justify-content:center;gap:14px;}
+  .btn-hero-p,.btn-hero-s{width:auto;padding:14px 28px;}
+
+  /* Stats row */
+  .stats-row{grid-template-columns:1fr 1fr 1fr 1fr;}
+
+  /* Cards grid */
+  .cards-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+  .browse-list{padding:16px;}
+  #itemsList{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+
+  /* Profile */
+  .prof-top{padding:32px;}
+
+  /* Home body */
+  .home-body{padding:20px 24px;}
+
+  /* Desktop chat slot */
+  .chat-window-slot{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    background:#f0f2f5;
+    overflow:hidden;
+  }
+  /* Chat window inside slot fills it */
+  #desktopChatSlot .chat-window,
+  #desktopChatSlot > .chat-window {
+    position:static!important;
+    transform:none!important;
+    display:flex!important;
+    flex-direction:column;
+    flex:1;
+    height:100%;
+  }
+}
 </style>
 </head>
 <body>
 <div id="app">
 
+  <!-- TOP BAR -->
   <div class="topbar">
     <div class="topbar-logo">
       <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
         <circle cx="22" cy="22" r="22" fill="#ffffff"/>
         <circle cx="22" cy="22" r="20" fill="#1C3557"/>
         <ellipse cx="22" cy="10" rx="4" ry="6" fill="#F47C20"/>
+        <ellipse cx="22" cy="12" rx="2.5" ry="4" fill="#FFB347"/>
+        <rect x="12" y="22" width="20" height="12" rx="2" fill="#ffffff" opacity="0.9"/>
+        <line x1="22" y1="22" x2="22" y2="34" stroke="#1C3557" stroke-width="1.2"/>
+        <ellipse cx="14" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(-30 14 20)"/>
+        <ellipse cx="30" cy="20" rx="4" ry="2.5" fill="#3FAE49" transform="rotate(30 30 20)"/>
         <text x="22" y="40" text-anchor="middle" font-size="4.5" font-weight="bold" fill="#F47C20" font-family="Arial">SMVDU</text>
       </svg>
       <div class="tb">
@@ -171,12 +436,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
     </div>
   </div>
 
+  <!-- PAGES -->
   <div class="pages">
 
+    <!-- HOME -->
     <div class="page active" id="page-home">
       <div class="hero">
         <div class="hero-badge">SMVDU, Katra</div>
-        <h1>Lost something?<br><span>We'll find it.</span></h1>
+        <h1>Lost something<br>on campus? <span>We'll find it.</span></h1>
         <p>Report lost items, find what others found, chat instantly.</p>
         <div class="hero-btns">
           <button class="btn-hero-p" onclick="openReportModal('lost')">📢 Report Lost</button>
@@ -189,56 +456,116 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
         <div class="stat-box"><div class="n" id="statResolved">--</div><div class="l">Reunited</div></div>
       </div>
       <div class="home-body">
+        <div id="guestCard" class="guest-card" style="display:none;">
+          <h3>Join SMVDU FindIt</h3>
+          <p>Sign in to report items, chat with students, and get notified when your lost item is found.</p>
+          <button onclick="openAuthModal()">Sign In with Google</button>
+        </div>
         <div class="sec-head">
           <div class="sec-title">Recent <span>Activity</span></div>
+          <span class="sec-link" onclick="showPage('items')">View all</span>
         </div>
-        <div id="recentList" class="cards-list"></div>
+        <div id="recentList" class="cards-list"><div class="loading"><div class="spin"></div></div></div>
       </div>
     </div>
 
+    <!-- BROWSE -->
     <div class="page" id="page-items">
       <div class="browse-head">
         <div class="search-wrap">
           <input class="search-inp" type="text" id="searchInput" placeholder="Search items..." oninput="filterItems()">
         </div>
       </div>
-      <div id="itemsList" class="cards-list" style="padding:14px;"></div>
+      <div class="tab-strip">
+        <button class="ts-btn active" id="tab-all" onclick="setTab('all')">All <span class="ts-badge" id="badge-all">0</span></button>
+        <button class="ts-btn" id="tab-lost" onclick="setTab('lost')">Lost <span class="ts-badge" id="badge-lost">0</span></button>
+        <button class="ts-btn" id="tab-found" onclick="setTab('found')">Found <span class="ts-badge" id="badge-found">0</span></button>
+      </div>
+      <div class="filter-scroll">
+        <div class="f-chip active" onclick="setCatFilter('all',this)">All</div>
+        <div class="f-chip" onclick="setCatFilter('Electronics',this)">📱 Electronics</div>
+        <div class="f-chip" onclick="setCatFilter('ID/Documents',this)">🪪 ID/Docs</div>
+        <div class="f-chip" onclick="setCatFilter('Keys',this)">🔑 Keys</div>
+        <div class="f-chip" onclick="setCatFilter('Wallet/Purse',this)">👛 Wallet</div>
+        <div class="f-chip" onclick="setCatFilter('Bag/Backpack',this)">🎒 Bag</div>
+        <div class="f-chip" onclick="setCatFilter('Clothing',this)">👕 Clothing</div>
+        <div class="f-chip" onclick="setCatFilter('Books/Notes',this)">📚 Books</div>
+        <div class="f-chip" onclick="setCatFilter('Sports',this)">⚽ Sports</div>
+        <div class="f-chip" onclick="setCatFilter('Bottle',this)">🍶 Bottle</div>
+        <div class="f-chip" onclick="setCatFilter('Other',this)">📦 Other</div>
+      </div>
+      <div class="browse-list" id="itemsList"><div class="loading"><div class="spin"></div></div></div>
     </div>
 
+    <!-- CHAT LIST -->
     <div class="page" id="page-chat">
-      <div class="chat-list-page">
-        <div class="chat-list-hdr">Messages</div>
-        <div class="chat-list-scroll" id="chatList"></div>
+      <div id="chatListPage" class="chat-list-page">
+        <div class="chat-list-hdr">
+          <span>Messages</span>
+        </div>
+        <div class="chat-list-scroll" id="chatList">
+          <div class="chat-empty-state">
+            <div class="ico">💬</div>
+            <p>Sign in to see conversations</p>
+          </div>
+        </div>
+      </div>
+      <!-- Desktop: chat window sits here instead of fullscreen -->
+      <div class="chat-window-slot" id="desktopChatSlot">
+        <div class="chat-empty-state">
+          <div class="ico">💬</div>
+          <h3 style="font-size:.95rem;color:var(--head);margin-bottom:6px;">Select a conversation</h3>
+          <p style="font-size:.82rem;">Click a chat to start messaging</p>
+        </div>
       </div>
     </div>
 
+    <!-- USERS -->
     <div class="page" id="page-users">
       <div class="users-hdr">
         <div class="search-wrap">
-          <input class="search-inp" type="text" id="userSearch" placeholder="Search students by name..." oninput="searchUsers(this.value)">
+          <input class="search-inp" type="text" id="userSearch" placeholder="Search students..." oninput="searchUsers(this.value)">
         </div>
       </div>
-      <div class="users-list" id="usersList"></div>
+      <div class="users-list" id="usersList">
+        <div style="text-align:center;padding:40px;color:var(--muted);">
+          <div style="font-size:2.5rem;margin-bottom:10px;">👥</div>
+          <p>Search for SMVDU students</p>
+        </div>
+      </div>
     </div>
 
+    <!-- PROFILE -->
     <div class="page" id="page-profile">
-      <div id="profContent" style="padding:20px; text-align:center;">
-        <p>Sign in to view your profile.</p>
+      <div id="profContent">
+        <div class="lock-screen">
+          <div class="ico">🔒</div>
+          <h3>Sign in to view profile</h3>
+          <p>Your reports, matches and profile details will appear here.</p>
+          <button onclick="openAuthModal()">Sign In</button>
+        </div>
       </div>
     </div>
 
   </div>
 
-  <div class="bottom-nav">
+  <!-- BOTTOM NAV (mobile) / SIDEBAR (desktop) -->
+  <div class="bottom-nav" id="sideNav">
+    <!-- Desktop only: Report buttons at top -->
+    <div class="desktop-only" style="display:none;">
+      <button class="desktop-fab" onclick="openReportModal('lost')">📢 Report Lost Item</button>
+      <button class="desktop-fab" style="background:var(--steel);margin-top:0;" onclick="openReportModal('found')">🔍 Found Something</button>
+      <div style="height:1px;background:rgba(255,255,255,.1);margin:8px 0;"></div>
+    </div>
     <button class="bn-item active" id="bn-home" onclick="showPage('home')">
       <span class="ico">🏠</span><span>Home</span>
     </button>
     <button class="bn-item" id="bn-items" onclick="showPage('items')">
       <span class="ico">🔍</span><span>Browse</span>
+      <span class="bn-badge" id="bn-badge"></span>
     </button>
     <button class="bn-item" id="bn-chat" onclick="showPage('chat')">
-      <span class="ico">💬</span><span>Chat</span>
-      <span class="bn-badge" id="bn-badge"></span>
+      <span class="ico">💬</span><span>Messages</span>
     </button>
     <button class="bn-item" id="bn-users" onclick="showPage('users')">
       <span class="ico">👥</span><span>Students</span>
@@ -246,79 +573,323 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
     <button class="bn-item" id="bn-profile" onclick="showPage('profile')">
       <span class="ico">👤</span><span>Profile</span>
     </button>
+    <!-- Desktop only: sign out at bottom -->
+    <div class="desktop-only" style="display:none;margin-top:auto;padding:12px;">
+      <div style="height:1px;background:rgba(255,255,255,.1);margin-bottom:12px;"></div>
+      <div id="sideUserInfo" style="display:flex;align-items:center;gap:8px;padding:8px 8px 12px;">
+        <div id="sideAv" style="width:32px;height:32px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;">?</div>
+        <div style="min-width:0;"><div id="sideName" style="color:#fff;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;">Guest</div></div>
+      </div>
+    </div>
   </div>
 
 </div>
 
+<!-- CHAT WINDOW (full screen slide) -->
 <div class="chat-window" id="chatWindow">
   <div class="cw-top">
     <button class="cw-back" onclick="closeChatWindow()">&#8592;</button>
-    <div id="cwName">Chat</div>
+    <div class="cw-av" id="cwAv">?</div>
+    <div class="cw-info">
+      <div class="cw-name" id="cwName">Chat</div>
+      <div class="cw-status" id="cwStatus">Online</div>
+    </div>
   </div>
   <div class="cw-msgs" id="cwMsgs"></div>
   <div class="cw-inp-wrap">
-    <textarea class="cw-inp" id="cwInp" placeholder="Type a message..." rows="1"></textarea>
+    <textarea class="cw-inp" id="cwInp" placeholder="Type a message..." rows="1" oninput="autoResize(this)"></textarea>
     <button class="cw-send" onclick="sendMsg()">&#10148;</button>
   </div>
 </div>
 
-<div class="overlay" id="reportModal">
+<!-- AUTH MODAL -->
+<div class="overlay" id="authModal">
   <div class="sheet">
+    <div class="sheet-handle"></div>
     <div class="sheet-hdr">
-      <div class="sheet-title" id="repTitle">Report Item</div>
-      <button onclick="closeModal('reportModal')">&#x2715;</button>
+      <div class="sheet-title" id="authTitle">Welcome to <span style="color:var(--orange)">FindIt</span></div>
+      <button class="sheet-x" onclick="closeModal('authModal')">&#x2715;</button>
     </div>
     <div class="sheet-body">
-      <input type="hidden" id="repType">
-      <div class="fg">
-        <label class="fl">Item Name *</label>
-        <input class="fi" type="text" id="itemName" placeholder="e.g. Black Wallet">
+      <div id="gSignInStep">
+        <p style="color:var(--muted);font-size:.87rem;margin-bottom:18px;text-align:center;line-height:1.6;">Sign in with your Google account to report items, chat with students, and more.</p>
+        <button id="googleBtn" class="google-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <p style="font-size:.74rem;color:#aaa;text-align:center;margin-top:12px;">Only verified SMVDU Google accounts</p>
       </div>
-      <div class="fg">
-        <label class="fl">Category *</label>
-        <select class="fs" id="itemCat">
-          <option value="Electronics">📱 Electronics</option>
-          <option value="ID/Documents">🪪 ID/Docs</option>
-          <option value="Bag/Backpack">🎒 Bag</option>
-          <option value="Other">📦 Other</option>
-        </select>
+      <div id="profileStep" style="display:none;">
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px;">Complete your profile to get started:</p>
+        <div style="text-align:center;margin-bottom:14px;">
+          <div id="avPreview" style="width:72px;height:72px;border-radius:50%;background:var(--off);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">🧑‍💻</div>
+          <label style="font-size:.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
+            Upload photo
+            <input type="file" id="regPhoto" accept="image/*" style="display:none;" onchange="previewRegPhoto(this)">
+          </label>
+        </div>
+        <div class="fg">
+          <label class="fl">Choose Avatar</label>
+          <div class="av-grid" id="avPicker">
+            <div class="av-opt sel" data-av="🧑‍💻">🧑‍💻</div>
+            <div class="av-opt" data-av="👨‍🎓">👨‍🎓</div>
+            <div class="av-opt" data-av="👩‍🎓">👩‍🎓</div>
+            <div class="av-opt" data-av="🧑‍🔬">🧑‍🔬</div>
+            <div class="av-opt" data-av="🧑‍🏫">🧑‍🏫</div>
+            <div class="av-opt" data-av="🦁">🦁</div>
+            <div class="av-opt" data-av="🐯">🐯</div>
+            <div class="av-opt" data-av="🦅">🦅</div>
+            <div class="av-opt" data-av="⚡">⚡</div>
+            <div class="av-opt" data-av="🏔️">🏔️</div>
+          </div>
+          <input type="hidden" id="selAvatar" value="🧑‍💻">
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">Roll Number *</label>
+            <input class="fi" type="text" id="regRoll" placeholder="25BCS080" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <div class="fg">
+            <label class="fl">Department</label>
+            <select class="fs" id="regDept">
+              <option value="">Select</option>
+              <option>Computer Science &amp; Engineering</option>
+              <option>Electronics &amp; Communication</option>
+              <option>Mechanical Engineering</option>
+              <option>Civil Engineering</option>
+              <option>Biotechnology</option>
+              <option>Physics</option>
+              <option>Chemistry</option>
+              <option>Mathematics</option>
+              <option>Management</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Hostel</label>
+          <select class="fs" id="regHostel">
+            <option value="">Select Hostel</option>
+            <option>Nilgiri Hostel</option>
+            <option>Vindhyanchal Hostel</option>
+            <option>Trikuta Hostel</option>
+            <option>Kailash Hostel</option>
+            <option>Shivalik Hostel</option>
+            <option>Vaishnavi Hostel</option>
+            <option>Basohli Hostel</option>
+            <option>Old Basohli Hostel</option>
+          </select>
+        </div>
+        <button class="btn-full green" onclick="saveProfile()">Complete Registration</button>
       </div>
-      <div class="fg">
-        <label class="fl">Location *</label>
-        <input class="fi" type="text" id="itemLoc" placeholder="e.g. Central Library">
-      </div>
-      <div class="fg">
-        <label class="fl">Description</label>
-        <textarea class="ft" id="itemDesc" style="width:100%; height:80px;"></textarea>
-      </div>
-      <div class="fg">
-        <label class="fl">Photo (optional)</label>
-        <input type="file" id="itemPhoto" accept="image/*">
-      </div>
-      <div class="fg" style="display:none;">
-          <input type="date" id="itemDate">
-      </div>
-      <button class="btn-full green" id="submitBtn" onclick="submitReport()">Submit Report</button>
     </div>
   </div>
 </div>
 
-<div class="overlay" id="authModal">
+<!-- REPORT MODAL -->
+<div class="overlay" id="reportModal">
   <div class="sheet">
-    <div class="sheet-body" style="text-align:center;">
-      <h3>Welcome back</h3>
-      <p style="margin:10px 0 20px;">Sign in with Google to continue</p>
-      <button class="btn-full" onclick="signIn()">Continue with Google</button>
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="repTitle">Report Item</div>
+      <button class="sheet-x" onclick="closeModal('reportModal')">&#x2715;</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="repType" value="lost">
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Item Name *</label>
+          <input class="fi" type="text" id="itemName" placeholder="Black Laptop Bag">
+        </div>
+        <div class="fg">
+          <label class="fl">Category *</label>
+          <select class="fs" id="itemCat">
+            <option value="">Select</option>
+            <option>Electronics</option>
+            <option>ID/Documents</option>
+            <option>Keys</option>
+            <option>Wallet/Purse</option>
+            <option>Bag/Backpack</option>
+            <option>Clothing</option>
+            <option>Books/Notes</option>
+            <option>Sports</option>
+            <option>Bottle</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Description *</label>
+        <textarea class="ft" id="itemDesc" placeholder="Color, brand, any unique marks..."></textarea>
+      </div>
+      <div class="fg">
+        <label class="fl">Location on Campus *</label>
+        <select class="fs" id="itemLoc">
+          <option value="">Select Location</option>
+          <optgroup label="Academic">
+            <option>Main Academic Block</option>
+            <option>Central Library</option>
+            <option>Labs Block</option>
+            <option>LT 1</option><option>LT 2</option><option>LT 3</option><option>LT 4</option>
+            <option>Admin Block</option>
+          </optgroup>
+          <optgroup label="Hostels">
+            <option>Nilgiri Hostel</option><option>Vindhyanchal Hostel</option>
+            <option>Trikuta Hostel</option><option>Kailash Hostel</option>
+            <option>Shivalik Hostel</option><option>Vaishnavi Hostel</option>
+            <option>Basohli Hostel</option><option>Old Basohli Hostel</option>
+          </optgroup>
+          <optgroup label="Mess / Canteen">
+            <option>Canteen</option><option>Nilgiri Mess</option>
+            <option>Vindhyanchal Mess</option><option>Central Mess</option>
+            <option>Shivalik Mess</option><option>Vaishnavi Mess</option><option>Basohli Mess</option>
+          </optgroup>
+          <optgroup label="Other Areas">
+            <option>Sports Complex</option><option>Gym</option>
+            <option>Matrika Auditorium</option><option>Trikuta Ground</option>
+            <option>Ground Of Campus</option><option>Red Rocks</option>
+            <option>BC Junction</option><option>Parking Area</option>
+            <option>Bus Stand</option><option>Near Guest House</option>
+            <option>Near Medical Building</option><option>Near Workshop</option>
+            <option>Grocery</option><option>Medical Aid Center</option>
+          </optgroup>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Date *</label>
+        <input class="fi" type="date" id="itemDate">
+      </div>
+      <div class="fg" id="verifyGrp" style="display:none;">
+        <label class="fl">Verification Question (helps prove ownership)</label>
+        <input class="fi" type="text" id="verifyQ" placeholder="e.g. What sticker is on your laptop?" style="margin-bottom:8px;">
+        <input class="fi" type="text" id="verifyA" placeholder="Your answer (private)">
+      </div>
+      <div class="fg">
+        <label class="fl">Photo (optional)</label>
+        <div class="upload-box" onclick="document.getElementById('itemPhoto').click()">
+          <input type="file" id="itemPhoto" accept="image/*" onchange="previewPhoto(this)">
+          <div id="uploadIcon" style="font-size:1.8rem;margin-bottom:6px;">📸</div>
+          <p id="uploadTxt" style="font-size:.8rem;color:var(--muted);">Tap to upload photo</p>
+        </div>
+      </div>
+      <button class="btn-full green" onclick="submitReport()">Submit Report</button>
+      <button class="btn-can-full" onclick="closeModal('reportModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detailModal">
+  <div class="sheet" style="max-height:95vh;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="detailTitle">Item Details</div>
+      <button class="sheet-x" onclick="closeModal('detailModal')">&#x2715;</button>
+    </div>
+    <div class="sheet-body" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- CLAIM MODAL -->
+<div class="overlay" id="claimModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title">Verify Ownership</div>
+      <button class="sheet-x" onclick="closeModal('claimModal')">&#x2715;</button>
+    </div>
+    <div class="sheet-body">
+      <p style="color:var(--muted);font-size:.87rem;margin-bottom:14px;line-height:1.6;">Answer the secret question set by the reporter to prove you're the owner:</p>
+      <div class="fg">
+        <label class="fl" id="claimQ">Question</label>
+        <input class="fi" type="text" id="claimAns" placeholder="Your answer">
+      </div>
+      <input type="hidden" id="claimId">
+      <button class="btn-full green" onclick="submitClaim()">Verify &amp; Claim</button>
+      <button class="btn-can-full" onclick="closeModal('claimModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="overlay" id="editProfileModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title">Edit Profile</div>
+      <button class="sheet-x" onclick="closeModal('editProfileModal')">&#x2715;</button>
+    </div>
+    <div class="sheet-body">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div id="editAvPreview" style="width:70px;height:70px;border-radius:50%;background:var(--off);border:2px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;">👤</div>
+        <label style="font-size:.78rem;color:var(--steel);cursor:pointer;text-decoration:underline;">
+          Change photo
+          <input type="file" id="editPhoto" accept="image/*" style="display:none;" onchange="previewEditPhoto(this)">
+        </label>
+      </div>
+      <div class="fg">
+        <label class="fl">Choose Avatar</label>
+        <div class="av-grid" id="editAvPicker">
+          <div class="av-opt" data-eav="🧑‍💻">🧑‍💻</div>
+          <div class="av-opt" data-eav="👨‍🎓">👨‍🎓</div>
+          <div class="av-opt" data-eav="👩‍🎓">👩‍🎓</div>
+          <div class="av-opt" data-eav="🧑‍🔬">🧑‍🔬</div>
+          <div class="av-opt" data-eav="🧑‍🏫">🧑‍🏫</div>
+          <div class="av-opt" data-eav="🦁">🦁</div>
+          <div class="av-opt" data-eav="🐯">🐯</div>
+          <div class="av-opt" data-eav="🦅">🦅</div>
+          <div class="av-opt" data-eav="⚡">⚡</div>
+          <div class="av-opt" data-eav="🏔️">🏔️</div>
+        </div>
+        <input type="hidden" id="editSelAv" value="">
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Roll Number</label>
+          <input class="fi" type="text" id="editRoll" placeholder="25BCS080" oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <div class="fg">
+          <label class="fl">Department</label>
+          <select class="fs" id="editDept">
+            <option value="">Select</option>
+            <option>Computer Science &amp; Engineering</option>
+            <option>Electronics &amp; Communication</option>
+            <option>Mechanical Engineering</option>
+            <option>Civil Engineering</option>
+            <option>Biotechnology</option>
+            <option>Physics</option>
+            <option>Chemistry</option>
+            <option>Mathematics</option>
+            <option>Management</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Hostel</label>
+        <select class="fs" id="editHostel">
+          <option value="">Select</option>
+          <option>Nilgiri Hostel</option><option>Vindhyanchal Hostel</option>
+          <option>Trikuta Hostel</option><option>Kailash Hostel</option>
+          <option>Shivalik Hostel</option><option>Vaishnavi Hostel</option>
+          <option>Basohli Hostel</option><option>Old Basohli Hostel</option>
+        </select>
+      </div>
+      <button class="btn-full" onclick="saveProfileEdit()">Save Changes</button>
+      <button class="btn-can-full" onclick="closeModal('editProfileModal')">Cancel</button>
     </div>
   </div>
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, query, orderBy, onSnapshot, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
+(async function() {
+
+const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+const { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+const { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, query, orderBy, onSnapshot, where, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
 
 const firebaseConfig = {
   apiKey: "AIzaSyBrwqF0UimXJonkwp8uV71MaGI2IzoyQfM",
@@ -329,240 +900,963 @@ const firebaseConfig = {
   appId: "1:521549279482:web:0bfb3509101dc380305943"
 };
 
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db   = getFirestore(app);
 
-let currentUser = null, allItems = [];
-let activeChatId = null, unsubChat = null;
+let currentUser = null, allItems = [], currentTab = 'all', currentCat = 'all';
+let activeChatId = null, unsubChat = null, regPhotoFile = null, editPhotoFile = null;
 
-// ── AUTH LOGIC ──
+// ── AUTH STATE ──
 onAuthStateChanged(auth, async user => {
   currentUser = user;
+  updateTopBar(user);
+  loadItems();
   if(user) {
-    document.getElementById('authBtn').textContent = 'Sign Out';
-    document.getElementById('authBtn').onclick = () => signOut(auth);
-    closeModal('authModal');
-    syncUserRecord(user);
-    loadItems();
-    loadChatList();
-    listenForUnread();
+    loadMyItems();
+    loadChatList(); // Start listening immediately
+    listenForMessageNotifications(); // Toast when new message arrives
+    document.getElementById('guestCard').style.display = 'none';
+    renderProfilePage(user);
   } else {
-    document.getElementById('authBtn').textContent = 'Sign In';
-    document.getElementById('authBtn').onclick = () => openModal('authModal');
+    document.getElementById('guestCard').style.display = 'block';
+    document.getElementById('statLost').textContent = '--';
+    document.getElementById('statFound').textContent = '--';
+    document.getElementById('statResolved').textContent = '--';
+    document.getElementById('recentList').innerHTML = '<div class="loading"><div style="font-size:2rem;margin-bottom:8px">🔒</div><p style="font-size:.85rem">Sign in to see activity</p></div>';
+    document.getElementById('profContent').innerHTML = '<div class="lock-screen"><div class="ico">🔒</div><h3>Sign in to view profile</h3><p>Your reports and profile details will appear here.</p><button onclick="openAuthModal()">Sign In</button></div>';
   }
 });
 
-async function signIn() {
-  const provider = new GoogleAuthProvider();
-  try { await signInWithPopup(auth, provider); } catch(e) { console.error(e); }
+function updateTopBar(user) {
+  const btn = document.getElementById('authBtn');
+  if(user) {
+    btn.textContent = 'Sign Out';
+    btn.onclick = async () => { await signOut(auth); };
+  } else {
+    btn.textContent = 'Sign In';
+    btn.onclick = openAuthModal;
+  }
 }
 
-async function syncUserRecord(user) {
-  const userRef = doc(db, 'users', user.uid);
-  await setDoc(userRef, {
-    uid: user.uid,
-    name: user.displayName,
-    email: user.email,
-    lastActive: serverTimestamp()
-  }, { merge: true });
-}
-
-// ── PAGE NAVIGATION ──
-window.showPage = (page) => {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('bn-' + page).classList.add('active');
-};
-
-window.openModal = (id) => document.getElementById(id).classList.add('open');
-window.closeModal = (id) => document.getElementById(id).classList.remove('open');
-
-// ── STUDENT SEARCH ──
-window.searchUsers = async (val) => {
-  const qStr = val.trim().toLowerCase();
-  const list = document.getElementById('usersList');
-  if (qStr.length < 2) {
-    list.innerHTML = '<p style="text-align:center; padding:20px;">Type at least 2 characters...</p>';
+// ── PAGE NAV ──
+window.showPage = function(page) {
+  const authPages = ['chat','users','profile'];
+  if(authPages.includes(page) && !currentUser) {
+    showToast('Please sign in first','error');
+    openAuthModal();
     return;
   }
-  const snap = await getDocs(collection(db, 'users'));
-  const users = snap.docs.map(d => d.data()).filter(u => 
-    u.name.toLowerCase().includes(qStr)
-  );
-  list.innerHTML = users.map(u => `
-    <div class="user-card">
-      <div class="user-av">${u.name.charAt(0)}</div>
-      <div class="user-info">
-        <div class="user-name">${u.name}</div>
-        <div class="user-detail">${u.email}</div>
-      </div>
-      <button class="user-chat-btn" onclick="startDirectChat('${u.uid}', '${u.name}')">Message</button>
-    </div>
-  `).join('');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('bn-'+page).classList.add('active');
+  if(page==='profile' && currentUser) {
+    renderProfilePage(currentUser).then(() => {
+      loadMyItems();
+      loadMatchInbox();
+    });
+  }
+  if(page==='chat' && currentUser) {
+    loadChatList();
+  }
 };
 
-// ── MESSAGING SYSTEM ──
-window.startDirectChat = (uid, name) => {
-  if (!currentUser) { openModal('authModal'); return; }
-  if (uid === currentUser.uid) return;
-  const chatId = [currentUser.uid, uid].sort().join('_');
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+window.openModal  = id => document.getElementById(id).classList.add('open');
+
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => {
+  if(e.target===o) o.classList.remove('open');
+}));
+
+window.showToast = function(msg, type) {
+  const t = document.createElement('div');
+  t.className = 'toast'+(type?' '+type:'');
+  t.textContent = msg;
+  document.getElementById('toastWrap').appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+};
+
+// ── AUTH ──
+window.openAuthModal = function() {
+  document.getElementById('gSignInStep').style.display = 'block';
+  document.getElementById('profileStep').style.display = 'none';
+  document.getElementById('authTitle').innerHTML = 'Welcome to <span style="color:var(--orange)">FindIt</span>';
+  document.getElementById('authModal').classList.add('open');
+};
+
+document.getElementById('googleBtn').addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, new GoogleAuthProvider());
+    const user = result.user;
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
+    if(snap.empty) {
+      document.getElementById('gSignInStep').style.display = 'none';
+      document.getElementById('profileStep').style.display = 'block';
+      document.getElementById('authTitle').innerHTML = 'Complete <span style="color:var(--orange)">Profile</span>';
+      regPhotoFile = null;
+      document.getElementById('regRoll').value = '';
+      document.getElementById('regDept').value = '';
+      document.getElementById('regHostel').value = '';
+      document.getElementById('selAvatar').value = '🧑‍💻';
+      document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">🧑‍💻</span>';
+      document.querySelectorAll('#avPicker .av-opt').forEach((a,i) => {
+        a.classList.toggle('sel', i===0);
+      });
+    } else {
+      showToast('Welcome back, '+(user.displayName||'Student')+'!','success');
+      closeModal('authModal');
+    }
+  } catch(e) {
+    if(e.code !== 'auth/popup-closed-by-user') showToast('Login failed: '+e.message,'error');
+  }
+});
+
+// Avatar pickers
+document.addEventListener('click', e => {
+  // Reg avatar
+  const av = e.target.closest('#avPicker .av-opt');
+  if(av) {
+    document.querySelectorAll('#avPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    av.classList.add('sel');
+    document.getElementById('selAvatar').value = av.getAttribute('data-av');
+    document.getElementById('avPreview').innerHTML = '<span style="font-size:2rem">'+av.getAttribute('data-av')+'</span>';
+    regPhotoFile = null;
+  }
+  // Edit avatar
+  const eav = e.target.closest('#editAvPicker .av-opt');
+  if(eav) {
+    document.querySelectorAll('#editAvPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    eav.classList.add('sel');
+    document.getElementById('editSelAv').value = eav.getAttribute('data-eav');
+    document.getElementById('editAvPreview').innerHTML = '<span style="font-size:2rem">'+eav.getAttribute('data-eav')+'</span>';
+    editPhotoFile = null;
+  }
+});
+
+window.previewRegPhoto = function(input) {
+  if(!input.files||!input.files[0]) return;
+  regPhotoFile = input.files[0];
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('avPreview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    document.querySelectorAll('#avPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    document.getElementById('selAvatar').value = '';
+  };
+  r.readAsDataURL(regPhotoFile);
+};
+
+window.saveProfile = async function() {
+  const user = auth.currentUser;
+  if(!user) return;
+  const roll = document.getElementById('regRoll').value.trim().toUpperCase();
+  if(!roll) { showToast('Please enter Roll Number','error'); return; }
+  const dept   = document.getElementById('regDept').value;
+  const hostel = document.getElementById('regHostel').value;
+  const avatar = document.getElementById('selAvatar').value || '🧑‍💻';
+  let customPhoto = '';
+  if(regPhotoFile) {
+    try {
+      const fd = new FormData();
+      fd.append('file',regPhotoFile);
+      fd.append('upload_preset','smvdu-findit');
+      customPhoto = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
+    } catch(ex) {}
+  }
+  await addDoc(collection(db,'users'),{ uid:user.uid, name:user.displayName||'', email:user.email||'', avatar, customPhoto, roll, dept, hostel, createdAt:serverTimestamp() });
+  showToast('Welcome, '+(user.displayName||'Student')+'!','success');
+  closeModal('authModal');
+  renderProfilePage(user);
+};
+
+// ── PROFILE PAGE ──
+async function renderProfilePage(user) {
+  if(!user) return;
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',user.uid)));
+    const u = snap.empty ? {} : snap.docs[0].data();
+    const avHtml = u.customPhoto
+      ? '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      : (u.avatar ? '<span style="font-size:2rem">'+u.avatar+'</span>' : '👤');
+    document.getElementById('profContent').innerHTML = `
+      <div class="prof-top">
+        <div class="prof-av-wrap">
+          <div class="prof-av-big" id="profAvBig">${avHtml}</div>
+          <label for="profPhotoInput" class="prof-av-edit">✏</label>
+          <input type="file" id="profPhotoInput" accept="image/*" style="display:none;" onchange="updatePhoto(this)">
+        </div>
+        <div class="prof-name">${u.name||user.displayName||'Student'}</div>
+        <div class="prof-sub">${user.email}</div>
+        <div class="prof-badges">
+          ${u.roll?'<span class="prof-badge-pill">🎓 '+u.roll+'</span>':''}
+          ${u.dept?'<span class="prof-badge-pill">📚 '+u.dept+'</span>':''}
+          ${u.hostel?'<span class="prof-badge-pill">🏠 '+u.hostel+'</span>':''}
+        </div>
+        <button class="prof-edit-btn" onclick="openProfileEdit()">✏ Edit Profile</button>
+      </div>
+      <div class="prof-body">
+        <div class="prof-stat-row">
+          <div class="prof-stat"><div class="n" id="pStatLost">0</div><div class="l">Lost</div></div>
+          <div class="prof-stat"><div class="n" id="pStatFound">0</div><div class="l">Found</div></div>
+          <div class="prof-stat"><div class="n" id="pStatDone">0</div><div class="l">Resolved</div></div>
+        </div>
+        <div id="matchInboxSec" style="display:none;margin-bottom:16px;">
+          <div class="sec-head"><div class="sec-title">Smart <span>Matches</span></div></div>
+          <div id="matchInbox"></div>
+        </div>
+        <div class="sec-head">
+          <div class="sec-title">My <span>Reports</span></div>
+          <span id="repCount" style="font-size:.78rem;color:var(--muted);background:var(--off);padding:3px 10px;border-radius:10px;">0</span>
+        </div>
+        <div id="myItems" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="loading"><div class="spin"></div></div>
+        </div>
+      </div>`;
+  } catch(e) {}
+}
+
+window.updatePhoto = async function(input) {
+  if(!currentUser||!input.files||!input.files[0]) return;
+  showToast('Uploading...','');
+  try {
+    const fd = new FormData();
+    fd.append('file',input.files[0]);
+    fd.append('upload_preset','smvdu-findit');
+    const url = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url;
+    if(!url) { showToast('Upload failed','error'); return; }
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
+    if(!snap.empty) await updateDoc(doc(db,'users',snap.docs[0].id),{customPhoto:url});
+    const avEl = document.getElementById('profAvBig');
+    if(avEl) avEl.innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    showToast('Photo updated!','success');
+  } catch(e) { showToast('Error','error'); }
+};
+
+window.previewEditPhoto = function(input) {
+  if(!input.files||!input.files[0]) return;
+  editPhotoFile = input.files[0];
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('editAvPreview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    document.querySelectorAll('#editAvPicker .av-opt').forEach(a => a.classList.remove('sel'));
+    document.getElementById('editSelAv').value = '';
+  };
+  r.readAsDataURL(editPhotoFile);
+};
+
+window.openProfileEdit = async function() {
+  if(!currentUser) return;
+  editPhotoFile = null;
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
+    if(!snap.empty) {
+      const u = snap.docs[0].data();
+      document.getElementById('editRoll').value   = u.roll||'';
+      document.getElementById('editDept').value   = u.dept||'';
+      document.getElementById('editHostel').value = u.hostel||'';
+      const avEl = document.getElementById('editAvPreview');
+      if(u.customPhoto) avEl.innerHTML = '<img src="'+u.customPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      else if(u.avatar) avEl.innerHTML = '<span style="font-size:2rem">'+u.avatar+'</span>';
+      document.getElementById('editSelAv').value = u.avatar||'';
+      document.querySelectorAll('#editAvPicker .av-opt').forEach(a => {
+        a.classList.toggle('sel', a.getAttribute('data-eav')===u.avatar);
+      });
+    }
+  } catch(e) {}
+  document.getElementById('editProfileModal').classList.add('open');
+};
+
+window.saveProfileEdit = async function() {
+  if(!currentUser) return;
+  const roll   = document.getElementById('editRoll').value.trim().toUpperCase();
+  const dept   = document.getElementById('editDept').value;
+  const hostel = document.getElementById('editHostel').value;
+  const avatar = document.getElementById('editSelAv').value;
+  let customPhoto = '';
+  if(editPhotoFile) {
+    try {
+      const fd = new FormData();
+      fd.append('file',editPhotoFile);
+      fd.append('upload_preset','smvdu-findit');
+      customPhoto = (await (await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
+    } catch(ex) {}
+  }
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('uid','==',currentUser.uid)));
+    const updates = {roll,dept,hostel};
+    if(avatar) updates.avatar = avatar;
+    if(customPhoto) updates.customPhoto = customPhoto;
+    if(!snap.empty) await updateDoc(doc(db,'users',snap.docs[0].id),updates);
+    showToast('Profile updated!','success');
+    closeModal('editProfileModal');
+    renderProfilePage(currentUser);
+  } catch(e) { showToast('Error','error'); }
+};
+
+// ── ITEMS ──
+async function loadItems() {
+  onSnapshot(query(collection(db,'items'), orderBy('createdAt','desc')), snap => {
+    allItems = snap.docs.map(d => ({id:d.id,...d.data()}));
+    const active = allItems.filter(i=>i.status!=='claimed');
+    if(currentUser) renderCards('recentList', active.slice(0,8));
+    filterItems();
+    updateBadges();
+    updateStats();
+  });
+}
+
+async function loadMyItems() {
+  if(!currentUser) return;
+  onSnapshot(query(collection(db,'items'), where('userId','==',currentUser.uid)), snap => {
+    const mine = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const el = document.getElementById('myItems');
+    if(!el) return;
+    const lost  = mine.filter(i=>i.type==='lost').length;
+    const found = mine.filter(i=>i.type==='found').length;
+    const done  = mine.filter(i=>i.status==='claimed').length;
+    const pL = document.getElementById('pStatLost');
+    const pF = document.getElementById('pStatFound');
+    const pD = document.getElementById('pStatDone');
+    if(pL) pL.textContent=lost;
+    if(pF) pF.textContent=found;
+    if(pD) pD.textContent=done;
+    const rc = document.getElementById('repCount');
+    if(rc) rc.textContent = mine.length;
+    if(!mine.length) {
+      el.innerHTML = '<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px">📋</div><p style="font-size:.84rem">No reports yet</p></div>';
+      return;
+    }
+    el.innerHTML = mine.map(item => {
+      const img = item.imageUrl?'<img src="'+item.imageUrl+'">':emojiFor(item.category);
+      return '<div class="my-item-card" onclick="openDetail(\''+item.id+'\')">' +
+        '<div class="my-item-thumb">'+img+'</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="display:flex;gap:5px;margin-bottom:4px;">' +
+            '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+            (item.status==='claimed'?'<span class="tag" style="background:#e8f3ff;color:var(--steel)">Resolved</span>':'') +
+          '</div>' +
+          '<div style="font-weight:700;font-size:.9rem;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+item.name+'</div>' +
+          '<div style="font-size:.76rem;color:var(--muted);margin-top:2px;">📍 '+item.location+'</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    mine.filter(i=>i.type==='lost'&&i.status==='active').forEach(checkSmartMatches);
+  });
+}
+
+function renderCards(cid, items) {
+  const el = document.getElementById(cid);
+  if(!el) return;
+  if(!items||!items.length) {
+    el.innerHTML='<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px">🔍</div><p style="font-size:.85rem">No items found</p></div>';
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const img = item.imageUrl?'<img src="'+item.imageUrl+'">':emojiFor(item.category);
+    return '<div class="item-card" onclick="openDetail(\''+item.id+'\')">' +
+      '<div class="item-card-inner">' +
+        '<div class="item-thumb">'+img+'</div>' +
+        '<div class="item-info">' +
+          '<div class="item-tags">' +
+            '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+            '<span class="tag tag-cat">'+(item.category||'Other')+'</span>' +
+          '</div>' +
+          '<div class="item-name">'+item.name+'</div>' +
+          '<div class="item-loc">📍 '+(item.location||'Unknown')+'</div>' +
+          '<div class="item-date">'+(item.date||'')+'</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function emojiFor(cat) {
+  return {'Electronics':'📱','ID/Documents':'🪪','Keys':'🔑','Wallet/Purse':'👛','Bag/Backpack':'🎒','Clothing':'👕','Books/Notes':'📚','Sports':'⚽','Bottle':'🍶'}[cat]||'📦';
+}
+
+function updateBadges() {
+  const a = allItems.filter(i=>i.status!=='claimed');
+  document.getElementById('badge-all').textContent  = a.length;
+  document.getElementById('badge-lost').textContent = a.filter(i=>i.type==='lost').length;
+  document.getElementById('badge-found').textContent= a.filter(i=>i.type==='found').length;
+}
+
+function updateStats() {
+  if(!currentUser) return;
+  document.getElementById('statLost').textContent     = allItems.filter(i=>i.type==='lost').length;
+  document.getElementById('statFound').textContent    = allItems.filter(i=>i.type==='found').length;
+  document.getElementById('statResolved').textContent = allItems.filter(i=>i.status==='claimed').length;
+}
+
+window.setTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  filterItems();
+};
+
+window.setCatFilter = function(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.f-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  filterItems();
+};
+
+window.filterItems = function() {
+  let items = allItems.filter(i=>i.status!=='claimed');
+  if(currentTab!=='all') items = items.filter(i=>i.type===currentTab);
+  if(currentCat!=='all') items = items.filter(i=>i.category===currentCat);
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  if(q) items = items.filter(i=>(i.name+' '+i.description+' '+i.location).toLowerCase().includes(q));
+  if(!currentUser) {
+    document.getElementById('itemsList').innerHTML = '<div class="lock-screen"><div class="ico">🔒</div><h3>Sign in to Browse</h3><p>See all lost and found items from SMVDU campus</p><button onclick="openAuthModal()">Sign In</button></div>';
+    return;
+  }
+  renderCards('itemsList', items);
+};
+
+// ── DETAIL ──
+window.openDetail = function(id) {
+  const item = allItems.find(i=>i.id===id);
+  if(!item) return;
+  document.getElementById('detailTitle').textContent = item.name;
+  const isOwner = currentUser && currentUser.uid===item.userId;
+  const img = item.imageUrl?'<img src="'+item.imageUrl+'">':emojiFor(item.category);
+  let btns = '';
+  if(!isOwner && item.status!=='claimed' && currentUser) {
+    if(item.verifyQuestion && item.type==='found')
+      btns += '<button style="background:var(--steel);color:#fff;" onclick="openClaimModal(\''+id+'\',\''+item.verifyQuestion.replace(/'/g,"\\'")+'\')"">This is Mine</button>';
+    btns += '<button style="background:var(--orange);color:#fff;" onclick="startChat(\''+id+'\',\''+((item.userName||'User').replace(/'/g,"\\'")+'\',\''+item.userId+'\')"">💬 Contact '+(item.type==='lost'?'Reporter':'Finder'))+'</button>';
+  }
+  if(isOwner && item.status!=='claimed')
+    btns += '<button style="background:var(--green);color:#fff;" onclick="markResolved(\''+id+'\')">Mark as Resolved</button>';
+  if(!currentUser)
+    btns += '<button style="background:var(--orange);color:#fff;" onclick="closeModal(\'detailModal\');openAuthModal()">Sign In to Contact</button>';
+  document.getElementById('detailBody').innerHTML =
+    '<div class="detail-img-big">'+img+'</div>' +
+    '<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">' +
+      '<span class="tag '+(item.type==='lost'?'tag-lost':'tag-found')+'" style="font-size:.78rem;padding:4px 12px;">'+(item.type==='lost'?'Lost':'Found')+'</span>' +
+      '<span class="tag tag-cat" style="font-size:.78rem;padding:4px 12px;">'+item.category+'</span>' +
+      (item.status==='claimed'?'<span class="tag" style="background:#e8f3ff;color:var(--steel);font-size:.78rem;padding:4px 12px;">Reunited</span>':'') +
+    '</div>' +
+    '<p style="color:var(--text);font-size:.88rem;line-height:1.6;margin-bottom:14px;">'+item.description+'</p>' +
+    '<div class="detail-grid">' +
+      '<div class="df"><div class="dk">Location</div><div class="dv">'+item.location+'</div></div>' +
+      '<div class="df"><div class="dk">Date</div><div class="dv">'+item.date+'</div></div>' +
+      '<div class="df"><div class="dk">Reported by</div><div class="dv">'+(item.userName||'Anonymous')+'</div></div>' +
+      '<div class="df"><div class="dk">Status</div><div class="dv" style="color:'+(item.status==='claimed'?'var(--green)':'var(--orange)')+'">'+( item.status==='claimed'?'Reunited':'Active')+'</div></div>' +
+    '</div>' +
+    '<div class="detail-btns">'+btns+'</div>';
+  document.getElementById('detailModal').classList.add('open');
+};
+
+window.openClaimModal = function(id, q) {
+  document.getElementById('claimId').value = id;
+  document.getElementById('claimQ').textContent = q;
+  document.getElementById('claimAns').value = '';
+  closeModal('detailModal');
+  document.getElementById('claimModal').classList.add('open');
+};
+
+window.submitClaim = async function() {
+  if(!currentUser) return;
+  const id  = document.getElementById('claimId').value;
+  const ans = document.getElementById('claimAns').value.trim();
+  if(!ans) { showToast('Enter your answer','error'); return; }
+  const item = allItems.find(i=>i.id===id);
+  if(!item) return;
+  if(ans.toLowerCase()===(item.verifyAnswer||'').toLowerCase()) {
+    await updateDoc(doc(db,'items',id),{status:'claimed'});
+    showToast('Claimed! Contact the finder.','success');
+    closeModal('claimModal');
+  } else showToast('Wrong answer','error');
+};
+
+window.markResolved = async function(id) {
+  if(!currentUser) return;
+  await updateDoc(doc(db,'items',id),{status:'claimed'});
+  showToast('Marked as resolved!','success');
+  closeModal('detailModal');
+};
+
+// ── REPORT ──
+window.openReportModal = function(type) {
+  if(!currentUser) { openAuthModal(); return; }
+  document.getElementById('repType').value = type;
+  document.getElementById('repTitle').textContent = type==='lost'?'Report Lost Item':'Report Found Item';
+  document.getElementById('verifyGrp').style.display = type==='lost'?'block':'none';
+  document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
+  ['itemName','itemDesc','itemCat','itemLoc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('uploadIcon').textContent='📸';
+  document.getElementById('uploadTxt').textContent='Tap to upload photo';
+  document.getElementById('reportModal').classList.add('open');
+};
+
+window.previewPhoto = function(input) {
+  if(!input.files||!input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('uploadIcon').innerHTML='<img src="'+e.target.result+'" style="width:80px;height:60px;object-fit:cover;border-radius:8px;">';
+    document.getElementById('uploadTxt').textContent=input.files[0].name;
+  };
+  r.readAsDataURL(input.files[0]);
+};
+
+let _submitting = false; // Prevent double submit
+window.submitReport = async function() {
+  if(!currentUser) return;
+  if(_submitting) return; // Already submitting, ignore extra clicks
+
+  const type=document.getElementById('repType').value;
+  const name=document.getElementById('itemName').value.trim();
+  const cat =document.getElementById('itemCat').value;
+  const desc=document.getElementById('itemDesc').value.trim();
+  const loc =document.getElementById('itemLoc').value;
+  const date=document.getElementById('itemDate').value;
+  if(!name||!cat||!desc||!loc||!date){showToast('Fill all required fields','error');return;}
+
+  // Disable button and show loading
+  _submitting = true;
+  const submitBtn = document.querySelector('#reportModal .btn-full.green');
+  const origText = submitBtn ? submitBtn.textContent : '';
+  if(submitBtn){ submitBtn.textContent = 'Submitting...'; submitBtn.disabled = true; submitBtn.style.opacity = '0.7'; }
+
+  try {
+    let imageUrl='';
+    const pf=document.getElementById('itemPhoto').files[0];
+    if(pf){
+      try{
+        const fd=new FormData();
+        fd.append('file',pf);
+        fd.append('upload_preset','smvdu-findit');
+        imageUrl=(await(await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload',{method:'POST',body:fd})).json()).secure_url||'';
+      }catch(ex){ console.warn('Photo upload failed, continuing without image'); }
+    }
+    const data={type,name,category:cat,description:desc,location:loc,date,
+      userId:currentUser.uid,userName:currentUser.displayName||currentUser.email,
+      status:'active',imageUrl,createdAt:serverTimestamp()};
+    if(type==='lost'){
+      data.verifyQuestion=document.getElementById('verifyQ').value;
+      data.verifyAnswer=document.getElementById('verifyA').value;
+    }
+    await addDoc(collection(db,'items'),data);
+    showToast((type==='lost'?'Lost':'Found')+' item reported!','success');
+    closeModal('reportModal');
+  } catch(e) {
+    showToast('Error: '+e.message,'error');
+  } finally {
+    // Re-enable button
+    _submitting = false;
+    if(submitBtn){ submitBtn.textContent = origText; submitBtn.disabled = false; submitBtn.style.opacity = '1'; }
+  }
+};
+
+// ── CHAT ──
+window.startChat = function(itemId, otherName, otherUid) {
+  if(!currentUser){ openAuthModal(); return; }
+  if(otherUid === currentUser.uid){ showToast('This is your own item!','error'); return; }
+  closeModal('detailModal');
+  const chatId = [currentUser.uid, otherUid].sort().join('_') + '_' + itemId;
   window._chatMap = window._chatMap || {};
-  window._chatMap[chatId] = { name, uid };
+  window._chatMap[chatId] = {name: otherName, uid: otherUid};
   showPage('chat');
+  setTimeout(() => openChatWindow(chatId, otherName, otherUid), 50);
+};
+
+window.startDirectChat = function(uid, name) {
+  if(!currentUser){ openAuthModal(); return; }
+  if(uid === currentUser.uid){ showToast('Cannot chat with yourself','error'); return; }
+  const chatId = [currentUser.uid, uid].sort().join('_');
+  // Store in map so _openChat works too
+  window._chatMap = window._chatMap || {};
+  window._chatMap[chatId] = {name, uid};
+  showPage('chat');
+  // Small delay to let chat page render
   setTimeout(() => openChatWindow(chatId, name, uid), 50);
 };
 
-window.openChatWindow = async (chatId, name, uid) => {
+window.openChatWindow = async function(chatId, otherName, otherUid) {
+  if(!currentUser) { openAuthModal(); return; }
+  if(!chatId) return;
   activeChatId = chatId;
-  document.getElementById('cwName').textContent = name;
+  if(unsubChat) unsubChat();
+
+  document.getElementById('cwName').textContent = otherName;
+  document.getElementById('cwAv').textContent = otherName.charAt(0).toUpperCase();
+  document.getElementById('cwStatus').textContent = 'Online';
+  // Only show loading if opening a different chat
+  if(activeChatId !== chatId) {
+    document.getElementById('cwMsgs').innerHTML = '<div class="loading"><div class="spin"></div></div>';
+  }
+  document.getElementById('cwInp').value = '';
   document.getElementById('chatWindow').classList.add('open');
-  if (unsubChat) unsubChat();
-  
-  unsubChat = onSnapshot(query(collection(db, 'chats', chatId, 'messages'), orderBy('time')), snap => {
-    const box = document.getElementById('cwMsgs');
-    box.innerHTML = snap.docs.map(d => {
-      const m = d.data();
-      const mine = m.senderId === currentUser.uid;
-      return `<div class="bubble ${mine ? 'bubble-out' : 'bubble-in'}">${m.text}</div>`;
+
+  // Create/update chat doc - try setDoc with merge, fallback to addDoc
+  try {
+    await setDoc(doc(db,'chats',chatId), {
+      participants: [currentUser.uid, otherUid].filter(Boolean),
+      participantNames: [currentUser.displayName||'User', otherName],
+      lastMessage: '',
+      lastUpdated: serverTimestamp()
+    }, {merge: true});
+  } catch(e) {
+    // Fallback: try addDoc if setDoc fails
+    try {
+      const existing = await getDocs(query(collection(db,'chats'), where('participants','array-contains',currentUser.uid)));
+      const alreadyExists = existing.docs.some(d => d.id === chatId);
+      if(!alreadyExists) {
+        await addDoc(collection(db,'chats'), {
+          id: chatId,
+          participants: [currentUser.uid, otherUid].filter(Boolean),
+          participantNames: [currentUser.displayName||'User', otherName],
+          lastMessage: '',
+          lastUpdated: serverTimestamp()
+        });
+      }
+    } catch(e2) { console.warn('Chat doc error:', e2); }
+  }
+
+  // Mark chat as read (clear unread indicator) and mark messages as seen
+  setTimeout(async()=>{
+    try{
+      // Clear unread dot by updating lastSeen
+      await updateDoc(doc(db,'chats',chatId),{
+        ['lastSeen_'+currentUser.uid]: serverTimestamp()
+      });
+      // Mark all incoming messages as seen
+      const q=query(collection(db,'chats',chatId,'messages'),where('senderId','!=',currentUser.uid),where('seen','==',false));
+      const s=await getDocs(q);
+      s.forEach(async d=>await updateDoc(doc(db,'chats',chatId,'messages',d.id),{seen:true}));
+    }catch(e){}
+  },600);
+
+  // Real-time listener
+  let lastDate='';
+  unsubChat = onSnapshot(query(collection(db,'chats',chatId,'messages'),orderBy('time')), snap=>{
+    const box=document.getElementById('cwMsgs');
+    if(!box) return;
+    const atBot=box.scrollHeight-box.clientHeight<=box.scrollTop+80;
+    lastDate='';
+    box.innerHTML=snap.docs.map(d=>{
+      const m=d.data();
+      const mine=m.senderId===currentUser.uid;
+      let timeStr='',dateDiv='';
+      if(m.time&&m.time.toDate){
+        const dt=m.time.toDate();
+        timeStr=dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        const ds=dt.toDateString();
+        if(ds!==lastDate){
+          lastDate=ds;
+          const now=new Date();
+          const label=ds===now.toDateString()?'Today':ds===new Date(Date.now()-86400000).toDateString()?'Yesterday':dt.toLocaleDateString([],{day:'numeric',month:'short'});
+          dateDiv='<div class="date-div"><span>'+label+'</span></div>';
+        }
+      }
+      let ticks='';
+      if(mine){
+        if(m.seen) ticks='<span class="b-tick blue">&#10003;&#10003;</span>';
+        else if(m.delivered) ticks='<span class="b-tick">&#10003;&#10003;</span>';
+        else ticks='<span class="b-tick">&#10003;</span>';
+      }
+      return dateDiv+
+        '<div class="bubble '+(mine?'bubble-out':'bubble-in')+'">'+
+          m.text+
+          '<div class="bubble-meta"><span class="b-time">'+timeStr+'</span>'+ticks+'</div>'+
+        '</div>';
     }).join('');
-    box.scrollTop = box.scrollHeight;
+    if(atBot||snap.docChanges().some(c=>c.type==='added')) box.scrollTop=box.scrollHeight;
+    // Mark new incoming as seen
+    snap.docChanges().filter(c=>c.type==='added').forEach(async c=>{
+      const m=c.doc.data();
+      if(m.senderId!==currentUser.uid&&!m.seen){
+        try{await updateDoc(doc(db,'chats',chatId,'messages',c.doc.id),{seen:true});}catch(ex){}
+      }
+    });
   });
 };
 
-window.closeChatWindow = () => {
-    document.getElementById('chatWindow').classList.remove('open');
-    if(unsubChat) unsubChat();
-    activeChatId = null;
+window.closeChatWindow = function() {
+  document.getElementById('chatWindow').classList.remove('open');
+  if(unsubChat){unsubChat();unsubChat=null;}
+  activeChatId=null;
 };
 
-window.sendMsg = async () => {
-  const inp = document.getElementById('cwInp');
-  const text = inp.value.trim();
-  if (!text || !activeChatId) return;
-  inp.value = '';
-  await addDoc(collection(db, 'chats', activeChatId, 'messages'), {
-    text, senderId: currentUser.uid, time: serverTimestamp()
+window.sendMsg = async function() {
+  if(!currentUser||!activeChatId) return;
+  const inp=document.getElementById('cwInp');
+  const text=inp.value.trim();
+  if(!text) return;
+  inp.value=''; inp.style.height=''; inp.focus();
+  // Get receiver UID from chatMap
+  const chatInfo = (window._chatMap||{})[activeChatId];
+  const receiverUid = chatInfo ? chatInfo.uid : null;
+  await addDoc(collection(db,'chats',activeChatId,'messages'),{
+    text,
+    senderId: currentUser.uid,
+    senderName: currentUser.displayName||'User',
+    time: serverTimestamp(),
+    delivered: true,
+    seen: false
   });
-  await setDoc(doc(db, 'chats', activeChatId), {
-    lastMessage: text,
-    lastUpdated: serverTimestamp(),
-    lastSenderId: currentUser.uid,
-    participants: activeChatId.split('_')
-  }, { merge: true });
+  // Write notification for receiver so their chat list updates immediately
+  if(receiverUid) {
+    try {
+      await addDoc(collection(db,'notifications'), {
+        type: 'message',
+        toUid: receiverUid,
+        fromUid: currentUser.uid,
+        fromName: currentUser.displayName||'Student',
+        chatId: activeChatId,
+        preview: text.length > 40 ? text.substring(0,40)+'...' : text,
+        read: false,
+        createdAt: serverTimestamp()
+      });
+    } catch(e) {}
+  }
+  // Update chat doc with last message info (receiver sees it instantly)
+  try {
+    await updateDoc(doc(db,'chats',activeChatId),{
+      lastMessage: text,
+      lastUpdated: serverTimestamp(),
+      lastSenderId: currentUser.uid
+    });
+  } catch(e) {
+    // If updateDoc fails, doc might not exist yet - create it
+    try {
+      await setDoc(doc(db,'chats',activeChatId), {
+        lastMessage: text,
+        lastUpdated: serverTimestamp(),
+        lastSenderId: currentUser.uid,
+        participants: [currentUser.uid]
+      }, {merge: true});
+    } catch(e2) { console.warn('Chat update error:', e2); }
+  }
+};
+
+// Enter to send
+document.getElementById('cwInp').addEventListener('keydown', e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+});
+
+window.autoResize = function(el) {
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,100)+'px';
 };
 
 async function loadChatList() {
-  const q = query(collection(db, 'chats'), where('participants', 'array-contains', currentUser.uid), orderBy('lastUpdated', 'desc'));
-  onSnapshot(q, snap => {
-    const list = document.getElementById('chatList');
-    list.innerHTML = snap.docs.map(d => {
-      const data = d.data();
-      const otherId = data.participants.find(id => id !== currentUser.uid);
-      return `<div class="chat-list-item" onclick="startDirectChat('${otherId}', 'User')">
-        <div class="cl-av">U</div>
-        <div class="cl-info">
-          <div class="cl-name">User ${otherId.substring(0,5)}</div>
-          <div class="cl-msg">${data.lastMessage}</div>
-        </div>
-      </div>`;
-    }).join('');
-  });
-}
-
-function listenForUnread() {
-  const q = query(collection(db, 'chats'), where('participants', 'array-contains', currentUser.uid));
-  onSnapshot(q, snap => {
-    let hasUnread = false;
-    snap.docs.forEach(d => {
-      const data = d.data();
-      if (data.lastSenderId && data.lastSenderId !== currentUser.uid && activeChatId !== d.id) hasUnread = true;
-    });
-    document.getElementById('bn-badge').style.display = hasUnread ? 'block' : 'none';
-  });
-}
-
-// ── HIGH SPEED REPORTING ──
-window.openReportModal = (type) => {
-  if (!currentUser) { openModal('authModal'); return; }
-  document.getElementById('repType').value = type;
-  document.getElementById('repTitle').textContent = type === 'lost' ? 'Report Lost' : 'Report Found';
-  document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
-  openModal('reportModal');
-};
-
-window.submitReport = async () => {
-  const name = document.getElementById('itemName').value.trim();
-  const btn = document.getElementById('submitBtn');
-  if(!name) return;
-  
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
-
-  try {
-    let imageUrl = '';
-    const file = document.getElementById('itemPhoto').files[0];
-    if (file) {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('upload_preset', 'smvdu-findit');
-      const res = await fetch('https://api.cloudinary.com/v1_1/duxehxynt/image/upload', {method:'POST', body:fd});
-      const data = await res.json();
-      imageUrl = data.secure_url;
+  if(!currentUser) return;
+  // Real-time — fires instantly when any chat updates
+  onSnapshot(
+    query(collection(db,'chats'), where('participants','array-contains',currentUser.uid), orderBy('lastUpdated','desc')),
+    snap => {
+      const list = document.getElementById('chatList');
+      if(!list) return;
+      if(snap.empty){
+        list.innerHTML = '<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet</p><p style="font-size:.8rem;margin-top:4px;">Find an item and tap Contact!</p></div>';
+        return;
+      }
+      list.innerHTML = snap.docs.map(d => {
+        const dt = d.data();
+        const other    = (dt.participantNames||[]).find(n => n !== currentUser.displayName) || 'Student';
+        const otherUid = (dt.participants||[]).find(u => u !== currentUser.uid) || '';
+        const chatId   = d.id;
+        let timeStr = '';
+        if(dt.lastUpdated && dt.lastUpdated.toDate) {
+          const t = dt.lastUpdated.toDate(), now = new Date();
+          timeStr = t.toDateString() === now.toDateString()
+            ? t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+            : t.toLocaleDateString([],{day:'numeric',month:'short'});
+        }
+        const hasUnread = dt.lastSenderId && dt.lastSenderId !== currentUser.uid && activeChatId !== chatId;
+        const isActive  = activeChatId === chatId;
+        // Store data in window map so onclick can access it safely
+        window._chatMap = window._chatMap || {};
+        window._chatMap[chatId] = {name: other, uid: otherUid};
+        return '<div class="chat-list-item'+(isActive?' active':'')+'" onclick="window._openChat(\''+chatId+'\')">'+
+          '<div class="cl-av">'+other.charAt(0).toUpperCase()+'</div>' +
+          '<div class="cl-info">' +
+            '<div class="cl-name" style="'+(hasUnread?'font-weight:700':'')+'">'+other+'</div>'+
+            '<div class="cl-msg" style="'+(hasUnread?'font-weight:600;color:#333':'')+'">'+
+              (dt.lastMessage ? (dt.lastMessage.length>40 ? dt.lastMessage.substring(0,40)+'...' : dt.lastMessage) : 'No messages yet')+
+            '</div>'+
+          '</div>'+
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">'+
+            (timeStr ? '<span class="cl-time">'+timeStr+'</span>' : '')+
+            (hasUnread ? '<span style="width:10px;height:10px;background:var(--orange);border-radius:50%;display:block;"></span>' : '')+
+          '</div>'+
+        '</div>';
+      }).join('');
     }
-
-    await addDoc(collection(db, 'items'), {
-      name,
-      type: document.getElementById('repType').value,
-      category: document.getElementById('itemCat').value,
-      location: document.getElementById('itemLoc').value,
-      description: document.getElementById('itemDesc').value,
-      imageUrl,
-      userId: currentUser.uid,
-      status: 'active',
-      createdAt: serverTimestamp()
-    });
-
-    showToast("Reported successfully!");
-    closeModal('reportModal');
-  } catch(e) { console.error(e); }
-  btn.disabled = false;
-  btn.textContent = 'Submit Report';
-};
-
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  document.getElementById('toastWrap').appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+  );
 }
 
-function loadItems() {
-  onSnapshot(query(collection(db, 'items'), orderBy('createdAt', 'desc')), snap => {
-    allItems = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    renderItems(allItems, 'recentList');
-    renderItems(allItems, 'itemsList');
+// Safe chat opener via map
+window._openChat = function(chatId) {
+  const info = (window._chatMap||{})[chatId];
+  if(!info) return;
+  openChatWindow(chatId, info.name, info.uid);
+};
+
+async function checkSmartMatches(lostItem) {
+  if(!currentUser) return;
+  try{
+    const snap=await getDocs(query(collection(db,'items'),where('type','==','found'),where('status','==','active')));
+    const matches=snap.docs.map(d=>({id:d.id,...d.data()})).filter(f=>{
+      let s=0;
+      if(lostItem.category&&f.category&&lostItem.category===f.category)s+=40;
+      if(lostItem.location&&f.location&&lostItem.location===f.location)s+=30;
+      if(lostItem.name&&f.name&&(lostItem.name.toLowerCase().includes(f.name.toLowerCase())||f.name.toLowerCase().includes(lostItem.name.toLowerCase())))s+=25;
+      return s>=40;
+    });
+    if(matches.length>0){
+      const ex=await getDocs(query(collection(db,'notifications'),where('lostItemId','==',lostItem.id),where('userId','==',currentUser.uid)));
+      if(ex.empty){
+        await addDoc(collection(db,'notifications'),{userId:currentUser.uid,lostItemId:lostItem.id,lostItemName:lostItem.name,matches:matches.map(m=>({id:m.id,name:m.name,location:m.location})),read:false,createdAt:serverTimestamp()});
+        showToast('Match found for "'+lostItem.name+'"!','success');
+      }
+    }
+  }catch(e){}
+}
+
+// ── REAL-TIME MESSAGE NOTIFICATIONS ──
+// Listens for new message notifications and shows toast + updates chat list
+function listenForMessageNotifications() {
+  if(!currentUser) return;
+  const q = query(
+    collection(db,'notifications'),
+    where('toUid','==',currentUser.uid),
+    where('type','==','message'),
+    where('read','==',false),
+    orderBy('createdAt','desc')
+  );
+  onSnapshot(q, snap => {
+    snap.docChanges().forEach(async change => {
+      if(change.type === 'added') {
+        const n = change.doc.data();
+        // Only show toast if we're not already in that chat
+        if(activeChatId !== n.chatId) {
+          showToast('💬 '+n.fromName+': '+n.preview, 'success');
+        }
+        // Mark as read
+        try {
+          await updateDoc(doc(db,'notifications',change.doc.id), {read: true});
+        } catch(e) {}
+      }
+    });
   });
 }
 
-function renderItems(items, containerId) {
-  const cont = document.getElementById(containerId);
-  if(!cont) return;
-  cont.innerHTML = items.map(i => `
-    <div class="item-card">
-      <div class="item-card-inner">
-        <div class="item-thumb">${i.imageUrl ? `<img src="${i.imageUrl}">` : '📦'}</div>
-        <div class="item-info">
-          <span class="tag ${i.type==='lost'?'tag-lost':'tag-found'}">${i.type}</span>
-          <div class="item-name">${i.name}</div>
-          <div class="item-loc">📍 ${i.location}</div>
-        </div>
-      </div>
-    </div>
-  `).join('');
+async function loadMatchInbox() {
+  if(!currentUser) return;
+  try{
+    onSnapshot(query(collection(db,'notifications'),where('userId','==',currentUser.uid),orderBy('createdAt','desc')),snap=>{
+      const sec=document.getElementById('matchInboxSec');
+      const inbox=document.getElementById('matchInbox');
+      if(!sec||!inbox) return;
+      if(snap.empty){sec.style.display='none';return;}
+      sec.style.display='block';
+      inbox.innerHTML=snap.docs.map(d=>{
+        const n=d.data();
+        return '<div class="match-card">'+
+          '<div style="font-weight:700;color:var(--head);font-size:.9rem;margin-bottom:8px;">Your lost "'+n.lostItemName+'" may have been found!</div>'+
+          (n.matches||[]).map(m=>'<div style="background:var(--off);border-radius:8px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-weight:600;font-size:.87rem">'+m.name+'</div><div style="font-size:.76rem;color:var(--muted)">'+m.location+'</div></div><button class="user-chat-btn" onclick="openDetail(\''+m.id+'\')">View</button></div>').join('')+
+        '</div>';
+      }).join('');
+    });
+  }catch(e){}
 }
+
+// ── DESKTOP DETECTION ──
+const isDesktop = () => window.innerWidth >= 768;
+
+// Show desktop-only elements when on desktop
+function applyLayout() {
+  const desktop = isDesktop();
+  // Show/hide desktop-only elements
+  document.querySelectorAll('.desktop-only').forEach(el => {
+    el.style.display = desktop ? 'block' : 'none';
+  });
+  // On desktop, chat window goes inside the slot instead of fullscreen
+  if(desktop) {
+    const slot = document.getElementById('desktopChatSlot');
+    const win  = document.getElementById('chatWindow');
+    if(slot && win && !slot.contains(win)) {
+      slot.innerHTML = '';
+      slot.appendChild(win);
+      win.style.cssText = 'position:static;transform:none;display:flex;flex-direction:column;height:100%;';
+    }
+  }
+}
+
+// Override openChatWindow for desktop - show in slot instead of fullscreen overlay
+const _origOpenChat = window.openChatWindow;
+window.openChatWindow = async function(chatId, otherName, otherUid) {
+  // Handle both direct call and event from data attributes
+  if(chatId && typeof chatId === 'object') {
+    const el = chatId.closest ? chatId : chatId.currentTarget;
+    otherUid  = el.getAttribute('data-cuid');
+    otherName = el.getAttribute('data-cname');
+    chatId    = el.getAttribute('data-cid');
+  }
+  if(isDesktop()) {
+    const win = document.getElementById('chatWindow');
+    // Make sure chat page is active
+    showPage('chat');
+    // Show the window inside slot
+    win.classList.add('open');
+    win.style.display = 'flex';
+    // Call original logic
+    await _origOpenChat(chatId, otherName, otherUid);
+  } else {
+    await _origOpenChat(chatId, otherName, otherUid);
+  }
+};
+
+window.closeChatWindow = function() {
+  if(isDesktop()) {
+    // On desktop just show empty state
+    const slot = document.getElementById('desktopChatSlot');
+    if(slot) slot.innerHTML = '<div class="chat-empty-state"><div class="ico">💬</div><h3 style="font-size:.95rem;color:var(--head);margin-bottom:6px;">Select a conversation</h3><p style="font-size:.82rem;">Click a chat to start messaging</p></div>';
+  } else {
+    document.getElementById('chatWindow').classList.remove('open');
+  }
+  if(unsubChat){unsubChat();unsubChat=null;}
+  activeChatId=null;
+};
+
+// Update sidebar user info on desktop
+function updateSideNav(user) {
+  if(!isDesktop()) return;
+  const sideAv   = document.getElementById('sideAv');
+  const sideName = document.getElementById('sideName');
+  if(!sideAv||!sideName) return;
+  if(user) {
+    sideAv.textContent = (user.displayName||'U').charAt(0).toUpperCase();
+    sideName.textContent = user.displayName||'Student';
+  } else {
+    sideAv.textContent = '?';
+    sideName.textContent = 'Guest';
+  }
+}
+
+// Call applyLayout on load and resize
+applyLayout();
+window.addEventListener('resize', applyLayout);
+
+// Patch onAuthStateChanged to also update sidebar
+const origUpdateTopBar = updateTopBar;
+window._patchedAuth = true;
+
+// Re-run layout after Firebase loads
+setTimeout(applyLayout, 500);
+
+// Also update side nav when user changes
+onAuthStateChanged(auth, user => {
+  updateSideNav(user);
+  if(isDesktop()) applyLayout();
+});
+
+})();
 </script>
 </body>
 </html>
