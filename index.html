@@ -43,7 +43,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
 /* ── BOTTOM NAV ── */
 .bottom-nav{display:flex;background:var(--white);border-top:1px solid var(--border);padding-bottom:var(--safe-bottom);flex-shrink:0;}
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-size:.65rem;gap:3px;position:relative;transition:color .15s;}
-.bn-item .ico{font-size:1.35rem;line-height:1;}
+.bn-item svg{display:block;margin:0 auto;}
 .bn-item.active{color:var(--orange);}
 .bn-item.active .ico{transform:scale(1.1);}
 .bn-badge{position:absolute;top:6px;right:calc(50% - 14px);background:var(--red);color:#fff;border-radius:10px;font-size:.6rem;padding:1px 5px;min-width:16px;text-align:center;display:none;}
@@ -446,8 +446,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
         <h1>Lost something<br>on campus? <span>We'll find it.</span></h1>
         <p>Report lost items, find what others found, chat instantly.</p>
         <div class="hero-btns">
-          <button class="btn-hero-p" onclick="openReportModal('lost')"> Report Lost</button>
-          <button class="btn-hero-s" onclick="openReportModal('found')"> Found Something</button>
+          <button class="btn-hero-p" onclick="openReportModal('lost')">📢 Report Lost</button>
+          <button class="btn-hero-s" onclick="openReportModal('found')">🔍 Found Something</button>
         </div>
       </div>
       <div class="stats-row">
@@ -483,16 +483,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
       </div>
       <div class="filter-scroll">
         <div class="f-chip active" onclick="setCatFilter('all',this)">All</div>
-        <div class="f-chip" onclick="setCatFilter('Electronics',this)"> Electronics</div>
-        <div class="f-chip" onclick="setCatFilter('ID/Documents',this)"> ID/Docs</div>
-        <div class="f-chip" onclick="setCatFilter('Keys',this)"> Keys</div>
-        <div class="f-chip" onclick="setCatFilter('Wallet/Purse',this)"> Wallet</div>
-        <div class="f-chip" onclick="setCatFilter('Bag/Backpack',this)"> Bag</div>
-        <div class="f-chip" onclick="setCatFilter('Clothing',this)"> Clothing</div>
-        <div class="f-chip" onclick="setCatFilter('Books/Notes',this)"> Books</div>
-        <div class="f-chip" onclick="setCatFilter('Sports',this)"> Sports</div>
-        <div class="f-chip" onclick="setCatFilter('Bottle',this)"> Bottle</div>
-        <div class="f-chip" onclick="setCatFilter('Other',this)"> Other</div>
+        <div class="f-chip" onclick="setCatFilter('Electronics',this)">Electronics</div>
+        <div class="f-chip" onclick="setCatFilter('ID/Documents',this)">ID / Docs</div>
+        <div class="f-chip" onclick="setCatFilter('Keys',this)">Keys</div>
+        <div class="f-chip" onclick="setCatFilter('Wallet/Purse',this)">Wallet</div>
+        <div class="f-chip" onclick="setCatFilter('Bag/Backpack',this)">Bag</div>
+        <div class="f-chip" onclick="setCatFilter('Clothing',this)">Clothing</div>
+        <div class="f-chip" onclick="setCatFilter('Books/Notes',this)">Books</div>
+        <div class="f-chip" onclick="setCatFilter('Sports',this)">Sports</div>
+        <div class="f-chip" onclick="setCatFilter('Bottle',this)">Bottle</div>
+        <div class="f-chip" onclick="setCatFilter('Other',this)">Other</div>
       </div>
       <div class="browse-list" id="itemsList"><div class="loading"><div class="spin"></div></div></div>
     </div>
@@ -505,7 +505,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
         </div>
         <div class="chat-list-scroll" id="chatList">
           <div class="chat-empty-state">
-            <div class="ico">💬</div>
+            <div class="ico" style="font-size:2.5rem;opacity:.25;margin-bottom:12px">&#128172;</div>
             <p>Sign in to see conversations</p>
           </div>
         </div>
@@ -513,7 +513,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
       <!-- Desktop: chat window sits here instead of fullscreen -->
       <div class="chat-window-slot" id="desktopChatSlot">
         <div class="chat-empty-state">
-          <div class="ico">💬</div>
+          <div class="ico" style="font-size:2.5rem;opacity:.25;margin-bottom:12px">&#128172;</div>
           <h3 style="font-size:.95rem;color:var(--head);margin-bottom:6px;">Select a conversation</h3>
           <p style="font-size:.82rem;">Click a chat to start messaging</p>
         </div>
@@ -539,7 +539,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
     <div class="page" id="page-profile">
       <div id="profContent">
         <div class="lock-screen">
-          <div class="ico"></div>
+          <div class="ico" style="font-size:2.5rem;opacity:.25;margin-bottom:12px">&#128274;</div>
           <h3>Sign in to view profile</h3>
           <p>Your reports, matches and profile details will appear here.</p>
           <button onclick="openAuthModal()">Sign In</button>
@@ -553,25 +553,30 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
   <div class="bottom-nav" id="sideNav">
     <!-- Desktop only: Report buttons at top -->
     <div class="desktop-only" style="display:none;">
-      <button class="desktop-fab" onclick="openReportModal('lost')"> Report Lost Item</button>
-      <button class="desktop-fab" style="background:var(--steel);margin-top:0;" onclick="openReportModal('found')"> Found Something</button>
+      <button class="desktop-fab" onclick="openReportModal('lost')">📢 Report Lost Item</button>
+      <button class="desktop-fab" style="background:var(--steel);margin-top:0;" onclick="openReportModal('found')">🔍 Found Something</button>
       <div style="height:1px;background:rgba(255,255,255,.1);margin:8px 0;"></div>
     </div>
     <button class="bn-item active" id="bn-home" onclick="showPage('home')">
-      <span class="ico">&#8962;</span><span>Home</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
     </button>
     <button class="bn-item" id="bn-items" onclick="showPage('items')">
-      <span class="ico">&#9740;</span><span>Browse</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Browse</span>
       <span class="bn-badge" id="bn-badge"></span>
     </button>
     <button class="bn-item" id="bn-chat" onclick="showPage('chat')">
-      <span class="ico">&#9993;</span><span>Messages</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Messages</span>
     </button>
     <button class="bn-item" id="bn-users" onclick="showPage('users')">
-      <span class="ico">&#128101;</span><span>Students</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Students</span>
     </button>
     <button class="bn-item" id="bn-profile" onclick="showPage('profile')">
-      <span class="ico">&#9888;</span><span>Profile</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
     </button>
     <!-- Desktop only: sign out at bottom -->
     <div class="desktop-only" style="display:none;margin-top:auto;padding:12px;">
@@ -769,7 +774,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--off);color:var(--t
         <label class="fl">Photo (optional)</label>
         <div class="upload-box" onclick="document.getElementById('itemPhoto').click()">
           <input type="file" id="itemPhoto" accept="image/*" onchange="previewPhoto(this)">
-          <div id="uploadIcon" style="font-size:1.8rem;margin-bottom:6px;">📸</div>
+          <div id="uploadIcon" style="font-size:1.8rem;margin-bottom:6px;"></div>
           <p id="uploadTxt" style="font-size:.8rem;color:var(--muted);">Tap to upload photo</p>
         </div>
       </div>
@@ -924,7 +929,7 @@ onAuthStateChanged(auth, async user => {
     document.getElementById('statFound').textContent = '--';
     document.getElementById('statResolved').textContent = '--';
     document.getElementById('recentList').innerHTML = '<div class="loading"><div style="font-size:2rem;margin-bottom:8px">🔒</div><p style="font-size:.85rem">Sign in to see activity</p></div>';
-    document.getElementById('profContent').innerHTML = '<div class="lock-screen"><div class="ico">🔒</div><h3>Sign in to view profile</h3><p>Your reports and profile details will appear here.</p><button onclick="openAuthModal()">Sign In</button></div>';
+    document.getElementById('profContent').innerHTML = '<div class="lock-screen"><div class="ico" style="font-size:2.5rem;opacity:.25;margin-bottom:12px">&#128274;</div><h3>Sign in to view profile</h3><p>Your reports and profile details will appear here.</p><button onclick="openAuthModal()">Sign In</button></div>';
   }
 });
 
@@ -1088,9 +1093,9 @@ async function renderProfilePage(user) {
         <div class="prof-name">${u.name||user.displayName||'Student'}</div>
         <div class="prof-sub">${user.email}</div>
         <div class="prof-badges">
-          ${u.roll?'<span class="prof-badge-pill"> '+u.roll+'</span>':''}
-          ${u.dept?'<span class="prof-badge-pill"> '+u.dept+'</span>':''}
-          ${u.hostel?'<span class="prof-badge-pill"> '+u.hostel+'</span>':''}
+          ${u.roll?'<span class="prof-badge-pill">🎓 '+u.roll+'</span>':''}
+          ${u.dept?'<span class="prof-badge-pill">📚 '+u.dept+'</span>':''}
+          ${u.hostel?'<span class="prof-badge-pill">🏠 '+u.hostel+'</span>':''}
         </div>
         <button class="prof-edit-btn" onclick="openProfileEdit()">✏ Edit Profile</button>
       </div>
@@ -1223,7 +1228,7 @@ async function loadMyItems() {
     const rc = document.getElementById('repCount');
     if(rc) rc.textContent = mine.length;
     if(!mine.length) {
-      el.innerHTML = '<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px"></div><p style="font-size:.84rem">No reports yet</p></div>';
+      el.innerHTML = '<div class="loading"><div style="font-size:2rem;opacity:.3;margin-bottom:8px">📋</div><p style="font-size:.84rem">No reports yet</p></div>';
       return;
     }
     el.innerHTML = mine.map(item => {
@@ -1236,7 +1241,7 @@ async function loadMyItems() {
             (item.status==='claimed'?'<span class="tag" style="background:#e8f3ff;color:var(--steel)">Resolved</span>':'') +
           '</div>' +
           '<div style="font-weight:700;font-size:.9rem;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+item.name+'</div>' +
-          '<div style="font-size:.76rem;color:var(--muted);margin-top:2px;"> '+item.location+'</div>' +
+          '<div style="font-size:.76rem;color:var(--muted);margin-top:2px;">📍 '+item.location+'</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1262,7 +1267,7 @@ function renderCards(cid, items) {
             '<span class="tag tag-cat">'+(item.category||'Other')+'</span>' +
           '</div>' +
           '<div class="item-name">'+item.name+'</div>' +
-          '<div class="item-loc"> '+(item.location||'Unknown')+'</div>' +
+          '<div class="item-loc">📍 '+(item.location||'Unknown')+'</div>' +
           '<div class="item-date">'+(item.date||'')+'</div>' +
         '</div>' +
       '</div>' +
@@ -1309,7 +1314,7 @@ window.filterItems = function() {
   const q = (document.getElementById('searchInput').value||'').toLowerCase();
   if(q) items = items.filter(i=>(i.name+' '+i.description+' '+i.location).toLowerCase().includes(q));
   if(!currentUser) {
-    document.getElementById('itemsList').innerHTML = '<div class="lock-screen"><div class="ico">🔒</div><h3>Sign in to Browse</h3><p>See all lost and found items from SMVDU campus</p><button onclick="openAuthModal()">Sign In</button></div>';
+    document.getElementById('itemsList').innerHTML = '<div class="lock-screen"><div class="ico" style="font-size:2.5rem;opacity:.25;margin-bottom:12px">&#128274;</div><h3>Sign in to Browse</h3><p>See all lost and found items from SMVDU campus</p><button onclick="openAuthModal()">Sign In</button></div>';
     return;
   }
   renderCards('itemsList', items);
@@ -1387,7 +1392,7 @@ window.openReportModal = function(type) {
   document.getElementById('verifyGrp').style.display = type==='lost'?'block':'none';
   document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
   ['itemName','itemDesc','itemCat','itemLoc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('uploadIcon').textContent='📸';
+  document.getElementById('uploadIcon').textContent='';
   document.getElementById('uploadTxt').textContent='Tap to upload photo';
   document.getElementById('reportModal').classList.add('open');
 };
@@ -1630,7 +1635,7 @@ async function loadChatList() {
       const list = document.getElementById('chatList');
       if(!list) return;
       if(snap.empty){
-        list.innerHTML = '<div class="chat-empty-state"><div class="ico">💬</div><p>No conversations yet</p><p style="font-size:.8rem;margin-top:4px;">Find an item and tap Contact!</p></div>';
+        list.innerHTML = '<div class="chat-empty-state"><div class="ico" style="font-size:2.5rem;opacity:.25;margin-bottom:12px">&#128172;</div><p>No conversations yet</p><p style="font-size:.8rem;margin-top:4px;">Find an item and tap Contact!</p></div>';
         return;
       }
       // Sort by lastUpdated descending in JS (no index needed)
@@ -1799,7 +1804,7 @@ window.closeChatWindow = function() {
   if(isDesktop()) {
     // On desktop just show empty state
     const slot = document.getElementById('desktopChatSlot');
-    if(slot) slot.innerHTML = '<div class="chat-empty-state"><div class="ico">💬</div><h3 style="font-size:.95rem;color:var(--head);margin-bottom:6px;">Select a conversation</h3><p style="font-size:.82rem;">Click a chat to start messaging</p></div>';
+    if(slot) slot.innerHTML = '<div class="chat-empty-state"><div class="ico" style="font-size:2.5rem;opacity:.25;margin-bottom:12px">&#128172;</div><h3 style="font-size:.95rem;color:var(--head);margin-bottom:6px;">Select a conversation</h3><p style="font-size:.82rem;">Click a chat to start messaging</p></div>';
   } else {
     document.getElementById('chatWindow').classList.remove('open');
   }
@@ -1861,12 +1866,18 @@ window.searchUsers = async function(val) {
   try {
     const snap = await getDocs(collection(db, 'users'));
     const q = val.trim().toLowerCase();
-    const results = snap.docs.map(d => d.data()).filter(u =>
-      (u.name||'').toLowerCase().includes(q) ||
-      (u.roll||'').toLowerCase().includes(q) ||
-      (u.dept||'').toLowerCase().includes(q) ||
-      (u.hostel||'').toLowerCase().includes(q)
-    );
+    // Deduplicate by uid (user might have multiple docs)
+    const seen = new Set();
+    const results = snap.docs
+      .map(d => d.data())
+      .filter(u => {
+        if(!u.uid || seen.has(u.uid)) return false;
+        seen.add(u.uid);
+        return (u.name||'').toLowerCase().includes(q) ||
+               (u.roll||'').toLowerCase().includes(q) ||
+               (u.dept||'').toLowerCase().includes(q) ||
+               (u.hostel||'').toLowerCase().includes(q);
+      });
     if(!results.length) {
       list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">No students found</div>';
       return;
